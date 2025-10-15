@@ -16,12 +16,12 @@ export async function runCommand(options: {
     Logger.info("🔍 Lade Konfiguration...");
 
     // Hauptkonfiguration laden (svi.json im Projekt-Stammverzeichnis)
-    const config = Config.loadConfig();
+    const config = new Config(); //.loadConfig();
 
     Logger.info("✅ Konfiguration erfolgreich geladen.");
-    Logger.debug(`ProgrammingLanguage: ${config.ProgrammingLanguage}`);
-    Logger.debug(`SearchPaths: ${config.SearchPaths.join(", ")}`);
-    Logger.debug(`IgnorePaths: ${config.IgnorePaths.join(", ")}`);
+    Logger.debug(`ProgrammingLanguage: ${config.programmingLanguage}`);
+    Logger.debug(`SearchPaths: ${config.searchPaths.join(", ")}`);
+    Logger.debug(`IgnorePaths: ${config.ignorePaths.join(", ")}`);
 
     // RunManager starten
     const runManager = new RunManager(config, {
