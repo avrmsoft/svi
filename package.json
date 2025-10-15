@@ -1,0 +1,17 @@
+{
+  "name": "SVI - Structural VIbe coding",
+  "version": "0.0.1",
+  "description": "A vibe-coding file-based command line tool that helps you create maintainable with the help of AI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/avrmsoft/svi.git"
+  },
+  "author": "AVRM Software",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r run build"
+  }
+}
