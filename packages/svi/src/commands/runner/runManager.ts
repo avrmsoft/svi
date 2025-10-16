@@ -3,14 +3,15 @@ import path from "path";
 import fs from "fs/promises";
 
 import { Config, SviConfig } from "../../config/config";
-import { loadSviFiles } from "./sviLoader";
-import { parseSvi, isActive as sviIsActive, SVIFile } from "./sviProcessor";
-import { buildPrompt } from "./promptBuilder";
+import { SviLoader } from "./sviLoader";
+import { processSVIFile, isActive as sviIsActive } from "./sviProcessor";
+import { buildPrompt } from "./promptbuilder";
 import * as cacheManager from "./cacheManager";
 import { LLM } from "../../llm/llm";
 import * as fileUtils from "../../utils/file";
 import logger from "../../utils/logger";
-import { CacheMap } from "./types";
+import { SVIFile } from "../../parser/sviParser";
+//import { CacheMap } from "./types";
 
 /**
  * RunManager
@@ -49,7 +50,8 @@ export class RunManager {
       const globalProgrammingLanguage = this.config.ProgrammingLanguage;
 
       logger.info("RunManager: Search for .svi files...");
-      const sviFiles = await loadSviFiles(this.config.SearchPaths, this.config.IgnorePaths);
+      //const sviFiles = await loadSviFiles(this.config.SearchPaths, this.config.IgnorePaths);
+      const sviFiles = new SviLoader(this.config).loadAll();
 
       if (!sviFiles || sviFiles.length === 0) {
         logger.info("No .svi files found. Nothing to do.");
@@ -73,8 +75,12 @@ export class RunManager {
           const sviFilename = path.basename(sviPath);
 
           // 1) Parsen der .svi Datei
-          const sviFile: SVIFile = await parseSvi(sviPath);
-          logger.debug(`File ${sviFilename} was parsed`, sviFile);
+          const sviFile: SVIFile | null = await processSVIFile(sviPath);
+          if(!sviFile) {
+            logger.error(`Could not parse ${sviFilename}`);
+            continue;
+          }
+          logger.debug(`File ${sviFilename} was parsed`);
 
           // 2) Active prüfen (wenn Abschnitt fehlt => true)
           if (!sviIsActive(sviFile)) {
@@ -105,21 +111,21 @@ export class RunManager {
 
           // 4) Prompt bauen
           // die Prompt-Builder-Funktion verwendet die sections der SVI-Datei
-          const { prompt, systemPrompt } = await buildPrompt(sviFile); //, sviFile.options?.ProgrammingLanguage ?? globalProgrammingLanguage);
-          logger.debug(`Prompt für ${sviFilename} gebaut.`);
+          const prompt = await buildPrompt(sviFile); //, sviFile.options?.ProgrammingLanguage ?? globalProgrammingLanguage);
+          logger.debug(`Prompt for ${sviFilename} was built.`);
 
-          // 5) LLM aufrufen
-          logger.info(`Sende Prompt an LLM für ${sviFilename}...`);
-          const generated = await llm.ask(prompt, systemPrompt);
-          if (!generated || generated.trim().length === 0) {
-            logger.warn(`LLM lieferte keinen Inhalt für ${sviFilename}. Überspringe Schreiben.`);
+          // 6) Ziel-Datei bestimmen (aus # Destination File section)
+          const destinationFromSvi = sviFile.destinationFile?.trim();
+          if (!destinationFromSvi) {
+            logger.error(`No destination file ${sviFilename} provided. Skipping.`);
             continue;
           }
 
-          // 6) Ziel-Datei bestimmen (aus # Destination File section)
-          const destinationFromSvi = sviFile.destination?.trim();
-          if (!destinationFromSvi) {
-            logger.error(`Keine Destination in ${sviFilename} angegeben. Überspringe.`);
+          // 6) LLM aufrufen
+          logger.info(`Send LLM from for ${sviFilename}...`);
+          const generated = await llm.ask(prompt);
+          if (!generated || generated.trim().length === 0) {
+            logger.error(`LLM returned no result for ${sviFilename}. Skipping.`);
             continue;
           }
 
@@ -137,8 +143,9 @@ export class RunManager {
           await fs.writeFile(destPath, generated, { encoding: "utf8" });
 
           // 8) Cache aktualisieren (.svicache)
-          cache[sviFilename] = currentHash;
-          await cacheManager.writeCache(sviDir, cache);
+          //cache[sviFilename] = currentHash;
+          //await cacheManager.writeCache(sviDir, cache);
+          cache?.updateCache
           logger.info(`Cache aktualisiert für ${sviFilename}`);
 
         } catch (innerErr) {

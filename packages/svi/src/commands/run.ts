@@ -1,6 +1,6 @@
 import { Config } from "../config/config";
 import { RunManager } from "../commands/runner/runManager";
-import { Logger } from "../utils/logger";
+import Logger from "../utils/logger";
 
 /**
  * CLI-Befehl: run
@@ -24,7 +24,7 @@ export async function runCommand(options: {
     Logger.debug(`IgnorePaths: ${config.ignorePaths.join(", ")}`);
 
     // RunManager starten
-    const runManager = new RunManager(config, {
+    const runManager = new RunManager(config.data, {
       model: options.model,
       apiKey: options.apiKey,
       envPath: options.envPath,

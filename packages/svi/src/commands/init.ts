@@ -1,6 +1,6 @@
 // src/commands/init.ts
 import path from "path";
-import { Logger } from "../utils/logger";
+import Logger from "../utils/logger";
 import { writeJSON, exists } from "../utils/file";
 
 interface InitOptions {

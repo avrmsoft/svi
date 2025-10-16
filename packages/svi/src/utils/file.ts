@@ -53,7 +53,10 @@ export function writeJSON(filePath: string, data: any): void {
 /**
  * Erstellt eine leere Datei mit Inhalt (falls sie nicht existiert)
  */
-export function createFileIfNotExists(filePath: string, content: string = ""): void {
+export function createFileIfNotExists(
+  filePath: string,
+  content: string = ""
+): void {
   if (!exists(filePath)) {
     const dir = path.dirname(filePath);
     if (!exists(dir)) {
@@ -66,7 +69,9 @@ export function createFileIfNotExists(filePath: string, content: string = ""): v
 /**
  * Holt den aktuellen Projekt-Stammordner (wo `svi.json` liegt)
  */
-export function getProjectRoot(startDir: string = process.cwd()): string | null {
+export function getProjectRoot(
+  startDir: string = process.cwd()
+): string | null {
   let current = startDir;
 
   while (true) {
@@ -81,4 +86,20 @@ export function getProjectRoot(startDir: string = process.cwd()): string | null 
   }
 
   return null;
+}
+
+export async function ensureDir(dirPath: string): Promise<void> {
+  try {
+    await fs.promises.mkdir(dirPath, { recursive: true });
+  } catch (error) {
+    console.error(
+      `Error creating folder(s) for the path ${dirPath}:`,
+      error
+    );
+    throw error;
+  }
+}
+
+export function getPathFromFile(fullPath: string): string {
+  return path.dirname(fullPath);
 }
