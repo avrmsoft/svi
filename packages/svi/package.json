@@ -9,5 +9,11 @@
   "devDependencies": {
     "@types/node": "^24.7.2",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@langchain/anthropic": "^0.3.32",
+    "@langchain/core": "^0.3.78",
+    "@langchain/openai": "^0.6.16",
+    "dotenv": "^17.2.3"
   }
 }

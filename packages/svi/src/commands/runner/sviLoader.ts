@@ -1,15 +1,14 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Config } from "../../config/config";
 import { SviConfig } from "../../config/config";
-import { Logger } from "../../utils/logger";
+import Logger from "../../utils/logger";
 
 export class SviLoader {
   private config: SviConfig;
   private rootDir: string;
 
-  constructor(config: Config, rootDir: string = process.cwd()) {
-    this.config = config.getConfig();
+  constructor(config: SviConfig, rootDir: string = process.cwd()) {
+    this.config = config;
     this.rootDir = rootDir;
   }
 

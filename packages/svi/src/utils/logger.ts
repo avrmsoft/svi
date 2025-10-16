@@ -18,7 +18,7 @@ const colors = {
   fgCyan: "\x1b[36m",
 };
 
-export class Logger {
+export default class Logger {
   static info(message: string) {
     console.log(`${colors.fgBlue}[${LogLevel.INFO}]${colors.reset} ${message}`);
   }
