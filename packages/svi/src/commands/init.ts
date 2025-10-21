@@ -1,5 +1,6 @@
 // src/commands/init.ts
 import path from "path";
+import fs from "fs";
 import Logger from "../utils/logger";
 import { writeJSON, exists } from "../utils/file";
 import { type SVIFile } from "../parser/sviParser";
@@ -163,8 +164,9 @@ Active=True // Optional
     contentLines.push(sviFile.prompt);
   }
 
-  // 5. Datei schreiben
-  writeJSON(targetPath, contentLines.join("\n")); // oder fs.writeFileSync(targetPath, contentLines.join("\n"), 'utf-8')
+  // 5. Write the file
+  //writeJSON(targetPath, contentLines.join("\n")); // oder fs.writeFileSync(targetPath, contentLines.join("\n"), 'utf-8')
+  fs.writeFileSync(targetPath, contentLines.join("\n"), 'utf-8');
   Logger.success(`SVI file created: ${targetPath}`);
   return 0;
 }
