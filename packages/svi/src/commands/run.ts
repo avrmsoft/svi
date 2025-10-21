@@ -3,8 +3,8 @@ import { RunManager } from "../commands/runner/runManager";
 import Logger from "../utils/logger";
 
 /**
- * CLI-Befehl: run
- * - Lädt die Hauptkonfiguration (svi.json)
+ * CLI-command: run
+ * - Load the main configuration (svi.json)
  * - Startet den RunManager, der den kompletten Prozess orchestriert
  */
 export async function runCommand(options: {
