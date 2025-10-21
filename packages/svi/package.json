@@ -1,19 +1,24 @@
 {
-  "name": "@svi/core",
+  "name": "svi",
   "version": "0.0.1",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "SVI - Structural Vibe Coding (SVI), CLI tools",
+  "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && copy package.json dist"
   },
   "devDependencies": {
     "@types/node": "^24.7.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.0.0"
   },
   "dependencies": {
     "@langchain/anthropic": "^0.3.32",
     "@langchain/core": "^0.3.78",
     "@langchain/openai": "^0.6.16",
+    "commander": "^14.0.1",
     "dotenv": "^17.2.3"
+  },
+  "bin": {
+    "svi": "dist/bin/cli.js"
   }
 }
