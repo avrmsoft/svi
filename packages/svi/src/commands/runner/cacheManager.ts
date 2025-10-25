@@ -1,68 +1,101 @@
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+import yaml from "js-yaml";
 
 export interface CacheEntry {
-    file: string;
-    hash: string;
+  file: string;
+  hash: string;
 }
 
 export class CacheManager {
-    private cacheFileName = '.svicache';
-    private cache: Map<string, string> = new Map();
+  private cacheFileName = ".svicache";
+  private cache: Map<string, string> = new Map();
 
-    constructor(private sviDir: string) {
-        this.loadCache();
-    }
+  constructor(private sviDir: string) {
+    this.loadCache();
+  }
 
-    /** Lädt den aktuellen Cache aus der .svicache Datei */
-    private loadCache() {
-        const cachePath = path.join(this.sviDir, this.cacheFileName);
-        if (!fs.existsSync(cachePath)) return;
+  /** Loads the current cache from the YAML file (.svicache) */
+  private loadCache() {
+    const cachePath = path.join(this.sviDir, this.cacheFileName);
+    if (!fs.existsSync(cachePath)) return;
 
-        const lines = fs.readFileSync(cachePath, 'utf-8').split(/\r?\n/);
-        for (const line of lines) {
-            if (!line.trim()) continue;
-            const [file, hash] = line.split(' ');
-            if (file && hash) this.cache.set(file, hash);
+    try {
+      const yamlContent = fs.readFileSync(cachePath, "utf-8");
+      const data = yaml.load(yamlContent) as Record<string, any> | undefined;
+      if (!data) return;
+
+      for (const [file, info] of Object.entries(data)) {
+        if (info && typeof info === "object" && "hash" in info) {
+          this.cache.set(file, (info as any).hash);
         }
+      }
+    } catch (err) {
+      console.warn("⚠️ Error while reading YAML file:", err);
+    }
+  }
+
+  /** Saves cache data in YAML format (without deleting other information) */
+  private saveCache() {
+    const cachePath = path.join(this.sviDir, this.cacheFileName);
+    let data: Record<string, any> = {};
+
+    // If file exists → keep existing data
+    if (fs.existsSync(cachePath)) {
+      try {
+        const yamlContent = fs.readFileSync(cachePath, "utf-8");
+        data = (yaml.load(yamlContent) as Record<string, any>) || {};
+      } catch {
+        data = {};
+      }
     }
 
-    /** Speichert den Cache zurück in die .svicache Datei */
-    private saveCache() {
-        const cachePath = path.join(this.sviDir, this.cacheFileName);
-        const content = Array.from(this.cache.entries())
-            .map(([file, hash]) => `${file} ${hash}`)
-            .join('\n');
-        fs.writeFileSync(cachePath, content, 'utf-8');
+    // Update cache entries
+    for (const [file, hash] of this.cache.entries()) {
+      const baseName = path.basename(file);
+      data[baseName] = { ...(data[baseName] || {}), hash };
     }
 
-    /** Berechnet den SHA256 Hash einer Datei */
-    private calculateHash(filePath: string): string {
-        const fileBuffer = fs.readFileSync(filePath);
-        const hashSum = crypto.createHash('sha256');
-        hashSum.update(fileBuffer);
-        return hashSum.digest('hex');
-    }
+    // Save YAML file in formatted form
+    const yamlContent = yaml.dump(data, { indent: 2, lineWidth: 120 });
+    fs.writeFileSync(cachePath, yamlContent, "utf-8");
+  }
 
-    /** Prüft, ob die Datei noch aktuell ist */
-    isCacheValid(fileName: string): boolean {
-        const filePath = path.join(this.sviDir, fileName);
-        if (!fs.existsSync(filePath)) return false;
+  /** Calculates the SHA256 hash of a file */
+  private calculateHash(filePath: string): string {
+    const fileBuffer = fs.readFileSync(filePath);
+    const hashSum = crypto.createHash("sha256");
+    hashSum.update(fileBuffer);
+    return hashSum.digest("hex");
+  }
 
-        const currentHash = this.calculateHash(filePath);
-        const cachedHash = this.cache.get(fileName);
+  /** Checks whether the file is still up to date */
+  isCacheValid(fileName: string): boolean {
+    const filePath = this.getAbsoluteFilePath(fileName);
+    if (!fs.existsSync(filePath)) return false;
 
-        return cachedHash === currentHash;
-    }
+    const currentHash = this.calculateHash(filePath);
+    this.loadCache();
+    const cachedHash = this.cache.get(path.basename(fileName));
+    return cachedHash === currentHash;
+  }
 
-    /** Aktualisiert den Cache für eine Datei */
-    updateCache(fileName: string) {
-        const filePath = path.join(this.sviDir, fileName);
-        if (!fs.existsSync(filePath)) return;
+  /** Updates the cache entry for a file */
+  updateCache(sviFileName: string) {
+    const filePath = this.getAbsoluteFilePath(sviFileName);
 
-        const currentHash = this.calculateHash(filePath);
-        this.cache.set(fileName, currentHash);
-        this.saveCache();
-    }
+    if (!fs.existsSync(filePath)) return;
+
+    const currentHash = this.calculateHash(filePath);
+    this.loadCache();
+    this.cache.set(path.basename(sviFileName), currentHash);
+    this.saveCache();
+  }
+
+  private getAbsoluteFilePath(sviFileName: string): string {
+    return path.isAbsolute(sviFileName)
+      ? sviFileName
+      : path.join(this.sviDir, sviFileName);
+  }
 }
