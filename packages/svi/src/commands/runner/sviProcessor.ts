@@ -1,16 +1,22 @@
 // src/commands/runner/sviProcessor.ts
-import fs from 'fs';
+//import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
+import fs from "fs/promises";
+
+//import crypto from 'crypto';
 import { SVIFile, SVIParser } from '../../parser/sviParser';
 import * as cacheManager from "./cacheManager";
 import logger from '../../utils/logger';
+import { buildPrompt } from "./promptbuilder";
+import { LLM } from "../../llm/llm";
+import * as fileUtils from "../../utils/file";
+import { clearContentFromMarkdownCodeMarkers } from '../../utils/utils';
 
 /**
- * Prüft, ob die Datei aktiv ist (Active=true)
+ * Check if file is active (according to options Active=true)
  */
 export function isActive(svi: SVIFile): boolean {
-    if (!svi.options) return true; // Standardmäßig aktiv
+    if (!svi.options) return true; // Default is active
     if (svi.options['Active'] === undefined) return true;
     return svi.options['Active'] === true || svi.options['Active'] === 'True';
 }
@@ -18,50 +24,72 @@ export function isActive(svi: SVIFile): boolean {
 /**
  * Berechnet den Hash einer Datei
  */
-function computeHash(content: string): string {
-    return crypto.createHash('md5').update(content, 'utf8').digest('hex');
-}
+//function computeHash(content: string): string {
+//    return crypto.createHash('md5').update(content, 'utf8').digest('hex');
+//}
 
 /**
- * Lädt und verarbeitet eine einzelne *.svi Datei
+ * Load and process a single *.svi file
  */
-export async function processSVIFile(filePath: string, cacheFilePath?: string): Promise<SVIFile | null> {
+export async function processSVIFile(filePath: string, llm: LLM): Promise<boolean | null> {
     try {
-        //const rawContent = fs.readFileSync(filePath, 'utf8');
 
         const parser = new SVIParser(); //rawContent);
         const svi: SVIFile = parser.parseFile(filePath);
 
-        // Prüfen, ob aktiv
+        // Check if active
         if (!isActive(svi)) {
             logger.info(`Skipping inactive SVI file: ${filePath}`);
-            return null;
+            return false;
+        }
+
+        // 6) Get destination file from the .svi file (from # Destination File section)
+        const destinationFromSvi = svi.destinationFile?.trim();
+        if (!destinationFromSvi) {
+            logger.error(`No destination file ${filePath} provided. Skipping.`);
+            return false;
         }
 
         const fileFolder = path.dirname(filePath);
 
-        // Prüfen Cache
+        // Check cache
         const cache = new cacheManager.CacheManager(fileFolder);
         if(cache.isCacheValid(filePath)) {
-        //const currentHash = computeHash(rawContent);
-        //if (cacheFilePath && fs.existsSync(cacheFilePath)) {
-        //    const cachedHash = readCache(cacheFilePath, path.basename(filePath));
-        //    if (cachedHash && cachedHash === currentHash) {
-            logger.info(`Cache is up to date, skipping file: ${filePath}`);
-            return null;
-            //}
+            if(!fileUtils.exists(destinationFromSvi)) {
+                logger.info(`Destination file ${destinationFromSvi} does not exist. Regenerating...`);
+            } else {
+                logger.info(`Cache is up to date, skipping file: ${filePath}`);
+                return false;
+            }
         }
 
-        // Prompt vorbereiten (hier nur das Prompt-Feld aus SVI)
-        //svi.rawContent = rawContent; // roher Inhalt bleibt erhalten
+        const prompt = buildPrompt(svi);
+        logger.debug(`Prompt for ${filePath} was built.`);
 
-        // Nach Bearbeitung: Cache aktualisieren
-        //if (cacheFilePath) {
-        //    updateCache(cacheFilePath, path.basename(filePath), currentHash);
-        //}
+        logger.info(`Ask LLM for ${filePath}...`);
+        const generated = await llm.ask(prompt);
+        if (!generated || generated.trim().length === 0) {
+            logger.error(`LLM returned no result for ${filePath}. Skipping.`);
+            return false;
+        }
+
+        const clearedCode = clearContentFromMarkdownCodeMarkers(generated);
+
+        const sviDir = path.dirname(filePath);
+
+        const destPath = path.isAbsolute(destinationFromSvi)
+        ? destinationFromSvi
+        : path.resolve(sviDir, destinationFromSvi);
+
+        const destDir = path.dirname(destPath);
+        await fileUtils.ensureDir(destDir);
+
+        logger.info(`Write generated code to ${destPath}`);
+        await fs.writeFile(destPath, clearedCode, { encoding: "utf8" });
+
         cache.updateCache(filePath);
 
-        return svi;
+        return true;
     } catch (err) {
         logger.error(`Error processing SVI file ${filePath}: ${(err as Error).message}`);
         return null;

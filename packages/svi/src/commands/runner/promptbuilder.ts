@@ -1,16 +1,17 @@
 // src/commands/runner/promptBuilder.ts
 import { SVIFile } from './../../parser/sviParser';
+import { generatorPromptTemplate } from './prompts/generate';
+import { optionValueAsString } from '../../utils/utils';
 
 /**
- * Baut den finalen Prompt-Text aus einer SVI-Datei.
- * @param svi Die SVI-Datei in geparster Form.
- * @returns Den fertigen Prompt-String für das LLM.
+ * Build a final prompt text based on a SVI-File.
+ * @param svi The parsed SVI file.
+ * @returns The final prompt string for the LLM.
  */
 export function buildPrompt(svi: SVIFile): string {
-    // Programming Language aus Optionen holen, Standard auf 'Node.js'
-    const programmingLanguage = svi.options?.ProgrammingLanguage || 'Node.js';
+    const programmingLanguage = optionValueAsString(svi.options?.ProgrammingLanguage
+         || 'Node.js');
 
-    // Input-Parameter und Output-Parameter formatieren
     const inputParams = svi.inputParameters && svi.inputParameters.length > 0
         ? `Input parameters: ${svi.inputParameters.join(', ')}.`
         : '';
@@ -19,7 +20,11 @@ export function buildPrompt(svi: SVIFile): string {
         ? `Output parameters: ${svi.output.join(', ')}.`
         : '';
 
-    // Prompt aus #Prompt Abschnitt
+    if(!svi.prompt) {
+        throw new Error("SVI file is missing the main prompt section.");
+    }
+
+    // Prompt from #Prompt section
     const mainPrompt = svi.prompt || '';
 
     // Import Prompts
@@ -28,13 +33,12 @@ export function buildPrompt(svi: SVIFile): string {
         : '';
 
     // Zusammenbauen des finalen Prompt-Texts
-    const finalPrompt = `
-Create a program in ${programmingLanguage} according to the following:
-${inputParams}
-${outputParams}
-${mainPrompt}
-${importPrompts}
-`;
+    let finalPrompt = generatorPromptTemplate
+        .replace('{{programmingLanguage}}', programmingLanguage)
+        .replace('{{inputParameters}}', inputParams)
+        .replace('{{outputParameters}}', outputParams)
+        .replace('{{mainPrompt}}', mainPrompt)
+        .replace('{{importedPrompts}}', importPrompts);
 
     return finalPrompt.trim();
 }

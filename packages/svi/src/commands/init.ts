@@ -18,7 +18,7 @@ export function initCommand(
     if(fileArg) {
       return createSviFile(fileArg, options);
     } else {
-      return globalConfigCreate(options);
+      return createGlobalConfig(options);
     }
     /*const programmingLanguage = options.lang || "";
 
@@ -58,13 +58,13 @@ export function initCommand(
   }
 }
 
-function globalConfigCreate(options: InitOptions = {}) : number {
+function createGlobalConfig(options: InitOptions = {}) : number {
   const programmingLanguage = options.lang || "";
 
   const config = {
     programmingLanguage,
-    SearchPaths: [] as string[],
-    IgnorePaths: [] as string[],
+    searchPaths: [] as string[],
+    ignorePaths: [] as string[],
   };
 
   const fileName = "svi.json";
@@ -74,7 +74,7 @@ function globalConfigCreate(options: InitOptions = {}) : number {
     return 1;
   }
 
-  config.SearchPaths.push("*");
+  config.searchPaths.push("*");
 
   writeJSON(targetPath, config);
   Logger.success(`Configuration created: ${targetPath}`);

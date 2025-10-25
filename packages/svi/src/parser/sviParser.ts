@@ -1,11 +1,13 @@
 import fs from "fs";
 //import path from "path";
 
+export type SVIOptionValue = string | boolean;
+
 export interface SVIFile {
     destinationFile?: string;
     inputParameters?: string[];
     output?: string[];
-    options?: Record<string, string | boolean>;
+    options?: Record<string, SVIOptionValue>;
     importPrompts?: string[];
     prompt?: string;
 }
@@ -109,8 +111,8 @@ export class SVIParser {
      * Active=True
      * ```
      */
-    private parseOptions(body: string): Record<string, string | boolean> {
-        const result: Record<string, string | boolean> = {};
+    private parseOptions(body: string): Record<string, SVIOptionValue> {
+        const result: Record<string, SVIOptionValue> = {};
         const lines = body.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
 
         for (const line of lines) {
