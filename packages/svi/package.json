@@ -14,6 +14,7 @@
   "dependencies": {
     "@langchain/anthropic": "^0.3.32",
     "@langchain/core": "^0.3.78",
+    "@langchain/google-genai": "^1.0.0",
     "@langchain/openai": "^0.6.16",
     "commander": "^14.0.1",
     "dotenv": "^17.2.3"

@@ -1,6 +1,7 @@
 // src/llm/llm.ts
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { config as loadEnv } from "dotenv";
@@ -9,19 +10,18 @@ import path from "path";
 export interface LLMOptions {
   modelName: string;
   apiKey?: string;
-  envFile?: string; // optionaler Pfad zu einer .env-Datei
+  envFile?: string;
 }
 
 export class LLM {
   private model: BaseChatModel;
 
   constructor(private options: LLMOptions) {
-    // ggf. .env-Datei laden
+    
     if (options.envFile) {
       loadEnv({ path: path.resolve(options.envFile) });
     }
 
-    // Modell auswählen
     this.model = this.initModel(options);
   }
 
@@ -30,7 +30,7 @@ export class LLM {
 
     if (modelName.startsWith("gpt")) {
       const key = apiKey ?? process.env.OPENAI_API_KEY;
-      if (!key) throw new Error("OpenAI API Key fehlt!");
+      if (!key) throw new Error("OpenAI API Key missing!");
       return new ChatOpenAI({
         modelName,
         apiKey: key,
@@ -40,7 +40,7 @@ export class LLM {
 
     if (modelName.startsWith("claude")) {
       const key = apiKey ?? process.env.ANTHROPIC_API_KEY;
-      if (!key) throw new Error("Anthropic API Key fehlt!");
+      if (!key) throw new Error("Anthropic API Key missing!");
       return new ChatAnthropic({
         modelName,
         apiKey: key,
@@ -48,7 +48,18 @@ export class LLM {
       });
     }
 
-    throw new Error(`Unbekanntes Modell: ${modelName}`);
+    // --- Google Gemini ---
+    if (modelName.startsWith("gemini")) {
+      const key = apiKey ?? process.env.GOOGLE_API_KEY;
+      if (!key) throw new Error("Google API Key missing!");
+      return new ChatGoogleGenerativeAI({
+        model: modelName,
+        apiKey: key,
+        temperature: 0,
+      });
+    }
+
+    throw new Error(`Unknown model: ${modelName}`);
   }
 
   async ask(prompt: string, systemPrompt?: string): Promise<string> {

@@ -18,8 +18,14 @@ export class SviLoader {
   public loadAll(): string[] {
     const results: string[] = [];
 
-    for (const searchPath of this.config.SearchPaths) {
-      const absSearchPath = path.resolve(this.rootDir, searchPath);
+    for (const searchPath of this.config.searchPaths) {
+      let absSearchPath: string;
+      if(searchPath === '*') {
+        absSearchPath = this.rootDir;
+      } else {
+        absSearchPath = path.resolve(this.rootDir, searchPath);
+      }
+      
       if (!fs.existsSync(absSearchPath)) {
         Logger.warn(`Search path not found: ${absSearchPath}`);
         continue;
@@ -56,7 +62,7 @@ export class SviLoader {
    * Prüfen, ob Pfad in IgnorePaths fällt
    */
   private isIgnored(targetPath: string): boolean {
-    return this.config.IgnorePaths.some(ignorePath => {
+    return this.config.ignorePaths.some(ignorePath => {
       const absIgnorePath = path.resolve(this.rootDir, ignorePath);
       return targetPath.startsWith(absIgnorePath);
     });

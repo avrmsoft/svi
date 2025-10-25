@@ -2,17 +2,17 @@ import * as fs from "fs";
 import * as path from "path";
 
 /**
- * Interface für die Struktur von svi.json oder *.svi-Dateien
+ * Interface for the structure of svi.json configuration file
  */
 export interface SviConfig {
-  ProgrammingLanguage: string;
-  SearchPaths: string[];
-  IgnorePaths: string[];
+  programmingLanguage: string;
+  searchPaths: string[];
+  ignorePaths: string[];
 }
 
 /**
- * Klasse zum Laden und Bereitstellen der Konfigurationsdaten
- * (Read-only, keine Schreiboperationen)
+ * Class for loading and storing of configuration data
+ * (Read-only, no write operations)
  */
 export class Config {
   private configPath: string;
@@ -22,7 +22,7 @@ export class Config {
     const resolvedPath = path.resolve(process.cwd(), fileName);
 
     if (!fs.existsSync(resolvedPath)) {
-      throw new Error(`Konfigurationsdatei nicht gefunden: ${resolvedPath}`);
+      throw new Error(`Configuration file not found: ${resolvedPath}`);
     }
 
     this.configPath = resolvedPath;
@@ -31,30 +31,27 @@ export class Config {
     try {
       this.configData = JSON.parse(raw) as SviConfig;
     } catch (e) {
-      throw new Error(`Ungültiges JSON in Datei ${this.configPath}: ${(e as Error).message}`);
+      throw new Error(`Invalid JSON in file ${this.configPath}: ${(e as Error).message}`);
     }
   }
 
-  /** Gibt den Pfad der geladenen Datei zurück */
   public get path(): string {
     return this.configPath;
   }
 
-  /** Gibt die gesamte Konfiguration zurück */
   public get data(): SviConfig {
     return this.configData;
   }
 
-  /** Convenience-Getter */
   public get programmingLanguage(): string {
-    return this.configData.ProgrammingLanguage;
+    return this.configData.programmingLanguage;
   }
 
   public get searchPaths(): string[] {
-    return this.configData.SearchPaths;
+    return this.configData.searchPaths;
   }
 
   public get ignorePaths(): string[] {
-    return this.configData.IgnorePaths;
+    return this.configData.ignorePaths;
   }
 }

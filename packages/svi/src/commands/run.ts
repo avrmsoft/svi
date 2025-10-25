@@ -13,17 +13,17 @@ export async function runCommand(options: {
   envPath?: string;
 }) {
   try {
-    Logger.info("🔍 Lade Konfiguration...");
+    Logger.info("🔍 Loading configuration...");
 
-    // Hauptkonfiguration laden (svi.json im Projekt-Stammverzeichnis)
+    // Load the main configuration (svi.json in the project root directory)
     const config = new Config(); //.loadConfig();
 
-    Logger.info("✅ Konfiguration erfolgreich geladen.");
-    Logger.debug(`ProgrammingLanguage: ${config.programmingLanguage}`);
-    Logger.debug(`SearchPaths: ${config.searchPaths.join(", ")}`);
-    Logger.debug(`IgnorePaths: ${config.ignorePaths.join(", ")}`);
+    Logger.info("✅ Configuration successfully loaded.");
+    Logger.debug(`Programming Language: ${config.programmingLanguage}`);
+    Logger.debug(`Search Paths: ${config.searchPaths.join(", ")}`);
+    Logger.debug(`Ignore Paths: ${config.ignorePaths.join(", ")}`);
 
-    // RunManager starten
+    // RunManager start
     const runManager = new RunManager(config.data, {
       model: options.model,
       apiKey: options.apiKey,
@@ -32,9 +32,9 @@ export async function runCommand(options: {
 
     await runManager.run();
 
-    Logger.info("🎉 Prozess abgeschlossen.");
+    Logger.info("🎉 Process finished.");
   } catch (err: any) {
-    Logger.error("❌ Fehler beim Ausführen von 'run':");
+    Logger.error("❌ Error while executing 'run':");
     Logger.error(err.message || err.toString());
     process.exit(1);
   }
