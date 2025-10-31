@@ -7,7 +7,7 @@ import { SviLoader } from "./sviLoader";
 import { processSVIFile, isActive as sviIsActive } from "./sviProcessor";
 import { buildPrompt } from "./promptbuilder";
 import * as cacheManager from "./cacheManager";
-import { LLM } from "../../llm/llm";
+import { LLMProcessor } from "../../llm/llm";
 import * as fileUtils from "../../utils/file";
 import logger from "../../utils/logger";
 import { SVIFile } from "../../parser/sviParser";
@@ -27,12 +27,16 @@ import { SVIFile } from "../../parser/sviParser";
 export class RunManager {
   private config!: SviConfig;
   private model?: string;
+  private service?: string;
   private apiKey?: string;
   private envPath?: string;
 
-  constructor(config: SviConfig , opts?: { model?: string; apiKey?: string; envPath?: string }) {
+  constructor(config: SviConfig, 
+    opts?: { model?: string; service?: string; apiKey?: string; envPath?: string }) {
+
     this.config = config;
     this.model = opts?.model;
+    this.service = opts?.service;
     this.apiKey = opts?.apiKey;
     this.envPath = opts?.envPath;
   }
@@ -47,7 +51,7 @@ export class RunManager {
       //logger.debug("Konfiguration geladen:", this.config);
 
       // Falls ProgrammingLanguage in global config vorhanden ist, sie als Default verwenden
-      const globalProgrammingLanguage = this.config.programmingLanguage;
+      //const globalProgrammingLanguage = this.config.programmingLanguage;
 
       logger.info("RunManager: Search for .svi files...");
       //const sviFiles = await loadSviFiles(this.config.SearchPaths, this.config.IgnorePaths);
@@ -61,7 +65,7 @@ export class RunManager {
       logger.info(`Number of found .svi files: ${sviFiles.length}`);
 
       // Init LLM
-      const llm = new LLM({
+      const llm = new LLMProcessor({
         modelName: this.model || '',
         apiKey: this.apiKey,
         envFile: this.envPath,

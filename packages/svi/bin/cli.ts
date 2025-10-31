@@ -42,18 +42,20 @@ program
 /**
  * Command: run
  * Usage:
- *   svi run -m <model_name> -k <api_key> -e <path_to_env>
+ *   svi run -m <model_name> -s <service_provider> -k <api_key> -e <path_to_env>
  */
 program
   .command("run")
   .description("Run the main process based on svi.json and .svi files")
   .option("-m, --model <model>", "Model name for LLM")
+  .option("-s, --service <service>", "LLM service provider")
   .option("-k, --key <apiKey>", "API key for LLM provider")
   .option("-e, --env <path>", "Path to .env file")
   .action(async (options) => {
     try {
       await runCommand({
         model: options.model,
+        service: options.service,
         apiKey: options.key,
         envPath: options.env,
       });
