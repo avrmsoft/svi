@@ -22,6 +22,9 @@ importers:
       '@langchain/openai':
         specifier: ^0.6.16
         version: 0.6.16(@langchain/core@0.3.78(openai@5.12.2(zod@3.25.76)))
+      '@themaximalist/llm.js':
+        specifier: ^1.0.3
+        version: 1.0.3
       commander:
         specifier: ^14.0.1
         version: 14.0.1
@@ -102,6 +105,9 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@langchain/core': '>=0.3.68 <0.4.0'
+
+  '@themaximalist/llm.js@1.0.3':
+    resolution: {integrity: sha512-ZuSqYOQDDRwPOyf5OOgsiFGRS3pDFLKt3HJ/WrIT+NBQ6hPXDeqTeYkVeniI5jT3tRUTuPpZ4jhK4s/WzEzTVw==}
 
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
@@ -400,6 +406,8 @@ snapshots:
       zod: 3.25.76
     transitivePeerDependencies:
       - ws
+
+  '@themaximalist/llm.js@1.0.3': {}
 
   '@tsconfig/node10@1.0.11': {}
 

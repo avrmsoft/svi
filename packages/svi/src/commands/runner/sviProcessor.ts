@@ -1,14 +1,12 @@
 // src/commands/runner/sviProcessor.ts
-//import fs from 'fs';
 import path from 'path';
 import fs from "fs/promises";
 
-//import crypto from 'crypto';
 import { SVIFile, SVIParser } from '../../parser/sviParser';
 import * as cacheManager from "./cacheManager";
 import logger from '../../utils/logger';
 import { buildPrompt } from "./promptbuilder";
-import { LLM } from "../../llm/llm";
+import { LLMProcessor } from "../../llm/llm";
 import * as fileUtils from "../../utils/file";
 import { clearContentFromMarkdownCodeMarkers } from '../../utils/utils';
 
@@ -22,16 +20,9 @@ export function isActive(svi: SVIFile): boolean {
 }
 
 /**
- * Berechnet den Hash einer Datei
- */
-//function computeHash(content: string): string {
-//    return crypto.createHash('md5').update(content, 'utf8').digest('hex');
-//}
-
-/**
  * Load and process a single *.svi file
  */
-export async function processSVIFile(filePath: string, llm: LLM): Promise<boolean | null> {
+export async function processSVIFile(filePath: string, llm: LLMProcessor): Promise<boolean | null> {
     try {
 
         const parser = new SVIParser(); //rawContent);
@@ -69,7 +60,7 @@ export async function processSVIFile(filePath: string, llm: LLM): Promise<boolea
         logger.info(`Ask LLM for ${filePath}...`);
         const generated = await llm.ask(prompt);
         if (!generated || generated.trim().length === 0) {
-            logger.error(`LLM returned no result for ${filePath}. Skipping.`);
+            logger.error(`LLM returned no result for ${filePath} or error occurred. Skipping.`);
             return false;
         }
 

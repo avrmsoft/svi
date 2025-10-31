@@ -9,6 +9,7 @@ import Logger from "../utils/logger";
  */
 export async function runCommand(options: {
   model?: string;
+  service?: string;
   apiKey?: string;
   envPath?: string;
 }) {

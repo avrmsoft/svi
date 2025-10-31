@@ -17,6 +17,7 @@
     "@langchain/core": "^0.3.78",
     "@langchain/google-genai": "^1.0.0",
     "@langchain/openai": "^0.6.16",
+    "@themaximalist/llm.js": "^1.0.3",
     "commander": "^14.0.1",
     "dotenv": "^17.2.3",
     "js-yaml": "^4.1.0"
