@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import path from "path";
-import { runCommand } from "../src/commands/run";
-import { initCommand } from "../src/commands/init";
-import Logger from "../src/utils/logger";
+import { runCommand } from "../src/commands/run.js";
+import { initCommand } from "../src/commands/init.js";
+import Logger from "../src/utils/logger.js";
 //import { version } from "../package.json";
 
 const { version } = require("../package.json");
