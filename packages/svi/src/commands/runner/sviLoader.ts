@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as path from "path";
+import fs from "fs";
+import path from "path";
 import { SviConfig } from "../../config/config";
 import Logger from "../../utils/logger";
 
@@ -20,12 +20,12 @@ export class SviLoader {
 
     for (const searchPath of this.config.searchPaths) {
       let absSearchPath: string;
-      if(searchPath === '*') {
+      if (searchPath === "*") {
         absSearchPath = this.rootDir;
       } else {
         absSearchPath = path.resolve(this.rootDir, searchPath);
       }
-      
+
       if (!fs.existsSync(absSearchPath)) {
         Logger.warn(`Search path not found: ${absSearchPath}`);
         continue;
@@ -62,7 +62,7 @@ export class SviLoader {
    * Prüfen, ob Pfad in IgnorePaths fällt
    */
   private isIgnored(targetPath: string): boolean {
-    return this.config.ignorePaths.some(ignorePath => {
+    return this.config.ignorePaths.some((ignorePath) => {
       const absIgnorePath = path.resolve(this.rootDir, ignorePath);
       return targetPath.startsWith(absIgnorePath);
     });
