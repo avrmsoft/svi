@@ -1,9 +1,3 @@
-// src/llm/llm.ts
-//import { ChatOpenAI } from "@langchain/openai";
-//import { ChatAnthropic } from "@langchain/anthropic";
-//import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-//import { BaseChatModel } from "@langchain/core/language_models/chat_models";
-//import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { config as loadEnv } from "dotenv";
 import path from "path";
 import LLM from "@themaximalist/llm.js";
@@ -19,7 +13,6 @@ export interface LLMOptions {
 }
 
 export class LLMProcessor {
-  //private model: BaseChatModel;
   private options: LLMOptions;
 
   constructor(private optionsIn: LLMOptions) {
@@ -56,7 +49,6 @@ export class LLMProcessor {
     let response: any;
 
     try {
-      //const llm = new LLM(undefined,options);
       const llm = new LLM(options);
       if (systemPrompt) {
         llm.system(systemPrompt);
@@ -64,7 +56,6 @@ export class LLMProcessor {
 
       llm.addMessage("user", prompt);
 
-      //response = await llm.chat(prompt);
       response = await llm.send();
     } catch (error) {
       console.error("Error initializing LLM:", (error as Error).message);
