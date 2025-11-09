@@ -1,24 +1,20 @@
 #!/usr/bin/env node
-import { runCli } from "../src/commands/entryPoint.js";
-
-runCli(process.argv);
-
-/*import { Command } from "commander";
-import { runCommand } from "../src/commands/run.js";
-import { initCommand } from "../src/commands/init.js";
-import Logger from "../src/utils/logger.js";
+import { Command } from "commander";
+import { runCommand } from "./run.js";
+import { initCommand } from "./init.js";
+import Logger from "../utils/logger.js";
 //import { version } from "../package.json";
 
-//const { version } = require("../package.json");
+const { version } = require("../../package.json");
 
-import { readFileSync } from "fs";
+/*import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const pkg = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf8"));
-const { version } = pkg;
+const { version } = pkg;*/
 
 const program = new Command();
 
@@ -33,7 +29,7 @@ program
  *   svi init                -> create root .svi or svi.json
  *   svi init <filename>     -> create a new .svi file with the given name
  */
-/*program
+program
   .command("init")
   .argument("[file]", "Optional: name of the .svi file to create")
   .description("Initialize svi configuration in the current directory or create a new .svi file")
@@ -43,11 +39,11 @@ program
       //const targetPath = file ? path.resolve(cwd, file) : cwd;
       const result : number = initCommand(file);
       if (result !== 0) {
-        Logger.default.error("❌ Initialization failed");
+        Logger.error("❌ Initialization failed");
         process.exit(result);
       }
     } catch (error: any) {
-      Logger.default.error("❌ Initialization failed:", error.message);
+      Logger.error("❌ Initialization failed:", error.message);
       process.exit(1);
     }
   });
@@ -57,7 +53,6 @@ program
  * Usage:
  *   svi run -m <model_name> -s <service_provider> -k <api_key> -e <path_to_env>
  */
-/*
 program
   .command("run")
   .description("Run the main process based on svi.json and .svi files")
@@ -74,7 +69,7 @@ program
         envPath: options.env,
       });
     } catch (error: any) {
-      Logger.default.error("❌ Run failed:", error.message);
+      Logger.error("❌ Run failed:", error.message);
       process.exit(1);
     }
   });
@@ -83,7 +78,7 @@ program
 export async function runCli(argv = process.argv) {
   await program.parseAsync(argv);
 }
-
+/*
 console.log(import.meta.url);
 
 if (import.meta.url === `file://${process.argv[1]}`) {

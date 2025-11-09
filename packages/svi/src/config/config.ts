@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as path from "path";
+import fs from "fs";
+import path from "path";
 
 /**
  * Interface for the structure of svi.json configuration file
@@ -31,7 +31,9 @@ export class Config {
     try {
       this.configData = JSON.parse(raw) as SviConfig;
     } catch (e) {
-      throw new Error(`Invalid JSON in file ${this.configPath}: ${(e as Error).message}`);
+      throw new Error(
+        `Invalid JSON in file ${this.configPath}: ${(e as Error).message}`
+      );
     }
   }
 

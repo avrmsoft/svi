@@ -24,9 +24,10 @@
     "@themaximalist/llm.js": "^1.0.3",
     "commander": "^14.0.1",
     "dotenv": "^17.2.3",
+    "execa": "^9.6.0",
     "js-yaml": "^4.1.0"
   },
   "bin": {
-    "svi": "dist/bin/cli.js"
+    "svi": "dist/bin/cli.mjs"
   }
 }

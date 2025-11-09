@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
+    "target": "ES2020",
+    "module": "nodenext",
     "outDir": "./dist",
     "rootDir": ".",
     "strict": true,
@@ -9,8 +9,10 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node"],
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "NodeNext",
+    "sourceMap": true,
   },
   "include": ["src/**/*", "bin", "tests/**/*"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules"],
+  "extensions": [".ts", ".mts"]
 }
