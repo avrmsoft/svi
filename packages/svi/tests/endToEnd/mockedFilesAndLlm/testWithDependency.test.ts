@@ -6,7 +6,7 @@ import {
   disableFakeLLMProcessor,
 } from "../../testUtils/fakeLLM";
 
-describe("Simple Test (E2E)", () => {
+describe("Test with a dependency (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
@@ -33,18 +33,37 @@ describe("Simple Test (E2E)", () => {
     );
 
     fakeFs.addFile(
-      "test.svi",
+      "maintest.svi",
       `
 # Destination File
-test.js
+maintest.js
 # Input parameters
+function add from dependency.js
 # Output
 # Options
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
-Test prompt
+Please add 2 + 3 and output result.
+Use the add function from dependency.js.
+`
+    );
+
+    fakeFs.addFile(
+      "dependency.svi",
+      `
+# Destination File
+dependency.js
+# Input parameters
+# Output
+export function add(a, b)
+# Options
+Active=True
+ProgrammingLanguage=node.js
+# Import prompts
+# Prompt
+Please create a function to add two numbers (a and b) and return the result.
 `
     );
 
@@ -62,16 +81,19 @@ Test prompt
       "testKey",
     ]);
 
-    expect(fakeFs.fileExists("test.js")).toBe(true);
+    expect(fakeFs.fileExists("maintest.js")).toBe(true);
 
-    const content = fakeFs.fileContent("test.js");
+    const content = fakeFs.fileContent("maintest.js");
 
-    expect(content).toContain("Test prompt");
-    expect(content).toContain("Please return only the code");
-    expect(content).toContain("without any explanations");
-    expect(content).toContain("installation manual");
-    expect(content).toContain(
-      "The code should fulfill the following requirements"
+    expect(content).toContain("Please add 2 + 3 and output result");
+
+    expect(fakeFs.fileExists("dependency.js")).toBe(true);
+
+    const depContent = fakeFs.fileContent("dependency.js");
+
+    expect(depContent).toContain("export function add(a, b)");
+    expect(depContent).toContain(
+      "Please create a function to add two numbers (a and b) and return the result"
     );
   });
 });

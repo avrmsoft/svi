@@ -6,7 +6,7 @@ import {
   disableFakeLLMProcessor,
 } from "../../testUtils/fakeLLM";
 
-describe("Simple Test (E2E)", () => {
+describe("A case with additional context (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("Simple Test (E2E)", () => {
     vi.clearAllMocks();
   });
 
-  it("Generate one file", async () => {
+  it("Generate one file considering additional context", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -33,7 +33,22 @@ describe("Simple Test (E2E)", () => {
     );
 
     fakeFs.addFile(
-      "test.svi",
+      "projectDescription.svi",
+      `
+# Destination File
+# Input parameters
+# Output
+# Options
+Active=True
+# Import prompts
+# Prompt
+The main project description is as follows:
+We are building a simple application that can add numbers.
+`
+    );
+
+    fakeFs.addFile(
+      "folder\\test.svi",
       `
 # Destination File
 test.js
@@ -43,8 +58,9 @@ test.js
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
+../projectDescription.svi
 # Prompt
-Test prompt
+Please write a function add(a, b) that returns the sum of a and b.
 `
     );
 
@@ -62,16 +78,17 @@ Test prompt
       "testKey",
     ]);
 
-    expect(fakeFs.fileExists("test.js")).toBe(true);
+    expect(fakeFs.fileExists("folder\\test.js")).toBe(true);
 
-    const content = fakeFs.fileContent("test.js");
+    const content = fakeFs.fileContent("folder\\test.js");
 
-    expect(content).toContain("Test prompt");
-    expect(content).toContain("Please return only the code");
-    expect(content).toContain("without any explanations");
-    expect(content).toContain("installation manual");
     expect(content).toContain(
-      "The code should fulfill the following requirements"
+      "Please write a function add(a, b) that returns the sum of a and b"
     );
+    expect(content).toContain(
+      "We are building a simple application that can add numbers"
+    );
+
+    expect(fakeFs.fileExists("projectDescription.js")).toBe(false);
   });
 });
