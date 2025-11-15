@@ -12,6 +12,14 @@ class fakeFileSystem {
   private files: testFile[] = [];
   private fakeCwd: string = process.cwd();
 
+  public constructor() {
+    if (process.platform === "win32") {
+      this.setCwd("C:\\temp");
+    } else {
+      this.setCwd("/tmp");
+    }
+  }
+
   public addFile(fullOrRelativePath: string, content?: string): void {
     const fullPath = convertPathToAbsolute(fullOrRelativePath, this.fakeCwd);
     const file: testFile = { fullPath: fullPath, content };

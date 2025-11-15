@@ -24,7 +24,6 @@ export class LLMProcessor {
   }
 
   public async ask(prompt: string, systemPrompt?: string): Promise<string> {
-
     let options: Options = {};
     if (this.options.modelName) {
       options.model = this.options.modelName;
@@ -35,14 +34,20 @@ export class LLMProcessor {
     }
 
     if (!this.options.service) {
-      const service = await LLMServiceByModel.getServiceForModel(this.options.modelName);
+      const service = await LLMServiceByModel.getServiceForModel(
+        this.options.modelName
+      );
       if (service) {
         options.service = this.options.service = service;
       }
 
       if (!this.options.service) {
-        logger.warn(`Could not determine service for model ${this.options.modelName}.`);
-        throw new Error(`Service provider is required for model ${this.options.modelName}. Please specify it explicitly or check model name.`);
+        logger.warn(
+          `Could not determine service for model ${this.options.modelName}.`
+        );
+        throw new Error(
+          `Service provider is required for model ${this.options.modelName}. Please specify it explicitly or check model name.`
+        );
       }
     }
 
@@ -62,7 +67,7 @@ export class LLMProcessor {
       console.error("Stack trace:", (error as Error).stack);
       return "";
     }
-    
+
     // Handle all possible types
     if (typeof response === "string") {
       return response;
@@ -84,5 +89,9 @@ export class LLMProcessor {
 
     // Fallback
     return JSON.stringify(response);
+  }
+
+  public getOptions(): LLMOptions {
+    return this.options;
   }
 }
