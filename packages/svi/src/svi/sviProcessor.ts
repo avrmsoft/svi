@@ -2,13 +2,14 @@
 import path from "path";
 import fs from "fs";
 
-import { SVIFile, SVIParser } from "../../parser/sviParser";
+import { SVIParser } from "./sviParser";
+import { SVIFile } from "./types";
 import * as cacheManager from "./cacheManager";
-import logger from "../../utils/logger";
+import logger from "../utils/logger";
 import { buildPrompt } from "./promptbuilder";
-import { LLMProcessor } from "../../llm/llm";
-import * as fileUtils from "../../utils/file";
-import { clearContentFromMarkdownCodeMarkers } from "../../utils/utils";
+import { LLMProcessor } from "../llm/llm";
+import * as fileUtils from "../utils/file";
+import { clearContentFromMarkdownCodeMarkers } from "../utils/utils";
 
 /**
  * Check if file is active (according to options Active=true)

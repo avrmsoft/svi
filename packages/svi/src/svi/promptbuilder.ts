@@ -1,7 +1,8 @@
 // src/commands/runner/promptBuilder.ts
-import { SVIFile } from "./../../parser/sviParser";
+import { SVIFile } from "./types";
 import { generatorPromptTemplate } from "./prompts/generate";
-import { optionValueAsString } from "../../utils/utils";
+import { optionValueAsString } from "../utils/utils";
+import { SVIImportPrompts } from "./sviImportPrompts";
 
 /**
  * Build a final prompt text based on a SVI-File.
@@ -31,10 +32,9 @@ export function buildPrompt(svi: SVIFile): string {
   const mainPrompt = svi.prompt || "";
 
   // Import Prompts
-  const importPrompts =
-    svi.importPrompts && svi.importPrompts.length > 0
-      ? svi.importPrompts.join("\n")
-      : "";
+  const importPrompter = new SVIImportPrompts(svi);
+  importPrompter.loadImportedPrompts();
+  const importedPrompts = importPrompter.getImportedPromptsAsString();
 
   // Build the final prompt
   let finalPrompt = generatorPromptTemplate
@@ -42,7 +42,7 @@ export function buildPrompt(svi: SVIFile): string {
     .replace("{{inputParameters}}", inputParams)
     .replace("{{outputParameters}}", outputParams)
     .replace("{{mainPrompt}}", mainPrompt)
-    .replace("{{importedPrompts}}", importPrompts);
+    .replace("{{importedPrompts}}", importedPrompts);
 
   return finalPrompt.trim();
 }
