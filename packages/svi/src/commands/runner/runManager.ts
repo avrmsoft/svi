@@ -3,14 +3,17 @@ import path from "path";
 import fs from "fs/promises";
 
 import { Config, SviConfig } from "../../config/config";
-import { SviLoader } from "./sviLoader";
-import { processSVIFile, isActive as sviIsActive } from "./sviProcessor";
-import { buildPrompt } from "./promptbuilder";
-import * as cacheManager from "./cacheManager";
+import { SviLoader } from "../../svi/sviLoader";
+import {
+  processSVIFile,
+  isActive as sviIsActive,
+} from "../../svi/sviProcessor";
+import { buildPrompt } from "../../svi/promptbuilder";
+import * as cacheManager from "../../svi/cacheManager";
 import { LLMProcessor } from "../../llm/llm";
 import * as fileUtils from "../../utils/file";
 import logger from "../../utils/logger";
-import { SVIFile } from "../../parser/sviParser";
+import { SVIFile } from "../../svi/types";
 //import { CacheMap } from "./types";
 
 /**
@@ -31,9 +34,15 @@ export class RunManager {
   private apiKey?: string;
   private envPath?: string;
 
-  constructor(config: SviConfig, 
-    opts?: { model?: string; service?: string; apiKey?: string; envPath?: string }) {
-
+  constructor(
+    config: SviConfig,
+    opts?: {
+      model?: string;
+      service?: string;
+      apiKey?: string;
+      envPath?: string;
+    }
+  ) {
     this.config = config;
     this.model = opts?.model;
     this.service = opts?.service;
@@ -66,17 +75,17 @@ export class RunManager {
 
       // Init LLM
       const llm = new LLMProcessor({
-        modelName: this.model || '',
+        modelName: this.model || "",
         apiKey: this.apiKey,
         envFile: this.envPath,
       });
-      
+
       for (const sviPath of sviFiles) {
         try {
           logger.info(`Processing: ${sviPath}`);
           //const sviDir = path.dirname(sviPath);
           //const sviFilename = path.basename(sviPath);
-          
+
           await processSVIFile(sviPath, llm);
           /*if(!sviFile) {
             logger.error(`Could not parse ${sviFilename}`);
@@ -144,9 +153,10 @@ export class RunManager {
           //await cacheManager.writeCache(sviDir, cache);
           cache?.updateCache(sviFilename);
           logger.info(`Cache updated for ${sviFilename}`);*/
-
         } catch (innerErr) {
-          logger.error(`Error processing ${sviPath}: ${(innerErr as Error).message}`);
+          logger.error(
+            `Error processing ${sviPath}: ${(innerErr as Error).message}`
+          );
         }
       }
 

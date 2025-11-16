@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import fs from "fs";
-import { SVIParser } from "../../src/parser/sviParser";
+import { SVIParser } from "../../src/svi/sviParser";
 
 vi.mock("fs");
 
@@ -103,7 +103,7 @@ Language=Node.js
     const result = parser.parseContent(content);
     expect(result.options).toEqual({
       Flag: true,
-      EmptyValue: "", 
+      EmptyValue: "",
       AnotherFlag: false,
       Language: "Node.js",
     });

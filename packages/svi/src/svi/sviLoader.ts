@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { SviConfig } from "../../config/config";
-import Logger from "../../utils/logger";
+import { SviConfig } from "../config/config";
+import Logger from "../utils/logger";
 
 export class SviLoader {
   private config: SviConfig;

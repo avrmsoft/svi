@@ -1,4 +1,5 @@
-import { SVIOptionValue } from "../parser/sviParser";
+import { SVIOptionValue } from "../svi/types";
+import crypto from "crypto";
 
 export function optionValueAsString(value: SVIOptionValue): string {
   if (typeof value === "boolean") {
@@ -13,4 +14,8 @@ export function clearContentFromMarkdownCodeMarkers(content: string): string {
     .replace(/```[a-zA-Z0-9]*\n/g, "")
     .replace(/```/g, "")
     .trim();
+}
+
+export function computeHashFromString(content: string): string {
+  return crypto.createHash("sha256").update(content).digest("hex");
 }
