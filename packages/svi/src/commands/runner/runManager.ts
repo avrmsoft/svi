@@ -1,20 +1,9 @@
 // src/commands/runner/runManager.ts
-import path from "path";
-import fs from "fs/promises";
-
-import { Config, SviConfig } from "../../config/config";
+import { SviConfig } from "../../config/config";
 import { SviLoader } from "../../svi/sviLoader";
-import {
-  processSVIFile,
-  isActive as sviIsActive,
-} from "../../svi/sviProcessor";
-import { buildPrompt } from "../../svi/promptbuilder";
-import * as cacheManager from "../../svi/cacheManager";
+import { processSVIFile } from "../../svi/sviProcessor";
 import { LLMProcessor } from "../../llm/llm";
-import * as fileUtils from "../../utils/file";
 import logger from "../../utils/logger";
-import { SVIFile } from "../../svi/types";
-//import { CacheMap } from "./types";
 
 /**
  * RunManager
