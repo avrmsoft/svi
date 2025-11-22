@@ -15,5 +15,9 @@
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "test:watch": "pnpm -r run test:watch"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.2",
+    "vitest": "^4.0.6"
   }
 }
