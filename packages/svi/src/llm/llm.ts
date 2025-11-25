@@ -21,6 +21,18 @@ export class LLMProcessor {
     if (this.options.envFile) {
       loadEnv({ path: path.resolve(this.options.envFile) });
     }
+
+    if (!this.options.apiKey && process.env.API_KEY) {
+      this.options.apiKey = process.env.API_KEY;
+    }
+
+    if (!this.options.modelName && process.env.MODEL_NAME) {
+      this.options.modelName = process.env.MODEL_NAME;
+    }
+
+    if (!this.options.modelName && process.env.MODEL) {
+      this.options.modelName = process.env.MODEL;
+    }
   }
 
   public async ask(prompt: string, systemPrompt?: string): Promise<string> {

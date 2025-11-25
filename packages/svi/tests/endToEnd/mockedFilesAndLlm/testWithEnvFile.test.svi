@@ -1,0 +1,11 @@
+# Destination File
+testWithEnvFile.test.ts
+# Input parameters
+# Output
+# Options
+Active=False
+ProgrammingLanguage=TypeScript
+# Import prompts
+# Prompt
+Here model and API key must come from *.env file which is passed
+as command line parameter -e
