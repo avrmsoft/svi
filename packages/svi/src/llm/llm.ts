@@ -1,9 +1,11 @@
 import { config as loadEnv } from "dotenv";
 import path from "path";
+import fs from "fs";
 import LLM from "@themaximalist/llm.js";
 import { Options } from "@themaximalist/llm.js";
 import logger from "../utils/logger";
 import { LLMServiceByModel } from "./llmUtils";
+import { DEFAULT_ENV_FILE } from "../utils/constants";
 
 export interface LLMOptions {
   modelName: string;
@@ -15,11 +17,13 @@ export interface LLMOptions {
 export class LLMProcessor {
   private options: LLMOptions;
 
-  constructor(private optionsIn: LLMOptions) {
+  constructor(optionsIn: LLMOptions) {
     this.options = optionsIn;
 
     if (this.options.envFile) {
       loadEnv({ path: path.resolve(this.options.envFile) });
+    } else if (fs.existsSync(path.resolve(DEFAULT_ENV_FILE))) {
+      loadEnv({ path: path.resolve(DEFAULT_ENV_FILE) });
     }
 
     if (!this.options.apiKey && process.env.API_KEY) {
