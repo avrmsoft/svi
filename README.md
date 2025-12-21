@@ -52,6 +52,8 @@ API_KEY=<your API key>
 MODEL_NAME=<model name>, e.g., gemini-2.5-flash
 ```
 
+_Note:_ Don't forget to add the .env file to .gitignore
+
 2. Go to the root directory of your project and just run:
 
 ```bash
