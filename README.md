@@ -27,3 +27,33 @@ Active=True
 <Paths to other svi files>
 # Prompt
 ```
+
+# Getting started
+
+## Initialize the options
+
+1. Go to the root folder of your project
+2. Create the svi.json file by the following command:
+
+```bash
+svi init
+```
+
+3. File svi.json will be created in the current folder; edit the file if necessary
+
+## Run the code generation
+
+### Recommended way:
+
+1. Create svi.env file in the root directory of your project, with the following content:
+
+```env
+API_KEY=<your API key>
+MODEL_NAME=<model name>, e.g., gemini-2.5-flash
+```
+
+2. Go to the root directory of your project and just run:
+
+```bash
+svi
+```
