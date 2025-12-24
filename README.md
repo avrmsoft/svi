@@ -57,5 +57,5 @@ _Note:_ Don't forget to add the .env file to .gitignore
 2. Go to the root directory of your project and just run:
 
 ```bash
-svi
+svi run
 ```
