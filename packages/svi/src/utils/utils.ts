@@ -19,3 +19,13 @@ export function clearContentFromMarkdownCodeMarkers(content: string): string {
 export function computeHashFromString(content: string): string {
   return crypto.createHash("sha256").update(content).digest("hex");
 }
+
+export function toCamelCase(value: string): string {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part, index) =>
+      index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)
+    )
+    .join("");
+}

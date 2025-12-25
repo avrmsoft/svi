@@ -1,5 +1,6 @@
 import fs from "fs";
 import { SVIFile, SVIOptionValue } from "./types";
+import logger from "../utils/logger";
 
 /**
  * Parses a `.svi` file into structured sections.
@@ -73,7 +74,12 @@ export class SVIParser {
 
         default:
           if (header.length > 0) {
-            console.warn(
+            //console.warn(
+            //  `[SVIParser] Unknown section '${header}' in file ${
+            //    filePath ?? "<string>"
+            //  }`
+            //);
+            logger.warn(
               `[SVIParser] Unknown section '${header}' in file ${
                 filePath ?? "<string>"
               }`
