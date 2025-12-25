@@ -3,6 +3,7 @@ import { Command } from "commander";
 import { runCommand } from "./run.js";
 import { initCommand } from "./init.js";
 import Logger from "../utils/logger.js";
+import { enrichOptionsFromEnv } from "./env.js";
 //import { version } from "../package.json";
 
 const { version } = require("../../package.json");
@@ -32,12 +33,21 @@ program
 program
   .command("init")
   .argument("[file]", "Optional: name of the .svi file to create")
-  .description("Initialize svi configuration in the current directory or create a new .svi file")
-  .action(async (file?: string) => {
+  .option(
+    "-l, --loglevel <level>",
+    "Set log level (ERROR, WARN, INFO, SUCCESS, DEBUG, TRACE)",
+    "INFO"
+  )
+  .description(
+    "Initialize svi configuration in the current directory or create a new .svi file"
+  )
+  .action(async (options) => {
+    enrichOptionsFromEnv(options);
+    Logger.setLogLevel(options.loglevel);
     try {
       //const cwd = process.cwd();
       //const targetPath = file ? path.resolve(cwd, file) : cwd;
-      const result : number = initCommand(file);
+      const result: number = initCommand(options.file);
       if (result !== 0) {
         Logger.error("❌ Initialization failed");
         process.exit(result);
@@ -60,7 +70,14 @@ program
   .option("-s, --service <service>", "LLM service provider")
   .option("-k, --key <apiKey>", "API key for LLM provider")
   .option("-e, --env <path>", "Path to .env file")
+  .option(
+    "-l, --loglevel <level>",
+    "Set log level (ERROR, WARN, INFO, SUCCESS, DEBUG, TRACE)",
+    "INFO"
+  )
   .action(async (options) => {
+    enrichOptionsFromEnv(options);
+    Logger.setLogLevel(options.loglevel);
     try {
       await runCommand({
         model: options.model,

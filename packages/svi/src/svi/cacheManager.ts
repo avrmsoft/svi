@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 import yaml from "js-yaml";
+import logger from "../utils/logger";
 
 export interface CacheEntry {
   file: string;
@@ -32,7 +33,8 @@ export class CacheManager {
         }
       }
     } catch (err) {
-      console.warn("⚠️ Error while reading YAML file:", err);
+      //console.warn("Error while reading YAML file:", err);
+      logger.warn(`Error while reading YAML file: ${err}`);
     }
   }
 

@@ -1,6 +1,6 @@
-import { config as loadEnv } from "dotenv";
-import path from "path";
-import fs from "fs";
+//import { config as loadEnv } from "dotenv";
+//import path from "path";
+//import fs from "fs";
 import LLM from "@themaximalist/llm.js";
 import { Options } from "@themaximalist/llm.js";
 import logger from "../utils/logger";
@@ -20,7 +20,7 @@ export class LLMProcessor {
   constructor(optionsIn: LLMOptions) {
     this.options = optionsIn;
 
-    if (this.options.envFile) {
+    /*if (this.options.envFile) {
       loadEnv({ path: path.resolve(this.options.envFile) });
     } else if (fs.existsSync(path.resolve(DEFAULT_ENV_FILE))) {
       loadEnv({ path: path.resolve(DEFAULT_ENV_FILE) });
@@ -36,7 +36,7 @@ export class LLMProcessor {
 
     if (!this.options.modelName && process.env.MODEL) {
       this.options.modelName = process.env.MODEL;
-    }
+    }*/
   }
 
   public async ask(prompt: string, systemPrompt?: string): Promise<string> {
@@ -79,8 +79,10 @@ export class LLMProcessor {
 
       response = await llm.send();
     } catch (error) {
-      console.error("Error initializing LLM:", (error as Error).message);
-      console.error("Stack trace:", (error as Error).stack);
+      //console.error("Error initializing LLM:", (error as Error).message);
+      //console.error("Stack trace:", (error as Error).stack);
+      logger.error("Error initializing LLM:", (error as Error).message);
+      logger.error("Stack trace:", (error as Error).stack);
       return "";
     }
 

@@ -1,6 +1,7 @@
 // src/utils/file.ts
 import fs from "fs";
 import path from "path";
+import logger from "./logger";
 
 /**
  * Prüft, ob ein Pfad existiert
@@ -92,10 +93,8 @@ export async function ensureDir(dirPath: string): Promise<void> {
   try {
     await fs.promises.mkdir(dirPath, { recursive: true });
   } catch (error) {
-    console.error(
-      `Error creating folder(s) for the path ${dirPath}:`,
-      error
-    );
+    //console.error(`Error creating folder(s) for the path ${dirPath}:`, error);
+    logger.error(`Error creating folder(s) for the path ${dirPath}: ${error}`);
     throw error;
   }
 }

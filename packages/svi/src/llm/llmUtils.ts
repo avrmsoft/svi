@@ -1,4 +1,5 @@
 import { ModelUsage } from "@themaximalist/llm.js";
+import logger from "../utils/logger";
 
 export class LLMServiceByModel {
   static async getServiceForModel(model: string): Promise<string | null> {
@@ -7,7 +8,7 @@ export class LLMServiceByModel {
 
     // Try to find model in cached data
     const foundModel = allModels.find((m) => m.model === model);
-    
+
     let result;
 
     if (foundModel) {
@@ -17,7 +18,8 @@ export class LLMServiceByModel {
 
     // If not found, refresh from latest sources
     const refreshedModels = await ModelUsage.refresh();
-    console.log("Refreshed models:", refreshedModels.length);
+    //console.log("Refreshed models:", refreshedModels.length);
+    logger.info(`Refreshed models: ${refreshedModels.length}`);
 
     // Try to find again in refreshed list
     const updatedModel = refreshedModels.find((m) => m.model === model);
