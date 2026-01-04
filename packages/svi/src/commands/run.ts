@@ -31,6 +31,7 @@ export async function runCommand(options: {
       envPath: options.envPath,
     });
 
+    Logger.debug("Running RunManager...");
     await runManager.run();
 
     Logger.info("🎉 Process finished.");

@@ -69,21 +69,21 @@ export default class Logger {
     ) {
       return;
     }
-    if (process.env.DEBUG === "true") {
-      console.log(
-        `${colors.fgCyan}[${LogLevel.DEBUG}]${colors.reset} ${message}`
-      );
-    }
+    //if (process.env.DEBUG === "true") {
+    console.debug(
+      `${colors.fgCyan}[${LogLevel.DEBUG}]${colors.reset} ${message}`
+    );
+    //}
   }
 
   static trace(message: string) {
     if (this.logLevel !== LogLevel.TRACE) {
       return;
     }
-    if (process.env.DEBUG === "true") {
-      console.log(
-        `${colors.fgCyan}[${LogLevel.TRACE}]${colors.reset} ${message}`
-      );
-    }
+    //if (process.env.DEBUG === "true") {
+    console.log(
+      `${colors.fgCyan}[${LogLevel.TRACE}]${colors.reset} ${message}`
+    );
+    //}
   }
 }

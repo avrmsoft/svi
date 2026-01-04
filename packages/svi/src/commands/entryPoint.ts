@@ -78,6 +78,7 @@ program
   .action(async (options) => {
     enrichOptionsFromEnv(options);
     Logger.setLogLevel(options.loglevel);
+    //Logger.info("imhere");
     try {
       await runCommand({
         model: options.model,
