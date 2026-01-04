@@ -1,40 +1,21 @@
-import { ModelUsage } from "@themaximalist/llm.js";
-import logger from "../utils/logger";
-
-export class LLMServiceByModel {
-  static async getServiceForModel(model: string): Promise<string | null> {
-    // Get all cached models
-    const allModels = ModelUsage.getAll();
-
-    // Try to find model in cached data
-    const foundModel = allModels.find((m) => m.model === model);
-
-    let result;
-
-    if (foundModel) {
-      result = this.adjustServiceName(foundModel.service);
-      return result;
-    }
-
-    // If not found, refresh from latest sources
-    const refreshedModels = await ModelUsage.refresh();
-    //console.log("Refreshed models:", refreshedModels.length);
-    logger.info(`Refreshed models: ${refreshedModels.length}`);
-
-    // Try to find again in refreshed list
-    const updatedModel = refreshedModels.find((m) => m.model === model);
-
-    result = updatedModel ? updatedModel.service : null;
-    result = this.adjustServiceName(result);
-    return result;
+export function prepareApiKeyForLogs(
+  apiKey: string | null | undefined
+): string {
+  if (!apiKey) {
+    return "null";
+  } else if (apiKey.length < 8) {
+    return "****";
   }
+  return apiKey.substring(0, 4) + "****" + apiKey.substring(apiKey.length - 4);
+}
 
-  private static adjustServiceName(service: string | null): string | null {
-    switch (service) {
-      case "gemini":
-        return "google";
-      default:
-        return service;
-    }
+export function preparePromptForLogs(prompt: string): string {
+  if (!prompt) {
+    return "null";
+  } else if (prompt.length <= 20) {
+    return prompt;
   }
+  return (
+    prompt.substring(0, 10) + "...." + prompt.substring(prompt.length - 10)
+  );
 }
