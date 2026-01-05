@@ -75,7 +75,7 @@ export class RunManager {
           //const sviDir = path.dirname(sviPath);
           //const sviFilename = path.basename(sviPath);
 
-          await processSVIFile(sviPath, llm);
+          await processSVIFile(sviPath, llm, this.config);
           /*if(!sviFile) {
             logger.error(`Could not parse ${sviFilename}`);
             continue;

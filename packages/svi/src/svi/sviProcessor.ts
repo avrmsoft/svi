@@ -10,6 +10,7 @@ import { buildPrompt } from "./promptbuilder";
 import { LLMProcessor } from "../llm/llm";
 import * as fileUtils from "../utils/file";
 import { clearContentFromMarkdownCodeMarkers } from "../utils/utils";
+import { SviConfig } from "../config/config";
 
 /**
  * Check if file is active (according to options Active=true)
@@ -25,7 +26,8 @@ export function isActive(svi: SVIFile): boolean {
  */
 export async function processSVIFile(
   filePath: string,
-  llm: LLMProcessor
+  llm: LLMProcessor,
+  config: SviConfig
 ): Promise<boolean | null> {
   try {
     const parser = new SVIParser(); //rawContent);
@@ -59,7 +61,7 @@ export async function processSVIFile(
       }
     }
 
-    const prompt = buildPrompt(svi);
+    const prompt = buildPrompt(svi, config);
     logger.debug(`Prompt for ${filePath} was built.`);
 
     logger.info(`Ask LLM for ${filePath}...`);
