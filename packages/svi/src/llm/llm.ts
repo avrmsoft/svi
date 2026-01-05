@@ -7,6 +7,7 @@ import logger from "../utils/logger";
 import { LLMServiceByModel } from "./llmServiceByModel";
 //import { DEFAULT_ENV_FILE } from "../utils/constants";
 import { prepareApiKeyForLogs, preparePromptForLogs } from "./llmUtils";
+import { UNLIMITED_TOKENS } from "../utils/constants";
 
 export interface LLMOptions {
   modelName: string;
@@ -20,24 +21,6 @@ export class LLMProcessor {
 
   constructor(optionsIn: LLMOptions) {
     this.options = optionsIn;
-
-    /*if (this.options.envFile) {
-      loadEnv({ path: path.resolve(this.options.envFile) });
-    } else if (fs.existsSync(path.resolve(DEFAULT_ENV_FILE))) {
-      loadEnv({ path: path.resolve(DEFAULT_ENV_FILE) });
-    }
-
-    if (!this.options.apiKey && process.env.API_KEY) {
-      this.options.apiKey = process.env.API_KEY;
-    }
-
-    if (!this.options.modelName && process.env.MODEL_NAME) {
-      this.options.modelName = process.env.MODEL_NAME;
-    }
-
-    if (!this.options.modelName && process.env.MODEL) {
-      this.options.modelName = process.env.MODEL;
-    }*/
   }
 
   public async ask(prompt: string, systemPrompt?: string): Promise<string> {
@@ -86,6 +69,10 @@ export class LLMProcessor {
       }
     }
 
+    if (!options.max_tokens && options.service === "google") {
+      options.max_tokens = UNLIMITED_TOKENS;
+    }
+
     let response: any;
 
     try {
@@ -110,7 +97,7 @@ export class LLMProcessor {
     // Handle all possible types
     if (typeof response === "string") {
       logger.debug("LLM returned a string response.");
-      return response;
+      return this.traceResultIfNeeded(response);
     }
 
     // If it's an async generator (stream)
@@ -120,7 +107,7 @@ export class LLMProcessor {
       for await (const chunk of response as AsyncGenerator<string>) {
         result += chunk;
       }
-      return result;
+      return this.traceResultIfNeeded(result);
     }
 
     // If it's a Response-like object
@@ -128,15 +115,22 @@ export class LLMProcessor {
       logger.debug(
         "LLM returned a Response-like object (we can use it as response.text())."
       );
-      return await response.text();
+      return this.traceResultIfNeeded(await response.text());
     }
 
     // Fallback
     logger.debug("No specific response type matched, returning JSON string.");
-    return JSON.stringify(response);
+    return this.traceResultIfNeeded(JSON.stringify(response));
   }
 
   public getOptions(): LLMOptions {
     return this.options;
+  }
+
+  public traceResultIfNeeded(result: string): string {
+    logger.trace(
+      `LLM response, length ${result.length}: ${preparePromptForLogs(result)}`
+    );
+    return result;
   }
 }
