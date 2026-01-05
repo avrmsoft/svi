@@ -6,7 +6,7 @@ import {
   disableFakeLLMProcessor,
 } from "../../../testUtils/fakeLLM";
 
-describe("Test checking programming language parameter (E2E)", () => {
+describe("A test when cache already exists (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
@@ -19,12 +19,12 @@ describe("Test checking programming language parameter (E2E)", () => {
     vi.clearAllMocks();
   });
 
-  it("Programming language parameter is set in svi.json", async () => {
+  it("Check that a new file is not generated when cache already exists", async () => {
     fakeFs.addFile(
       "svi.json",
       `
       {
-        "programmingLanguage": "Python",
+        "programmingLanguage": "node.js",
         "searchPaths": [
           "*"
         ],
@@ -41,11 +41,18 @@ test.js
 # Output
 # Options
 Active=True
-ProgrammingLanguage=
+ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
-Test prompt
+Test prompt not cached
 `
+    );
+
+    fakeFs.addFile("test.js", "Old content that shouldn't be replaced");
+    fakeFs.addFile(
+      ".svicache",
+      `test.svi:
+  hash: 929d49c0a006da8dfa4397b2d67caec6c1be76259b98dd349abf1b27bc9bc470`
     );
 
     fakeFs.applyMocks();
@@ -66,13 +73,7 @@ Test prompt
 
     const content = fakeFs.fileContent("test.js");
 
-    expect(content).toContain("Test prompt");
-    expect(content).toContain("Please return only the code");
-    expect(content).toContain("without any explanations");
-    expect(content).toContain("installation manual");
-    expect(content).toContain(
-      "The code should fulfill the following requirements"
-    );
-    expect(content).toContain("in programming language Python");
+    expect(content).toContain("Old content that shouldn't be replaced");
+    expect(content).not.toContain("Test prompt not cached");
   });
 });
