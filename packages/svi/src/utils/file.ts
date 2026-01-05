@@ -102,3 +102,19 @@ export async function ensureDir(dirPath: string): Promise<void> {
 export function getPathFromFile(fullPath: string): string {
   return path.dirname(fullPath);
 }
+
+export function constructFullPath(
+  folderPathOrAnotherFileFullPath: string,
+  filename: string
+): string {
+  let filePath: string = folderPathOrAnotherFileFullPath;
+  if (isFile(filePath)) {
+    filePath = getPathFromFile(filePath);
+  }
+
+  if (path.isAbsolute(filename)) {
+    return filename;
+  } else {
+    return path.join(filePath, filename);
+  }
+}

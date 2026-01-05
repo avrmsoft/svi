@@ -42,7 +42,7 @@ export async function processSVIFile(
     // 6) Get destination file from the .svi file (from # Destination File section)
     const destinationFromSvi = svi.destinationFile?.trim();
     if (!destinationFromSvi) {
-      logger.error(`No destination file ${filePath} provided. Skipping.`);
+      logger.info(`No destination file ${filePath} provided. Skipping.`);
       return false;
     }
 
@@ -51,7 +51,11 @@ export async function processSVIFile(
     // Check cache
     const cache = new cacheManager.CacheManager(fileFolder);
     if (cache.isCacheValid(filePath)) {
-      if (!fileUtils.exists(destinationFromSvi)) {
+      if (
+        !fileUtils.exists(
+          fileUtils.constructFullPath(fileFolder, destinationFromSvi)
+        )
+      ) {
         logger.info(
           `Destination file ${destinationFromSvi} does not exist. Regenerating...`
         );
@@ -75,12 +79,12 @@ export async function processSVIFile(
 
     const clearedCode = clearContentFromMarkdownCodeMarkers(generated);
 
-    const sviDir = path.dirname(filePath);
+    //const sviDir = path.dirname(filePath);
 
-    const destPath = path.isAbsolute(destinationFromSvi)
-      ? destinationFromSvi
-      : path.resolve(sviDir, destinationFromSvi);
-
+    const destPath = fileUtils.constructFullPath(
+      fileFolder,
+      destinationFromSvi
+    );
     const destDir = path.dirname(destPath);
     await fileUtils.ensureDir(destDir);
 
