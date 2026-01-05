@@ -3,15 +3,16 @@ import { SVIFile } from "./types";
 import { generatorPromptTemplate } from "./prompts/generate";
 import { optionValueAsString } from "../utils/utils";
 import { SVIImportPrompts } from "./sviImportPrompts";
+import { SviConfig } from "../config/config";
 
 /**
  * Build a final prompt text based on a SVI-File.
  * @param svi The parsed SVI file.
  * @returns The final prompt string for the LLM.
  */
-export function buildPrompt(svi: SVIFile): string {
+export function buildPrompt(svi: SVIFile, config: SviConfig): string {
   const programmingLanguage = optionValueAsString(
-    svi.options?.ProgrammingLanguage || "Node.js"
+    svi.options?.ProgrammingLanguage || config.programmingLanguage || "Node.js"
   );
 
   const inputParams =
