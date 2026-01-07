@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fakeFileSystem } from "../../../testUtils/fakeFileSystem";
+import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
 import FakeLogger from "../../../testUtils/fakeLogger";
 import {
   beforeEachSimpleTest,

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { runCli } from "../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../testUtils/fakeFileSystem";
+import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
   enableFakeLLMProcessor,
   disableFakeLLMProcessor,

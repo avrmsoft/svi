@@ -10,6 +10,10 @@ export class SviLoader {
   constructor(config: SviConfig, rootDir: string = process.cwd()) {
     this.config = config;
     this.rootDir = rootDir;
+
+    if (this.config.configDir) {
+      this.rootDir = this.config.configDir;
+    }
   }
 
   /**

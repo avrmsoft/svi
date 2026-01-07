@@ -4,18 +4,9 @@ import { runCommand } from "./run.js";
 import { initCommand } from "./init.js";
 import Logger from "../utils/logger.js";
 import { enrichOptionsFromEnv } from "./env.js";
-//import { version } from "../package.json";
+import { initOptions, runOptions } from "./cliOptions.js";
 
 const { version } = require("../../package.json");
-
-/*import { readFileSync } from "fs";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const pkg = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf8"));
-const { version } = pkg;*/
 
 const program = new Command();
 
@@ -30,7 +21,25 @@ program
  *   svi init                -> create root .svi or svi.json
  *   svi init <filename>     -> create a new .svi file with the given name
  */
-program
+
+let initProg = program
+  .command("init")
+  .argument("[file]", "Optional: name of the .svi file to create");
+
+for (const option of initOptions) {
+  initProg = initProg.option(
+    `${option.shortFlag}, ${option.fullFlag}`,
+    option.description,
+    option.defaultValue
+  );
+}
+
+initProg
+  .description(
+    "Initialize svi configuration in the current directory or create a new .svi file"
+  )
+  .action(async (options) => {
+    /*program
   .command("init")
   .argument("[file]", "Optional: name of the .svi file to create")
   .option(
@@ -41,7 +50,7 @@ program
   .description(
     "Initialize svi configuration in the current directory or create a new .svi file"
   )
-  .action(async (options) => {
+  .action(async (options) => {*/
     enrichOptionsFromEnv(options);
     Logger.setLogLevel(options.loglevel);
     try {
@@ -63,6 +72,20 @@ program
  * Usage:
  *   svi run -m <model_name> -s <service_provider> -k <api_key> -e <path_to_env>
  */
+let runProg = program
+  .command("run")
+  .description("Run the main process based on svi.json and .svi files");
+
+for (const option of runOptions) {
+  runProg = runProg.option(
+    `${option.shortFlag}, ${option.fullFlag}`,
+    option.description,
+    option.defaultValue
+  );
+}
+
+runProg.action(async (options) => {
+  /*
 program
   .command("run")
   .description("Run the main process based on svi.json and .svi files")
@@ -75,22 +98,26 @@ program
     "Set log level (ERROR, WARN, INFO, SUCCESS, DEBUG, TRACE)",
     "INFO"
   )
-  .action(async (options) => {
-    enrichOptionsFromEnv(options);
-    Logger.setLogLevel(options.loglevel);
-    //Logger.info("imhere");
-    try {
-      await runCommand({
-        model: options.model,
-        service: options.service,
-        apiKey: options.key,
-        envPath: options.env,
-      });
-    } catch (error: any) {
-      Logger.error("❌ Run failed:", error.message);
-      process.exit(1);
-    }
-  });
+  .option("-p, --path <svi.json path>", "Path to svi.json file")
+  .action(async (options) => {*/
+  const possibleOptions: string[] = runOptions.map((opt) => opt.paramName);
+  console.log("Options = ", options);
+  enrichOptionsFromEnv(options, possibleOptions);
+  Logger.setLogLevel(options.loglevel);
+  //Logger.info("imhere");
+  try {
+    await runCommand({
+      model: options.model,
+      service: options.service,
+      apiKey: options.key,
+      envPath: options.env,
+      sviJsonPath: options.configPath,
+    });
+  } catch (error: any) {
+    Logger.error("❌ Run failed:", error.message);
+    process.exit(1);
+  }
+});
 
 // Parse CLI arguments
 export async function runCli(argv = process.argv) {

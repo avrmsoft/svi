@@ -12,12 +12,21 @@ export async function runCommand(options: {
   service?: string;
   apiKey?: string;
   envPath?: string;
+  sviJsonPath?: string;
 }) {
   try {
     Logger.info("🔍 Loading configuration...");
 
     // Load the main configuration (svi.json in the project root directory)
-    const config = new Config(); //.loadConfig();
+    let config: Config;
+    if (options.sviJsonPath) {
+      Logger.debug(
+        `Using svi.json path from parameter: ${options.sviJsonPath}`
+      );
+      config = new Config(options.sviJsonPath);
+    } else {
+      config = new Config();
+    }
 
     Logger.info("✅ Configuration successfully loaded.");
     Logger.debug(`Programming Language: ${config.programmingLanguage}`);

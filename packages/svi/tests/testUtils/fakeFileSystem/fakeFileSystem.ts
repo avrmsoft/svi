@@ -1,12 +1,14 @@
 import { vi } from "vitest";
 import fs from "fs";
 import path from "path";
-import { convertPathToAbsolute } from "./testUtils";
+import { convertPathToAbsolute } from "../testUtils";
+import { type testFile } from "./types";
+import { FakeFsStatResult } from "./fakeFsStatResult";
 
-interface testFile {
+/*interface testFile {
   fullPath: string;
   content?: string;
-}
+}*/
 
 class fakeFileSystem {
   private files: testFile[] = [];
@@ -180,6 +182,14 @@ class fakeFileSystem {
         }
         // `recursive: true` ignorieren, aber kein Fehler werfen
         return abs;
+      }
+    );
+
+    vi.spyOn(fs, "statSync").mockImplementation(
+      (filePath: fs.PathLike): fs.Stats => {
+        const absPath = this.convPath(filePath.toString());
+        const fakeStat = new FakeFsStatResult(absPath, this.files);
+        return fakeStat as unknown as fs.Stats;
       }
     );
   }
