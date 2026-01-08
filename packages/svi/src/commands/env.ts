@@ -9,6 +9,8 @@ export function enrichOptionsFromEnv(options: any, possibleOptions?: string[]) {
     loadEnv({ path: path.resolve(options.env) });
   } else if (fs.existsSync(path.resolve(DEFAULT_ENV_FILE))) {
     loadEnv({ path: path.resolve(DEFAULT_ENV_FILE) });
+  } else if (options.configPath && fs.existsSync(path.join(path.dirname(options.configPath), DEFAULT_ENV_FILE))) {
+    loadEnv({ path: path.join(path.dirname(options.configPath), DEFAULT_ENV_FILE) });
   }
 
   let possibleKeys: string[] = ["modelName", "apiKey"];
