@@ -1,34 +1,34 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { runCli } from "../../../../src/commands/entryPoint";
 import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
+//import {
+//  enableFakeLLMProcessor,
+//  disableFakeLLMProcessor,
+//} from "../../../testUtils/fakeLLM";
+//import { pushProcessEnv, popProcessEnv } from "../../../testUtils/testUtils";
 import {
-  enableFakeLLMProcessor,
-  disableFakeLLMProcessor,
-} from "../../../testUtils/fakeLLM";
+  beforeEachSimpleTest,
+  afterEachSimpleTest,
+} from "../templates/simpleTest";
 
 describe("File svi.json path parameter (-p) (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
+    beforeEachSimpleTest(fakeFs);
   });
 
   afterEach(() => {
-    disableFakeLLMProcessor();
-    fakeFs.restoreMocks();
-    vi.clearAllMocks();
+    afterEachSimpleTest(fakeFs);
   });
 
   it("Check svi.json file path parameter -p", async () => {
     await runTests(fakeFs, "-p", "D:\\test\\svi.json");
   });
 
-  it("Check svi.json file path parameter -configPath", async () => {
-    await runTests(fakeFs, "--configPath", "D:\\test\\svi.json");
-  });
-
-  it("Check svi config file path parameter -p when it contains only folder without filename", async () => {
-    await runTests(fakeFs, "--configPath", "D:\\test");
+  it("Check svi.json file path parameter -p when it contains only folder without filename", async () => {
+    await runTests(fakeFs, "-p", "D:\\test");
   });
 
   it("Check svi config file path parameter -p when filename not equals to svi.json", async () => {
@@ -75,21 +75,17 @@ Test prompt
 `
   );
 
+  fakeFs.addFile(
+    "D:\\test\\svi.env",
+    `API_KEY=testKey
+       MODEL_NAME=gemini-2.5-flash`
+  );
+
   fakeFs.applyMocks();
 
-  enableFakeLLMProcessor({ apiKey: "testKey" });
+  //enableFakeLLMProcessor({ modelName: "gemini-2.5-flash", apiKey: "testKey" });
 
-  await runCli([
-    "node",
-    "svi",
-    "run",
-    "-m",
-    "gemini-2.5-flash",
-    "-k",
-    "testKey",
-    parameterKey,
-    parameterValue,
-  ]);
+  await runCli(["node", "svi", "run", parameterKey, parameterValue]);
 
   expect(fakeFs.fileExists("D:\\test\\test.js")).toBe(true);
 

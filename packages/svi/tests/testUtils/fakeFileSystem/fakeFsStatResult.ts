@@ -13,9 +13,15 @@ export class FakeFsStatResult {
     return file !== undefined;
   }
   public isDirectory(): boolean {
-    const dirPrefix = this.fileName.endsWith("/")
+    /*const dirPrefix = this.fileName.endsWith("/")
       ? this.fileName
       : this.fileName + "/";
-    return this.files.some((f) => f.fullPath.startsWith(dirPrefix));
+    return this.files.some((f) => f.fullPath.startsWith(dirPrefix));*/
+    const normalized = this.fileName.replace(/\\/g, "/");
+    const dirPrefix = normalized.endsWith("/") ? normalized : normalized + "/";
+
+    return this.files.some((f) =>
+      f.fullPath.replace(/\\/g, "/").startsWith(dirPrefix)
+    );
   }
 }

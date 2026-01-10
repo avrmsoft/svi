@@ -13,3 +13,14 @@ export function convertPathToAbsolute(
     : path.resolve(cwd, fullOrRelativePath);
   return fullPath;
 }
+
+export function pushProcessEnv(): void {
+  (globalThis as any)._savedProcessEnv = { ...process.env };
+}
+
+export function popProcessEnv(): void {
+  if ((globalThis as any)._savedProcessEnv) {
+    process.env = (globalThis as any)._savedProcessEnv;
+    delete (globalThis as any)._savedProcessEnv;
+  }
+}

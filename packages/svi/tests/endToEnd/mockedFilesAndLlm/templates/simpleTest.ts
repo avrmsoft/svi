@@ -5,12 +5,14 @@ import {
   disableFakeLLMProcessor,
 } from "../../../testUtils/fakeLLM";
 import { vi } from "vitest";
+import { pushProcessEnv, popProcessEnv } from "../../../testUtils/testUtils";
 
 export function beforeEachSimpleTest(
   fakeFs: fakeFileSystem,
   fakeLogger?: fakeLogger,
   testApiKey: string = "testKey"
 ) {
+  pushProcessEnv();
   fakeFs.applyMocks();
   if (fakeLogger) {
     fakeLogger.applyMocks();
@@ -22,6 +24,7 @@ export function afterEachSimpleTest(
   fakeFs: fakeFileSystem,
   fakeLogger?: fakeLogger
 ) {
+  popProcessEnv();
   disableFakeLLMProcessor();
   fakeFs.restoreMocks();
   vi.clearAllMocks();

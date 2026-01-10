@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { runCli } from "../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
+import { runCli } from "../../../../src/commands/entryPoint";
+import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
   enableFakeLLMProcessor,
   disableFakeLLMProcessor,
-} from "../../testUtils/fakeLLM";
+} from "../../../testUtils/fakeLLM";
 
 describe("Simple Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
