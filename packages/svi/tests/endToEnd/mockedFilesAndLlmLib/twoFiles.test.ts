@@ -1,21 +1,39 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { runCli } from "../../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { runCli } from "../../../src/commands/entryPoint";
+import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
-  beforeEachSimpleTest,
-  afterEachSimpleTest,
-} from "../templates/simpleTest";
+  beforeEachEndToEndTest,
+  afterEachEndToEndTest,
+} from "../endToEndTestUtils";
+import {
+  enableFakeMaximalistLLMJsLLM,
+  disableFakeMaximalistLLMJsLLM,
+} from "../../testUtils/fakeMaximalistLlmJsObjects/fakeMaximalistLlmJs";
+import {
+  enableFakeMaximalistLLMJsModelUsage,
+  disableFakeMaximalistLLMJsModelUsage,
+} from "../../testUtils/fakeMaximalistLlmJsObjects/fakeMaximalistLlmJsModelUsage";
 
-describe("Two files Test (E2E)", () => {
+describe("Two files test (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
-    beforeEachSimpleTest(fakeFs);
+    beforeEachEndToEndTest(fakeFs);
+
+    enableFakeMaximalistLLMJsLLM({
+      model: "gemini-2.5-flash",
+      apiKey: "testKey",
+      service: "google",
+    });
+
+    enableFakeMaximalistLLMJsModelUsage();
   });
 
   afterEach(() => {
-    afterEachSimpleTest(fakeFs);
+    afterEachEndToEndTest(fakeFs);
+    disableFakeMaximalistLLMJsLLM();
+    disableFakeMaximalistLLMJsModelUsage();
   });
 
   it("Generate one file", async () => {

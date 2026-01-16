@@ -42,7 +42,11 @@ export class LLMProcessor {
       "Using LLM API key: " + prepareApiKeyForLogs(this.options.apiKey)
     );
 
-    if (!this.options.service) {
+    options.service = this.options.service;
+
+    logger.trace("Using LLM service: " + options.service);
+
+    if (!options.service) {
       logger.debug(
         "Service not specified, trying to determine from model name."
       );
