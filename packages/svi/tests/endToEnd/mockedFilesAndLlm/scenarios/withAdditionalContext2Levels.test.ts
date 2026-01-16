@@ -1,22 +1,21 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { runCli } from "../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
+import { runCli } from "../../../../src/commands/entryPoint";
+import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
-  enableFakeLLMProcessor,
-  disableFakeLLMProcessor,
-} from "../../testUtils/fakeLLM";
+  beforeEachSimpleTest,
+  afterEachSimpleTest,
+} from "../templates/simpleTest";
 
 describe("A case with additional context (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
+    beforeEachSimpleTest(fakeFs);
   });
 
   afterEach(() => {
-    disableFakeLLMProcessor();
-    fakeFs.restoreMocks();
-    vi.clearAllMocks();
+    afterEachSimpleTest(fakeFs);
   });
 
   it("Generate one file considering additional context", async () => {
@@ -48,7 +47,23 @@ We are building a simple application that can add numbers.
     );
 
     fakeFs.addFile(
-      "folder\\test.svi",
+      "folder\\partDescription.svi",
+      `
+# Destination File
+# Input parameters
+# Output
+# Options
+Active=True
+# Import prompts
+../projectDescription.svi
+# Prompt
+The project part's description is as follows:
+This module is responsible for computing.
+`
+    );
+
+    fakeFs.addFile(
+      "folder\\subfolder\\test.svi",
       `
 # Destination File
 test.js
@@ -58,15 +73,13 @@ test.js
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
-../projectDescription.svi
+../partDescription.svi
 # Prompt
 Please write a function add(a, b) that returns the sum of a and b.
 `
     );
 
     fakeFs.applyMocks();
-
-    enableFakeLLMProcessor({ apiKey: "testKey" });
 
     await runCli([
       "node",
@@ -78,17 +91,18 @@ Please write a function add(a, b) that returns the sum of a and b.
       "testKey",
     ]);
 
-    expect(fakeFs.fileExists("folder\\test.js")).toBe(true);
+    expect(fakeFs.fileExists("folder\\subfolder\\test.js")).toBe(true);
 
-    const content = fakeFs.fileContent("folder\\test.js");
+    const content = fakeFs.fileContent("folder\\subfolder\\test.js");
 
     expect(content).toContain(
       "Please write a function add(a, b) that returns the sum of a and b"
     );
+    expect(content).toContain("This module is responsible for computing");
     expect(content).toContain(
       "We are building a simple application that can add numbers"
     );
 
-    expect(fakeFs.fileExists("projectDescription.js")).toBe(false);
+    expect(fakeFs.fileExists("folder\\partDescription.js")).toBe(false);
   });
 });

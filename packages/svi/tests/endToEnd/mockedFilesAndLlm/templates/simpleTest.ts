@@ -4,19 +4,24 @@ import {
   enableFakeLLMProcessor,
   disableFakeLLMProcessor,
 } from "../../../testUtils/fakeLLM";
-import { vi } from "vitest";
-import { pushProcessEnv, popProcessEnv } from "../../../testUtils/testUtils";
+//import { vi } from "vitest";
+//import { pushProcessEnv, popProcessEnv } from "../../../testUtils/testUtils";
+import {
+  beforeEachEndToEndTest,
+  afterEachEndToEndTest,
+} from "../../endToEndTestUtils";
 
 export function beforeEachSimpleTest(
   fakeFs: fakeFileSystem,
   fakeLogger?: fakeLogger,
   testApiKey: string = "testKey"
 ) {
-  pushProcessEnv();
+  beforeEachEndToEndTest(fakeFs, fakeLogger);
+  /*pushProcessEnv();
   fakeFs.applyMocks();
   if (fakeLogger) {
     fakeLogger.applyMocks();
-  }
+  }*/
   enableFakeLLMProcessor({ apiKey: testApiKey });
 }
 
@@ -24,13 +29,15 @@ export function afterEachSimpleTest(
   fakeFs: fakeFileSystem,
   fakeLogger?: fakeLogger
 ) {
+  afterEachEndToEndTest(fakeFs, fakeLogger);
+  /*
   popProcessEnv();
-  disableFakeLLMProcessor();
   fakeFs.restoreMocks();
   vi.clearAllMocks();
   if (fakeLogger) {
     fakeLogger.disableMocks();
-  }
+  }*/
+  disableFakeLLMProcessor();
 }
 
 export function prepareSimpleTest(fakeFs: fakeFileSystem) {

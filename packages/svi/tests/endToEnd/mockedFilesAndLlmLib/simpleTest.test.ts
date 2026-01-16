@@ -1,31 +1,42 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { runCli } from "../../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
+import { runCli } from "../../../src/commands/entryPoint";
+import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
-  enableFakeLLMProcessor,
-  disableFakeLLMProcessor,
-} from "../../../testUtils/fakeLLM";
+  beforeEachEndToEndTest,
+  afterEachEndToEndTest,
+} from "../endToEndTestUtils";
+import {
+  enableFakeMaximalistLLMJsLLM,
+  disableFakeMaximalistLLMJsLLM,
+} from "../../testUtils/fakeMaximalistLlmJsObjects/fakeMaximalistLlmJs";
+import {
+  enableFakeMaximalistLLMJsModelUsage,
+  disableFakeMaximalistLLMJsModelUsage,
+} from "../../testUtils/fakeMaximalistLlmJsObjects/fakeMaximalistLlmJsModelUsage";
 
 describe("Simple Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
+    beforeEachEndToEndTest(fakeFs);
+
+    enableFakeMaximalistLLMJsLLM({
+      model: "gemini-2.5-flash",
+      apiKey: "testKey",
+      service: "google",
+    });
+
+    enableFakeMaximalistLLMJsModelUsage();
   });
 
   afterEach(() => {
-    disableFakeLLMProcessor();
-    fakeFs.restoreMocks();
-    vi.clearAllMocks();
+    afterEachEndToEndTest(fakeFs);
+    disableFakeMaximalistLLMJsLLM();
+    disableFakeMaximalistLLMJsModelUsage();
   });
 
   it("Generate one file", async () => {
-    fakeFs.addFile(
-      "svi.env",
-      `API_KEY=testKey2
-       MODEL_NAME=gemini-2.5-flash`
-    );
-
     fakeFs.addFile(
       "svi.json",
       `
@@ -56,12 +67,15 @@ Test prompt
 
     fakeFs.applyMocks();
 
-    enableFakeLLMProcessor({
-      apiKey: "testKey2",
-      modelName: "gemini-2.5-flash",
-    });
-
-    await runCli(["node", "svi", "run"]);
+    await runCli([
+      "node",
+      "svi",
+      "run",
+      "-m",
+      "gemini-2.5-flash",
+      "-k",
+      "testKey",
+    ]);
 
     expect(fakeFs.fileExists("test.js")).toBe(true);
 

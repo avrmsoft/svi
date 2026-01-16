@@ -1,13 +1,11 @@
-//import { config as loadEnv } from "dotenv";
-//import path from "path";
-//import fs from "fs";
-import LLM from "@themaximalist/llm.js";
+//import LLM from "@themaximalist/llm.js";
 import { Options } from "@themaximalist/llm.js";
+//import logger from "@src/utils/logger";
 import logger from "../utils/logger";
 import { LLMServiceByModel } from "./llmServiceByModel";
-//import { DEFAULT_ENV_FILE } from "../utils/constants";
 import { prepareApiKeyForLogs, preparePromptForLogs } from "./llmUtils";
 import { UNLIMITED_TOKENS } from "../utils/constants";
+import LlmJsFactories from "./theMaximalistLlmJs/LlmJsFactories";
 
 export interface LLMOptions {
   modelName: string;
@@ -77,7 +75,7 @@ export class LLMProcessor {
 
     try {
       logger.trace("Before calling LLM");
-      const llm = new LLM(options);
+      const llm = LlmJsFactories.createLlm(options);
       if (systemPrompt) {
         llm.system(systemPrompt);
       }

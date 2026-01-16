@@ -1,10 +1,13 @@
-import { ModelUsage } from "@themaximalist/llm.js";
+//import { ModelUsage } from "@themaximalist/llm.js";
+//import { createModelUsage } from "./theMaximalistLlmJs/LlmJsFactories";
+import ModelUsageWrapper from "./theMaximalistLlmJs/ModelUsageWrapper";
 import logger from "../utils/logger";
 
 export class LLMServiceByModel {
   static async getServiceForModel(model: string): Promise<string | null> {
     // Get all cached models
-    const allModels = ModelUsage.getAll();
+    //const allModels = ModelUsageWrapper.getAll();
+    const allModels = ModelUsageWrapper.getAll();
 
     // Try to find model in cached data
     const foundModel = allModels.find((m) => m.model === model);
@@ -17,7 +20,7 @@ export class LLMServiceByModel {
     }
 
     // If not found, refresh from latest sources
-    const refreshedModels = await ModelUsage.refresh();
+    const refreshedModels = await ModelUsageWrapper.refresh();
     //console.log("Refreshed models:", refreshedModels.length);
     logger.info(`Refreshed models: ${refreshedModels.length}`);
 

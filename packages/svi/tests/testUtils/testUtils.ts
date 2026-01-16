@@ -1,7 +1,11 @@
 import path from "path";
 
-export function getCliPath(): string {
+export function getCliPathInDist(): string {
   return path.join(__dirname, "../../dist/bin/cli.js");
+}
+
+export function getCliPathTs(): string {
+  return path.join(__dirname, "../../bin/cli.ts");
 }
 
 export function convertPathToAbsolute(
