@@ -1,22 +1,21 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { runCli } from "../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
+import { runCli } from "../../../../src/commands/entryPoint";
+import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
-  enableFakeLLMProcessor,
-  disableFakeLLMProcessor,
-} from "../../testUtils/fakeLLM";
+  beforeEachSimpleTest,
+  afterEachSimpleTest,
+} from "../templates/simpleTest";
 
 describe("Simple Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
+    beforeEachSimpleTest(fakeFs);
   });
 
   afterEach(() => {
-    disableFakeLLMProcessor();
-    fakeFs.restoreMocks();
-    vi.clearAllMocks();
+    afterEachSimpleTest(fakeFs);
   });
 
   it("Generate one file", async () => {
@@ -48,9 +47,23 @@ Test prompt
 `
     );
 
-    fakeFs.applyMocks();
+    fakeFs.addFile(
+      "test2.svi",
+      `
+# Destination File
+test2.js
+# Input parameters
+# Output
+# Options
+Active=True
+ProgrammingLanguage=node.js
+# Import prompts
+# Prompt
+Test prompt 2
+`
+    );
 
-    enableFakeLLMProcessor({ apiKey: "testKey" });
+    fakeFs.applyMocks();
 
     await runCli([
       "node",
@@ -71,6 +84,16 @@ Test prompt
     expect(content).toContain("without any explanations");
     expect(content).toContain("installation manual");
     expect(content).toContain(
+      "The code should fulfill the following requirements"
+    );
+
+    const content2 = fakeFs.fileContent("test2.js");
+
+    expect(content2).toContain("Test prompt 2");
+    expect(content2).toContain("Please return only the code");
+    expect(content2).toContain("without any explanations");
+    expect(content2).toContain("installation manual");
+    expect(content2).toContain(
       "The code should fulfill the following requirements"
     );
   });

@@ -1,31 +1,24 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { runCli } from "../../../../src/commands/entryPoint";
 import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
-  enableFakeLLMProcessor,
-  disableFakeLLMProcessor,
-} from "../../../testUtils/fakeLLM";
+  beforeEachSimpleTest,
+  afterEachSimpleTest,
+} from "../templates/simpleTest";
 
 describe("Simple Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
+    beforeEachSimpleTest(fakeFs);
   });
 
   afterEach(() => {
-    disableFakeLLMProcessor();
-    fakeFs.restoreMocks();
-    vi.clearAllMocks();
+    afterEachSimpleTest(fakeFs);
   });
 
   it("Generate one file", async () => {
-    fakeFs.addFile(
-      "svi.env",
-      `API_KEY=testKey2
-       MODEL_NAME=gemini-2.5-flash`
-    );
-
     fakeFs.addFile(
       "svi.json",
       `
@@ -56,12 +49,15 @@ Test prompt
 
     fakeFs.applyMocks();
 
-    enableFakeLLMProcessor({
-      apiKey: "testKey2",
-      modelName: "gemini-2.5-flash",
-    });
-
-    await runCli(["node", "svi", "run"]);
+    await runCli([
+      "node",
+      "svi",
+      "run",
+      "-m",
+      "gemini-2.5-flash",
+      "-k",
+      "testKey",
+    ]);
 
     expect(fakeFs.fileExists("test.js")).toBe(true);
 

@@ -1,22 +1,21 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { runCli } from "../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
+import { runCli } from "../../../../src/commands/entryPoint";
+import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
-  enableFakeLLMProcessor,
-  disableFakeLLMProcessor,
-} from "../../testUtils/fakeLLM";
+  beforeEachSimpleTest,
+  afterEachSimpleTest,
+} from "../templates/simpleTest";
 
 describe("Test with a dependency (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
+    beforeEachSimpleTest(fakeFs);
   });
 
   afterEach(() => {
-    disableFakeLLMProcessor();
-    fakeFs.restoreMocks();
-    vi.clearAllMocks();
+    afterEachSimpleTest(fakeFs);
   });
 
   it("Generate one file", async () => {
@@ -68,8 +67,6 @@ Please create a function to add two numbers (a and b) and return the result.
     );
 
     fakeFs.applyMocks();
-
-    enableFakeLLMProcessor({ apiKey: "testKey" });
 
     await runCli([
       "node",
