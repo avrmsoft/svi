@@ -1,8 +1,8 @@
-import { vi } from "vitest";
+/*import { vi } from "vitest";
 
 const SERVICE_MODEL_MAPPING = [
   { model: "gemini-2.5-flash", service: "gemini" },
-];
+];*/
 
 /*
 import { ModelUsage } from "@themaximalist/llm.js";
@@ -47,7 +47,7 @@ export class LLMServiceByModel {
 }
 */
 
-export function enableFakeMaximalistLLMJsLLM(requiredOptions: {
+/*export function enableFakeMaximalistLLMJsLLM(requiredOptions: {
   model?: string;
   apiKey?: string;
   service?: string;
@@ -119,3 +119,4 @@ export function enableFakeMaximalistLLMJsLLM(requiredOptions: {
 export function disableFakeMaximalistLLMJsLLM() {
   vi.unmock("@themaximalist/llm.js");
 }
+*/
