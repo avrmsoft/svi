@@ -21,12 +21,15 @@ describe("SVIParser", () => {
   });
 
   it("should read file content and call parseContent", () => {
-    const mockContent = "# Destination File\noutput.txt";
+    const mockContent = "# Destination File\noutput.txt\n# Prompt\nHello World";
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync).mockReturnValue(mockContent);
 
     const result = parser.parseFile("file.svi");
-    expect(result.destinationFile).toBe("output.txt");
+    expect(result).not.toBeNull();
+    if (result) {
+      expect(result.destinationFile).toBe("output.txt");
+    }
   });
 
   // --- parseContent tests ---------------------------------------------------
