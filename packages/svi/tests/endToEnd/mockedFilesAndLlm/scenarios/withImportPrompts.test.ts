@@ -6,7 +6,7 @@ import {
   afterEachSimpleTest,
 } from "../templates/simpleTest";
 
-describe("Test with a dependency (E2E)", () => {
+describe("A case with the 'Import prompts' parameter (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe("Test with a dependency (E2E)", () => {
     afterEachSimpleTest(fakeFs);
   });
 
-  it("Generate one file", async () => {
+  it("Generate one file considering additional context from imported prompts", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -28,42 +28,39 @@ describe("Test with a dependency (E2E)", () => {
           "*"
         ],
         "ignorePaths": []
-      }`
+      }`,
     );
 
     fakeFs.addFile(
-      "maintest.svi",
+      "projectDescription.svi",
       `
 # Destination File
-maintest.js
 # Input parameters
-function add from dependency.js
+# Output
+# Options
+Active=True
+# Import prompts
+# Prompt
+The main project description is as follows:
+We are building a simple application that can add numbers.
+`,
+    );
+
+    fakeFs.addFile(
+      "folder\\test.svi",
+      `
+# Destination File
+test.js
+# Input parameters
 # Output
 # Options
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
+../projectDescription.svi
 # Prompt
-Please add 2 + 3 and output result.
-Use the add function from dependency.js.
-`
-    );
-
-    fakeFs.addFile(
-      "dependency.svi",
-      `
-# Destination File
-dependency.js
-# Input parameters
-# Output
-export function add(a, b)
-# Options
-Active=True
-ProgrammingLanguage=node.js
-# Import prompts
-# Prompt
-Please create a function to add two numbers (a and b) and return the result.
-`
+Please write a function add(a, b) that returns the sum of a and b.
+`,
     );
 
     fakeFs.applyMocks();
@@ -78,19 +75,17 @@ Please create a function to add two numbers (a and b) and return the result.
       "testKey",
     ]);
 
-    expect(fakeFs.fileExists("maintest.js")).toBe(true);
+    expect(fakeFs.fileExists("folder\\test.js")).toBe(true);
 
-    const content = fakeFs.fileContent("maintest.js");
+    const content = fakeFs.fileContent("folder\\test.js");
 
-    expect(content).toContain("Please add 2 + 3 and output result");
-
-    expect(fakeFs.fileExists("dependency.js")).toBe(true);
-
-    const depContent = fakeFs.fileContent("dependency.js");
-
-    expect(depContent).toContain("export function add(a, b)");
-    expect(depContent).toContain(
-      "Please create a function to add two numbers (a and b) and return the result"
+    expect(content).toContain(
+      "Please write a function add(a, b) that returns the sum of a and b",
     );
+    expect(content).toContain(
+      "We are building a simple application that can add numbers",
+    );
+
+    expect(fakeFs.fileExists("projectDescription.js")).toBe(false);
   });
 });

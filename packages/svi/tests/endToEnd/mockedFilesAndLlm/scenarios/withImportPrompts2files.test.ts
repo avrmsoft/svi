@@ -6,7 +6,7 @@ import {
   afterEachSimpleTest,
 } from "../templates/simpleTest";
 
-describe("A case with additional context (E2E)", () => {
+describe("A case with the 'Import prompts' parameter, two files (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe("A case with additional context (E2E)", () => {
     afterEachSimpleTest(fakeFs);
   });
 
-  it("Generate one file considering additional context", async () => {
+  it("Generate one file considering additional context from the 'Import prompts' parameter", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -28,7 +28,7 @@ describe("A case with additional context (E2E)", () => {
           "*"
         ],
         "ignorePaths": []
-      }`
+      }`,
     );
 
     fakeFs.addFile(
@@ -43,7 +43,20 @@ Active=True
 # Prompt
 The main project description is as follows:
 We are building a simple application that can add numbers.
-`
+`,
+    );
+
+    fakeFs.addFile(
+      "folder\\additionalContext.svi",
+      `# Destination File
+# Input parameters
+# Output
+# Options
+Active=True
+# Import prompts
+# Prompt
+Additional context: This is a second file containing additional context.
+`,
     );
 
     fakeFs.addFile(
@@ -56,10 +69,11 @@ We are building a simple application that can add numbers.
 Active=True
 # Import prompts
 ../projectDescription.svi
+additionalContext.svi
 # Prompt
 The project part's description is as follows:
 This module is responsible for computing.
-`
+`,
     );
 
     fakeFs.addFile(
@@ -76,7 +90,7 @@ ProgrammingLanguage=node.js
 ../partDescription.svi
 # Prompt
 Please write a function add(a, b) that returns the sum of a and b.
-`
+`,
     );
 
     fakeFs.applyMocks();
@@ -96,11 +110,15 @@ Please write a function add(a, b) that returns the sum of a and b.
     const content = fakeFs.fileContent("folder\\subfolder\\test.js");
 
     expect(content).toContain(
-      "Please write a function add(a, b) that returns the sum of a and b"
+      "Please write a function add(a, b) that returns the sum of a and b",
     );
     expect(content).toContain("This module is responsible for computing");
     expect(content).toContain(
-      "We are building a simple application that can add numbers"
+      "We are building a simple application that can add numbers",
+    );
+
+    expect(content).toContain(
+      "Additional context: This is a second file containing additional context",
     );
 
     expect(fakeFs.fileExists("folder\\partDescription.js")).toBe(false);

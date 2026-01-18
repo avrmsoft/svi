@@ -34,16 +34,25 @@ export class SVIImportPrompts {
       return true;
     }
 
-    let bResult: boolean = true;
+    let success: boolean = true;
 
     for (const promptPath of sviFile.importPrompts) {
       const resolvedPath = this.resolvePromptPath(promptPath, sviFile);
-      if (!this.loadPromptForPath(resolvedPath)) {
-        bResult = false;
+      if (this.loadPromptForPath(resolvedPath)) {
+        continue;
       }
+
+      if (!resolvedPath.endsWith(".svi")) {
+        const resolvedPathWithExtension = resolvedPath + ".svi";
+        if (this.loadPromptForPath(resolvedPathWithExtension)) {
+          continue;
+        }
+      }
+
+      success = false;
     }
 
-    return bResult;
+    return success;
   }
 
   private resolvePromptPath(
