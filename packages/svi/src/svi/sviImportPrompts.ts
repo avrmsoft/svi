@@ -25,39 +25,30 @@ export class SVIImportPrompts {
     return this.importedPrompts.map((imp) => imp.prompt).join("\n---\n");
   }
 
-  public loadImportedPrompts(): void {
-    this.loadImportedPromptsFromSvi(this.sviFile);
+  public loadImportedPrompts(): boolean {
+    return this.loadImportedPromptsFromSvi(this.sviFile);
   }
 
-  private loadImportedPromptsFromSvi(sviFile: SVIFile): void {
+  private loadImportedPromptsFromSvi(sviFile: SVIFile): boolean {
     if (!sviFile.importPrompts || sviFile.importPrompts.length === 0) {
-      return;
+      return true;
     }
+
+    let bResult: boolean = true;
 
     for (const promptPath of sviFile.importPrompts) {
       const resolvedPath = this.resolvePromptPath(promptPath, sviFile);
-      this.loadPromptForPath(resolvedPath);
-
-      //const dependencySVI = this.loadSVIFile(resolvedPath);
-      //if (dependencySVI && dependencySVI.prompt) {
-
-      /*const promptContent = dependencySVI.prompt;
-        const promptHash = this.computeHash(promptContent);
-        this.importedPrompts.push({
-          prompt: promptContent,
-          hash: promptHash,
-        });*/
-      //} else {
-      //  Logger.error(
-      //    `Failed to load imported prompt from dependency ${resolvedPath}`
-      //  );
-      //}
+      if (!this.loadPromptForPath(resolvedPath)) {
+        bResult = false;
+      }
     }
+
+    return bResult;
   }
 
   private resolvePromptPath(
     promptPath: string,
-    relativeToSvi?: SVIFile
+    relativeToSvi?: SVIFile,
   ): string {
     const relativeToSviFile = relativeToSvi || this.sviFile;
     if (relativeToSviFile.filePath) {
@@ -81,13 +72,13 @@ export class SVIImportPrompts {
     return computeHashFromString(content);
   }
 
-  private loadPromptForPath(path: string): void {
+  private loadPromptForPath(path: string): boolean {
     const dependencySVI = this.loadSVIFile(path);
     if (dependencySVI && dependencySVI.prompt) {
       const promptContent = dependencySVI.prompt;
       const promptHash = this.computeHash(promptContent);
       if (this.hashExists(promptHash)) {
-        return;
+        return true;
       }
 
       this.importedPrompts.push({
@@ -95,9 +86,11 @@ export class SVIImportPrompts {
         hash: promptHash,
       });
 
-      this.loadImportedPromptsFromSvi(dependencySVI);
+      return this.loadImportedPromptsFromSvi(dependencySVI);
     } else {
       Logger.error(`Failed to load imported prompt from dependency ${path}`);
+
+      return false;
     }
   }
 

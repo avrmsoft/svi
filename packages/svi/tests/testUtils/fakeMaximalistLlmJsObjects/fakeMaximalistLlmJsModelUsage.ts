@@ -1,7 +1,6 @@
 import ModelUsageWrapper from "../../../src/llm/theMaximalistLlmJs/ModelUsageWrapper";
 import { vi } from "vitest";
 import { ModelUsageType } from "@themaximalist/llm.js";
-import { ModelUsage } from "@themaximalist/llm.js";
 
 const SERVICE_MODEL_MAPPING = [
   { model: "gemini-2.5-flash", service: "gemini" },

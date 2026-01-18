@@ -105,6 +105,10 @@ export default class FakeLogger {
     return this.logLines.some((line) => line.includes(text));
   }
 
+  public containsLogRegex(pattern: RegExp): boolean {
+    return this.logLines.some((line) => pattern.test(line));
+  }
+
   public containsErrorLog(text: string): boolean {
     return this.errorLines.some((line) => line.includes(text));
   }
