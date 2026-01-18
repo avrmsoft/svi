@@ -31,7 +31,12 @@ export async function processSVIFile(
 ): Promise<boolean> {
   try {
     const parser = new SVIParser(); //rawContent);
-    const svi: SVIFile = parser.parseFile(filePath);
+    const svi: SVIFile | null = parser.parseFile(filePath);
+
+    if (!svi) {
+      logger.error(`Failed to parse SVI file: ${filePath}`);
+      return false;
+    }
 
     // Check if active
     if (!isActive(svi)) {

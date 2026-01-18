@@ -8,6 +8,7 @@ import {
 import FakeLogger from "../../../../testUtils/fakeLogger";
 import {
   mockProcessExit,
+  checkProcessExitCalledWith,
   restoreProcessExit,
 } from "../../../../testUtils/fakeProcess";
 
@@ -58,8 +59,11 @@ describe("Dependency File is Incorrect (E2E)", () => {
       "testKey",
     ]);
 
-    //checkProcessExitCalledWith(1);
+    checkProcessExitCalledWith(1);
 
     fakeLogger.containsWarningLog("[SVIParser] Unknown section");
+    fakeLogger.containsErrorLogRegex(
+      /[SVIParser] No 'Prompt' or 'Import Prompts' section found in file.*test\.svi/,
+    );
   });
 });
