@@ -39,8 +39,8 @@ export class SVIParser {
       .filter(Boolean);
 
     const svi: SVIFile = {};
-    let currentHeader: string | null = null;
-    let currentContent: string[] = [];
+    //let currentHeader: string | null = null;
+    //let currentContent: string[] = [];
 
     for (const rawSection of sections) {
       const [headerLine, ...bodyLines] = rawSection.split("\n");
@@ -74,15 +74,10 @@ export class SVIParser {
 
         default:
           if (header.length > 0) {
-            //console.warn(
-            //  `[SVIParser] Unknown section '${header}' in file ${
-            //    filePath ?? "<string>"
-            //  }`
-            //);
             logger.warn(
               `[SVIParser] Unknown section '${header}' in file ${
                 filePath ?? "<string>"
-              }`
+              }`,
             );
           }
           break;
