@@ -21,7 +21,25 @@ export class SVIParser {
 
     if (!parsedSvi.prompt && !parsedSvi.importPrompts) {
       logger.error(
-        `[SVIParser] No 'Prompt' or 'Import Prompts' section found in file ${filePath}, looks like file has incorrect format.`,
+        `[SVIParser] No 'Prompt' or 'Import Prompts' section found in file ${filePath}, looks like file has incorrect format.
+An example of the correct format:
+=====================================
+# Destination File
+test.js
+# Input parameters
+Import function1(param1: number) : string from ../utils/utils.js
+# Output
+export function2(paramA: string) : number
+# Options
+Active=True
+ProgrammingLanguage=node.js
+# Import prompts
+../prompts/common.svi
+specific.svi
+# Prompt
+Test prompt
+=====================================
+        `,
       );
       return null;
     }
