@@ -11,13 +11,22 @@ export class SVIParser {
    * Reads and parses a .svi file.
    * @param filePath Full path to the .svi file.
    */
-  public parseFile(filePath: string): SVIFile {
+  public parseFile(filePath: string): SVIFile | null {
     if (!fs.existsSync(filePath)) {
       throw new Error(`File not found: ${filePath}`);
     }
 
     const raw = fs.readFileSync(filePath, "utf-8");
-    return this.parseContent(raw, filePath);
+    const parsedSvi = this.parseContent(raw, filePath);
+
+    if (!parsedSvi.prompt && !parsedSvi.importPrompts) {
+      logger.error(
+        `[SVIParser] No 'Prompt' or 'Import Prompts' section found in file ${filePath}, looks like file has incorrect format.`,
+      );
+      return null;
+    }
+
+    return parsedSvi;
   }
 
   /**
