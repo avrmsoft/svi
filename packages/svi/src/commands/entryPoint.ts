@@ -30,32 +30,18 @@ for (const option of initOptions) {
   initProg = initProg.option(
     `${option.shortFlag}, ${option.fullFlag}`,
     option.description,
-    option.defaultValue
+    option.defaultValue,
   );
 }
 
 initProg
   .description(
-    "Initialize svi configuration in the current directory or create a new .svi file"
+    "Initialize svi configuration in the current directory or create a new .svi file",
   )
   .action(async (options) => {
-    /*program
-  .command("init")
-  .argument("[file]", "Optional: name of the .svi file to create")
-  .option(
-    "-l, --loglevel <level>",
-    "Set log level (ERROR, WARN, INFO, SUCCESS, DEBUG, TRACE)",
-    "INFO"
-  )
-  .description(
-    "Initialize svi configuration in the current directory or create a new .svi file"
-  )
-  .action(async (options) => {*/
     enrichOptionsFromEnv(options);
     Logger.setLogLevel(options.loglevel);
     try {
-      //const cwd = process.cwd();
-      //const targetPath = file ? path.resolve(cwd, file) : cwd;
       const result: number = initCommand(options.file);
       if (result !== 0) {
         Logger.error("❌ Initialization failed");
@@ -80,26 +66,11 @@ for (const option of runOptions) {
   runProg = runProg.option(
     `${option.shortFlag}, ${option.fullFlag}`,
     option.description,
-    option.defaultValue
+    option.defaultValue,
   );
 }
 
 runProg.action(async (options) => {
-  /*
-program
-  .command("run")
-  .description("Run the main process based on svi.json and .svi files")
-  .option("-m, --model <model>", "Model name for LLM")
-  .option("-s, --service <service>", "LLM service provider")
-  .option("-k, --key <apiKey>", "API key for LLM provider")
-  .option("-e, --env <path>", "Path to .env file")
-  .option(
-    "-l, --loglevel <level>",
-    "Set log level (ERROR, WARN, INFO, SUCCESS, DEBUG, TRACE)",
-    "INFO"
-  )
-  .option("-p, --path <svi.json path>", "Path to svi.json file")
-  .action(async (options) => {*/
   const possibleOptions: string[] = runOptions.map((opt) => opt.paramName);
   console.log("Options = ", options);
   enrichOptionsFromEnv(options, possibleOptions);
@@ -123,9 +94,3 @@ program
 export async function runCli(argv = process.argv) {
   await program.parseAsync(argv);
 }
-/*
-console.log(import.meta.url);
-
-if (import.meta.url === `file://${process.argv[1]}`) {
-  runCli();
-}*/

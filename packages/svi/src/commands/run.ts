@@ -21,7 +21,7 @@ export async function runCommand(options: {
     let config: Config;
     if (options.sviJsonPath) {
       Logger.debug(
-        `Using svi.json path from parameter: ${options.sviJsonPath}`
+        `Using svi.json path from parameter: ${options.sviJsonPath}`,
       );
       config = new Config(options.sviJsonPath);
     } else {
@@ -41,9 +41,14 @@ export async function runCommand(options: {
     });
 
     Logger.debug("Running RunManager...");
-    await runManager.run();
-
-    Logger.info("🎉 Process finished.");
+    if (await runManager.run()) {
+      Logger.info("🎉 Process finished.");
+    } else {
+      Logger.error(
+        "❌ Error(s) occured during processing, not all operations were successful.",
+      );
+      process.exit(1);
+    }
   } catch (err: any) {
     Logger.error("❌ Error while executing 'run':");
     Logger.error(err.message || err.toString());

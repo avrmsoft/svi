@@ -96,37 +96,9 @@ export function enableFakeMaximalistLLMJsLLM(requiredOptions: {
       return fake as unknown as InstanceType<typeof LLM>;
     }
   );
-
-  /*const mockFn = vi
-    .fn()
-    .mockImplementation((input?: any, options: any = {}) => {
-      const fake = new FakeLlm(input || { messages: [] }, options);
-      fake.setBenchmarkOptions(requiredOptions);
-      return fake;
-    });
-
-  createLlm = mockFn;*/
-
-  /*vi.mock("../../../src/llm/theMaximalistLlmJs/LlmJsClassWrapper", async () => {
-    const mod = await vi.importActual<any>(
-      "../../../src/llm/theMaximalistLlmJs/LlmJsClassWrapper"
-    );
-
-    return {
-      __esModule: true,
-      default: class LLMWrapper {
-        private fake: any;
-
-        constructor(input?: any, options: any = {}) {
-          this.fake = new FakeLlm(input || { messages: [] }, options);
-          this.fake.setBenchmarkOptions(requiredOptions);
-          return this.fake;
-        }
-      },
-    };
-  });*/
 }
 
 export function disableFakeMaximalistLLMJsLLM() {
-  vi.unmock("../../../src/llm/theMaximalistLlmJs/LlmJsClassWrapper");
+  //vi.unmock("../../../src/llm/theMaximalistLlmJs/LlmJsClassWrapper");
+  vi.restoreAllMocks();
 }

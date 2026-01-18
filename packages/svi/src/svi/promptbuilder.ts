@@ -12,7 +12,7 @@ import { SviConfig } from "../config/config";
  */
 export function buildPrompt(svi: SVIFile, config: SviConfig): string {
   const programmingLanguage = optionValueAsString(
-    svi.options?.ProgrammingLanguage || config.programmingLanguage || "Node.js"
+    svi.options?.ProgrammingLanguage || config.programmingLanguage || "Node.js",
   );
 
   const inputParams =
@@ -34,7 +34,9 @@ export function buildPrompt(svi: SVIFile, config: SviConfig): string {
 
   // Import Prompts
   const importPrompter = new SVIImportPrompts(svi);
-  importPrompter.loadImportedPrompts();
+  if (!importPrompter.loadImportedPrompts()) {
+    return "";
+  }
   const importedPrompts = importPrompter.getImportedPromptsAsString();
 
   // Build the final prompt

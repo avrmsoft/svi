@@ -6,7 +6,7 @@ import { SVIParser } from "./sviParser";
 import { SVIFile } from "./types";
 import * as cacheManager from "./cacheManager";
 import logger from "../utils/logger";
-import { buildPrompt } from "./promptbuilder";
+import { buildPrompt } from "./promptBuilder";
 import { LLMProcessor } from "../llm/llm";
 import * as fileUtils from "../utils/file";
 import { clearContentFromMarkdownCodeMarkers } from "../utils/utils";
@@ -27,8 +27,8 @@ export function isActive(svi: SVIFile): boolean {
 export async function processSVIFile(
   filePath: string,
   llm: LLMProcessor,
-  config: SviConfig
-): Promise<boolean | null> {
+  config: SviConfig,
+): Promise<boolean> {
   try {
     const parser = new SVIParser(); //rawContent);
     const svi: SVIFile = parser.parseFile(filePath);
@@ -36,14 +36,14 @@ export async function processSVIFile(
     // Check if active
     if (!isActive(svi)) {
       logger.info(`Skipping inactive SVI file: ${filePath}`);
-      return false;
+      return true;
     }
 
     // 6) Get destination file from the .svi file (from # Destination File section)
     const destinationFromSvi = svi.destinationFile?.trim();
     if (!destinationFromSvi) {
       logger.info(`No destination file ${filePath} provided. Skipping.`);
-      return false;
+      return true;
     }
 
     const fileFolder = path.dirname(filePath);
@@ -53,37 +53,41 @@ export async function processSVIFile(
     if (cache.isCacheValid(filePath)) {
       if (
         !fileUtils.exists(
-          fileUtils.constructFullPath(fileFolder, destinationFromSvi)
+          fileUtils.constructFullPath(fileFolder, destinationFromSvi),
         )
       ) {
         logger.info(
-          `Destination file ${destinationFromSvi} does not exist. Regenerating...`
+          `Destination file ${destinationFromSvi} does not exist. Regenerating...`,
         );
       } else {
         logger.info(`Cache is up to date, skipping file: ${filePath}`);
-        return false;
+        return true;
       }
     }
 
     const prompt = buildPrompt(svi, config);
+
+    if (!prompt || prompt.trim().length === 0) {
+      logger.error(`Error creating prompt for file: ${filePath}.`);
+      return false;
+    }
+
     logger.debug(`Prompt for ${filePath} was built.`);
 
     logger.info(`Ask LLM for ${filePath}...`);
     const generated = await llm.ask(prompt);
     if (!generated || generated.trim().length === 0) {
       logger.error(
-        `LLM returned no result for ${filePath} or error occurred. Skipping.`
+        `LLM returned no result for ${filePath} or error occurred. Skipping.`,
       );
       return false;
     }
 
     const clearedCode = clearContentFromMarkdownCodeMarkers(generated);
 
-    //const sviDir = path.dirname(filePath);
-
     const destPath = fileUtils.constructFullPath(
       fileFolder,
-      destinationFromSvi
+      destinationFromSvi,
     );
     const destDir = path.dirname(destPath);
     await fileUtils.ensureDir(destDir);
@@ -96,8 +100,8 @@ export async function processSVIFile(
     return true;
   } catch (err) {
     logger.error(
-      `Error processing SVI file ${filePath}: ${(err as Error).message}`
+      `Error processing SVI file ${filePath}: ${(err as Error).message}`,
     );
-    return null;
+    return false;
   }
 }

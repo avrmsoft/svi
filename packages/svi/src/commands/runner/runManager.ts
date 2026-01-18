@@ -30,7 +30,7 @@ export class RunManager {
       service?: string;
       apiKey?: string;
       envPath?: string;
-    }
+    },
   ) {
     this.config = config;
     this.model = opts?.model;
@@ -42,14 +42,14 @@ export class RunManager {
   /**
    * Main method to run the process
    */
-  public async run(): Promise<void> {
+  public async run(): Promise<boolean> {
     try {
       logger.info("RunManager: Search for .svi files...");
       const sviFiles = new SviLoader(this.config).loadAll();
 
       if (!sviFiles || sviFiles.length === 0) {
         logger.info("No .svi files found. Nothing to do.");
-        return;
+        return true;
       }
 
       logger.info(`Number of found .svi files: ${sviFiles.length}`);
@@ -61,19 +61,30 @@ export class RunManager {
         envFile: this.envPath,
       });
 
+      let result = true;
+
       for (const sviPath of sviFiles) {
         try {
           logger.info(`Processing: ${sviPath}`);
 
-          await processSVIFile(sviPath, llm, this.config);
+          if (!(await processSVIFile(sviPath, llm, this.config))) {
+            result = false;
+          }
         } catch (innerErr) {
           logger.error(
-            `Error processing ${sviPath}: ${(innerErr as Error).message}`
+            `Error processing ${sviPath}: ${(innerErr as Error).message}`,
           );
+          result = false;
         }
       }
 
-      logger.info("RunManager: Done.");
+      if (result) {
+        logger.info("RunManager: Done.");
+      } else {
+        logger.error("RunManager: Some files failed to process.");
+      }
+
+      return result;
     } catch (err) {
       logger.error("RunManager: Severe error: " + (err as Error).message);
       throw err;
