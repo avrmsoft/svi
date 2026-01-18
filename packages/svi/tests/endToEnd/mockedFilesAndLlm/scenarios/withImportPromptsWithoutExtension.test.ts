@@ -6,7 +6,7 @@ import {
   afterEachSimpleTest,
 } from "../templates/simpleTest";
 
-describe("A case with additional context (E2E)", () => {
+describe("A case with the 'Import prompts' parameter without extension (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe("A case with additional context (E2E)", () => {
     afterEachSimpleTest(fakeFs);
   });
 
-  it("Generate one file considering additional context", async () => {
+  it("Generate one file considering additional context from imported prompts", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -28,7 +28,7 @@ describe("A case with additional context (E2E)", () => {
           "*"
         ],
         "ignorePaths": []
-      }`
+      }`,
     );
 
     fakeFs.addFile(
@@ -43,7 +43,7 @@ Active=True
 # Prompt
 The main project description is as follows:
 We are building a simple application that can add numbers.
-`
+`,
     );
 
     fakeFs.addFile(
@@ -57,10 +57,10 @@ test.js
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
-../projectDescription.svi
+../projectDescription
 # Prompt
 Please write a function add(a, b) that returns the sum of a and b.
-`
+`,
     );
 
     fakeFs.applyMocks();
@@ -80,10 +80,10 @@ Please write a function add(a, b) that returns the sum of a and b.
     const content = fakeFs.fileContent("folder\\test.js");
 
     expect(content).toContain(
-      "Please write a function add(a, b) that returns the sum of a and b"
+      "Please write a function add(a, b) that returns the sum of a and b",
     );
     expect(content).toContain(
-      "We are building a simple application that can add numbers"
+      "We are building a simple application that can add numbers",
     );
 
     expect(fakeFs.fileExists("projectDescription.js")).toBe(false);
