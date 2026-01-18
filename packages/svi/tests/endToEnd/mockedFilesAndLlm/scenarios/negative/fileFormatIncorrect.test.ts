@@ -65,5 +65,6 @@ describe("Dependency File is Incorrect (E2E)", () => {
     fakeLogger.containsErrorLogRegex(
       /[SVIParser] No 'Prompt' or 'Import Prompts' section found in file.*test\.svi/,
     );
+    fakeLogger.containsErrorLog("An example of the correct format:");
   });
 });
