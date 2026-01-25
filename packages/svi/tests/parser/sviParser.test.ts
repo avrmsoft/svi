@@ -78,6 +78,7 @@ Generate something cool
     const content = `# UnknownSection\nSome text`;
 
     const result = parser.parseContent(content);
+    parser.logParseMessages();
 
     expect(result).toEqual({});
     expect(spy).toHaveBeenCalledOnce();

@@ -11,6 +11,7 @@ import { LLMProcessor } from "../llm/llm";
 import * as fileUtils from "../utils/file";
 import { clearContentFromMarkdownCodeMarkers } from "../utils/utils";
 import { SviConfig } from "../config/config";
+import RunStatistics from "../commands/runner/runStatistics";
 
 /**
  * Check if file is active (according to options Active=true)
@@ -56,11 +57,7 @@ export async function processSVIFile(
     // Check cache
     const cache = new cacheManager.CacheManager(fileFolder);
     if (cache.isCacheValid(filePath)) {
-      if (
-        !fileUtils.exists(
-          fileUtils.constructFullPath(fileFolder, destinationFromSvi),
-        )
-      ) {
+      if (!fileUtils.exists(svi.getDestinationFileFullPath() || "")) {
         logger.info(
           `Destination file ${destinationFromSvi} does not exist. Regenerating...`,
         );
@@ -98,9 +95,18 @@ export async function processSVIFile(
     await fileUtils.ensureDir(destDir);
 
     logger.info(`Write generated code to ${destPath}`);
+
+    const fileIsNew = !(await fileUtils.exists(destPath));
     await fs.writeFileSync(destPath, clearedCode);
 
     cache.updateCache(filePath);
+
+    const runStatistics = RunStatistics.getInstance();
+    if (fileIsNew) {
+      runStatistics.addFileCreated(destPath);
+    } else {
+      runStatistics.addFileUpdated(destPath);
+    }
 
     return true;
   } catch (err) {

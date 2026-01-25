@@ -4,6 +4,7 @@ import fs from "fs";
 import Logger from "../utils/logger";
 import { writeJSON, exists } from "../utils/file";
 import { type SVIFile } from "../svi/types";
+import SviFileClass from "../svi/sviFileClass";
 
 interface InitOptions {
   lang?: string;
@@ -11,7 +12,7 @@ interface InitOptions {
 
 export function initCommand(
   fileArg?: string, // optionaler Parameter nach "init"
-  options: InitOptions = {}
+  options: InitOptions = {},
 ): number {
   try {
     if (fileArg) {
@@ -19,38 +20,6 @@ export function initCommand(
     } else {
       return createGlobalConfig(options);
     }
-    /*const programmingLanguage = options.lang || "";
-
-    // Standard-Struktur für svi.json oder *.svi
-    const config = {
-      programmingLanguage,
-      SearchPaths: [] as string[],
-      IgnorePaths: [] as string[],
-    };
-
-    let fileName: string;
-
-    if (!fileArg) {
-      // Kein Zusatz -> Standard "svi.json"
-      fileName = "svi.json";
-    } else {
-      // Mit Zusatz -> erstelle "<fileArg>.svi"
-      const base = path.basename(fileArg, ".svi");
-      fileName = `${base}.svi`;
-    }
-
-    const targetPath = path.resolve(process.cwd(), fileName);
-
-    if (exists(targetPath)) {
-      Logger.error(`File ${fileName} already exists, the initialization cancelled`);
-      return;
-    }
-
-    config.SearchPaths.push("*");
-    
-    writeJSON(targetPath, config);
-    Logger.success(`Configuration created: ${targetPath}`);
-    */
   } catch (err) {
     Logger.error("Error creating configuration", err);
     return 1;
@@ -70,7 +39,7 @@ function createGlobalConfig(options: InitOptions = {}): number {
   const targetPath = path.resolve(process.cwd(), fileName);
   if (exists(targetPath)) {
     Logger.error(
-      `File ${fileName} already exists, the initialization cancelled`
+      `File ${fileName} already exists, the initialization cancelled`,
     );
     return 1;
   }
@@ -83,7 +52,7 @@ function createGlobalConfig(options: InitOptions = {}): number {
 }
 
 function createSviFile(fileArg: string, options: InitOptions = {}): number {
-  const sviFile: SVIFile = {};
+  const sviFile: SVIFile = new SviFileClass();
   for (var option in options) {
     if (Object.prototype.hasOwnProperty.call(options, option)) {
       const value = (options as any)[option];
@@ -98,29 +67,11 @@ function createSviFile(fileArg: string, options: InitOptions = {}): number {
   const targetPath = path.resolve(process.cwd(), fileName);
   if (exists(targetPath)) {
     Logger.error(
-      `File ${fileName} already exists, the initialization cancelled`
+      `File ${fileName} already exists, the initialization cancelled`,
     );
     return 1;
   }
   const contentLines: string[] = [];
-
-  /* Dateiformat
-  # Destination File
-z.B. code.js
-# Input parameters
-z.B. class Storage from utils/storage.js
-# Output
-z.B. class AwesomeAlg, methods doAwesome, doMagic
-# Options
-ProgrammingLanguage=Node.js
-Active=True // Optional
-# Import prompts
-
-# Prompt
-*/
-  //Bitte übernehmen Sie die Standardwerte aus der sviFile-Struktur, falls vorhanden
-  // 4. Inhalt der SVI-Datei aufbauen
-  //const contentLines: string[] = [];
 
   // Destination File
   contentLines.push(`# Destination File`);
@@ -168,7 +119,6 @@ Active=True // Optional
   }
 
   // 5. Write the file
-  //writeJSON(targetPath, contentLines.join("\n")); // oder fs.writeFileSync(targetPath, contentLines.join("\n"), 'utf-8')
   fs.writeFileSync(targetPath, contentLines.join("\n"), "utf-8");
   Logger.success(`SVI file created: ${targetPath}`);
   return 0;

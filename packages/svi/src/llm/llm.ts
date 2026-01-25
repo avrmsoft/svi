@@ -25,11 +25,22 @@ export class LLMProcessor {
     let options: Options = {};
 
     logger.debug(
-      "Planning to ask LLM, prompt: " + preparePromptForLogs(prompt)
+      "Planning to ask LLM, prompt: " + preparePromptForLogs(prompt),
     );
 
     if (this.options.modelName) {
       options.model = this.options.modelName;
+    }
+
+    if (!this.options.modelName) {
+      logger.error("LLM model name is not specified.");
+      logger.error(
+        "Please specify the model name in svi.env file, or specify another .env file via the -e parameter.",
+      );
+      logger.error(
+        "Also, you can specify the model name via the -m parameter.",
+      );
+      throw new Error("LLM model name is required.");
     }
 
     logger.debug("Using LLM model:" + this.options.modelName);
@@ -39,7 +50,7 @@ export class LLMProcessor {
     }
 
     logger.debug(
-      "Using LLM API key: " + prepareApiKeyForLogs(this.options.apiKey)
+      "Using LLM API key: " + prepareApiKeyForLogs(this.options.apiKey),
     );
 
     options.service = this.options.service;
@@ -48,12 +59,15 @@ export class LLMProcessor {
 
     if (!options.service) {
       logger.debug(
-        "Service not specified, trying to determine from model name."
+        "Service not specified, trying to determine from model name.",
       );
 
-      const service = await LLMServiceByModel.getServiceForModel(
-        this.options.modelName
+      const service = await LLMProcessor.getServiceForModel(
+        this.options.modelName,
       );
+      //const service = await LLMServiceByModel.getServiceForModel(
+      //  this.options.modelName,
+      //);
 
       logger.debug("Determined service: " + service);
 
@@ -62,11 +76,11 @@ export class LLMProcessor {
       }
 
       if (!this.options.service) {
-        logger.warn(
-          `Could not determine service for model ${this.options.modelName}.`
+        logger.error(
+          `Could not determine service for model ${this.options.modelName}.`,
         );
         throw new Error(
-          `Service provider is required for model ${this.options.modelName}. Please specify it explicitly or check model name.`
+          `Service provider is required for model ${this.options.modelName}. Please specify it explicitly or check model name.`,
         );
       }
     }
@@ -115,7 +129,7 @@ export class LLMProcessor {
     // If it's a Response-like object
     if ("text" in response && typeof response.text === "function") {
       logger.debug(
-        "LLM returned a Response-like object (we can use it as response.text())."
+        "LLM returned a Response-like object (we can use it as response.text()).",
       );
       return this.traceResultIfNeeded(await response.text());
     }
@@ -131,8 +145,14 @@ export class LLMProcessor {
 
   public traceResultIfNeeded(result: string): string {
     logger.trace(
-      `LLM response, length ${result.length}: ${preparePromptForLogs(result)}`
+      `LLM response, length ${result.length}: ${preparePromptForLogs(result)}`,
     );
     return result;
+  }
+
+  public static async getServiceForModel(
+    modelName: string,
+  ): Promise<string | null> {
+    return await LLMServiceByModel.getServiceForModel(modelName);
   }
 }

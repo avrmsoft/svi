@@ -1,0 +1,21 @@
+# Destination File
+sviFileClass.ts
+# Input parameters
+import { SVIFile } from "./types";
+# Output
+export default class SviFileClass
+# Options
+Active=True
+# Import prompts
+../projectDescription.svi
+sviFileFormatDescr.svi
+types.ts
+# Prompt
+Please create an implementation of the SVIFile interface.
+When creating constructor, don't make its 'data' parameter mandatory.
+If not set, let attributes be undefined. In this case, they will be filled
+in later.
+Please use the 'path' library, don't try to write the algorithm from scratch:
+getting absolute path, resolving paths, etc
+This ensures working of production code and tests in various environments 
+(windows, linux, mac)

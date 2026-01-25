@@ -8,4 +8,9 @@ export interface SVIFile {
   options?: Record<string, SVIOptionValue>;
   importPrompts?: string[];
   prompt?: string;
+
+  getSviFileName(): string;
+  getSviFileDirectory(): string;
+  getDestinationFileFullPath(): string | undefined;
+  getImportPromptsFullPaths(): string[];
 }

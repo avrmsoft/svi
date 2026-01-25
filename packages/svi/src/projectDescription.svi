@@ -1,0 +1,12 @@
+# Destination File
+# Input parameters
+# Output
+# Options
+Active=True
+# Import prompts
+# Prompt
+The project allows the generation of source codes on a programming language based on textual description.
+The approach is writing a prompt for one single file on programming language.
+The prompt and other parameters are described in *.svi files, which generate the corresponding
+files with source code. Some files don't generate any file and are reused in another files
+as a part of a prompt (like 'require' in programming languages).

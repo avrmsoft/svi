@@ -1,21 +1,25 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { runCli } from "../../../../src/commands/entryPoint";
 import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
 } from "../templates/simpleTest";
+import FakeLogger from "../../../testUtils/fakeLogger";
 
 describe("Two files Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
+  let fakeLogger: FakeLogger;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
-    beforeEachSimpleTest(fakeFs);
+    fakeLogger = new FakeLogger();
+    fakeLogger.setSuppressOutputDuringTest(false);
+    beforeEachSimpleTest(fakeFs, fakeLogger);
   });
 
   afterEach(() => {
-    afterEachSimpleTest(fakeFs);
+    afterEachSimpleTest(fakeFs, fakeLogger);
   });
 
   it("Generate two files", async () => {
@@ -76,25 +80,14 @@ Test prompt 2
     ]);
 
     expect(fakeFs.fileExists("test.js")).toBe(true);
-
-    const content = fakeFs.fileContent("test.js");
-
-    expect(content).toContain("Test prompt");
-    expect(content).toContain("Please return only the code");
-    expect(content).toContain("without any explanations");
-    expect(content).toContain("installation manual");
-    expect(content).toContain(
-      "The code should fulfill the following requirements",
+    expect(fakeFs.fileExists("test2.js")).toBe(true);
+    expect(fakeLogger.containsLog("Number of found .svi files: 2")).toBe(true);
+    expect(fakeLogger.containsLog("Number of processed .svi files: 2")).toBe(
+      true,
     );
 
-    const content2 = fakeFs.fileContent("test2.js");
+    expect(fakeLogger.containsLog("- Created: C:\\temp\\test.js")).toBe(true);
 
-    expect(content2).toContain("Test prompt 2");
-    expect(content2).toContain("Please return only the code");
-    expect(content2).toContain("without any explanations");
-    expect(content2).toContain("installation manual");
-    expect(content2).toContain(
-      "The code should fulfill the following requirements",
-    );
+    expect(fakeLogger.containsLog("- Created: C:\\temp\\test2.js")).toBe(true);
   });
 });
