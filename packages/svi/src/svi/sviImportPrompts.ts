@@ -1,8 +1,10 @@
 import { SVIFile } from "./types";
 import Logger from "../utils/logger";
 import path from "path";
+import fs from "fs";
 import { SVIParser } from "./sviParser";
 import { computeHashFromString } from "../utils/utils";
+import { fileHasExtension } from "../utils/file";
 
 interface ImportedPrompt {
   prompt: string;
@@ -12,6 +14,7 @@ interface ImportedPrompt {
 export class SVIImportPrompts {
   private sviFile: SVIFile;
   private importedPrompts: ImportedPrompt[] = [];
+  private sviParser: SVIParser = new SVIParser();
 
   constructor(sviFile: SVIFile) {
     this.sviFile = sviFile;
@@ -36,14 +39,17 @@ export class SVIImportPrompts {
 
     let success: boolean = true;
 
-    for (const promptPath of sviFile.importPrompts) {
-      const resolvedPath = this.resolvePromptPath(promptPath, sviFile);
-      if (this.loadPromptForPath(resolvedPath)) {
+    const promptPaths: string[] = sviFile.getImportPromptsFullPaths();
+
+    for (const promptPath of promptPaths) {
+      // sviFile.importPrompts) {
+      //const resolvedPath = this.resolvePromptPath(promptPath, sviFile);
+      if (this.loadPromptForPath(promptPath)) {
         continue;
       }
 
-      if (!resolvedPath.endsWith(".svi")) {
-        const resolvedPathWithExtension = resolvedPath + ".svi";
+      if (!promptPath.endsWith(".svi")) {
+        const resolvedPathWithExtension = promptPath + ".svi";
         if (this.loadPromptForPath(resolvedPathWithExtension)) {
           continue;
         }
@@ -55,22 +61,22 @@ export class SVIImportPrompts {
     return success;
   }
 
-  private resolvePromptPath(
+  /*private resolvePromptPath(
     promptPath: string,
     relativeToSvi?: SVIFile,
   ): string {
     const relativeToSviFile = relativeToSvi || this.sviFile;
     if (relativeToSviFile.filePath) {
-      const sviDir = path.dirname(relativeToSviFile.filePath);
+      const sviDir = relativeToSviFile.getSviFileDirectory(); // path.dirname(relativeToSviFile.filePath);
       return path.resolve(sviDir, promptPath);
     }
     return promptPath;
-  }
+  }*/
 
   private loadSVIFile(filePath: string): SVIFile | null {
     try {
-      const parser = new SVIParser();
-      return parser.parseFile(filePath);
+      //const parser = new SVIParser();
+      return this.sviParser.parseFile(filePath);
     } catch (error) {
       Logger.error(`Error loading SVI file ${filePath}: ${error}`);
       return null;
@@ -82,11 +88,42 @@ export class SVIImportPrompts {
   }
 
   private loadPromptForPath(path: string): boolean {
-    const dependencySVI = this.loadSVIFile(path);
+    let dependencySVI: SVIFile | null = null;
+
+    if (this.fileHasSviExtension(path)) {
+      dependencySVI = this.loadSVIFile(path);
+    }
+
+    let promptContent = "";
+    let promptHash = "";
+    let result = false;
+
+    Logger.trace(`Loading imported prompt from path: ${path}`);
+
     if (dependencySVI && dependencySVI.prompt) {
-      const promptContent = dependencySVI.prompt;
-      const promptHash = this.computeHash(promptContent);
+      Logger.trace(`Imported prompt is SVI file with prompt section: ${path}`);
+      promptContent = dependencySVI.prompt;
+    } else {
+      Logger.trace(
+        `Failed to parse this path as *.svi format: ${path}; will try other options`,
+      );
+    }
+
+    if (
+      !promptContent &&
+      !fileHasExtension(path, ".svi") &&
+      fs.existsSync(path)
+    ) {
+      promptContent = fs.readFileSync(path, "utf-8");
+      Logger.trace(`Imported prompt loaded as raw file content: ${path}`);
+    }
+
+    if (promptContent.length > 0) {
+      promptHash = this.computeHash(promptContent);
       if (this.hashExists(promptHash)) {
+        Logger.trace(
+          `Imported prompt has already been added: ${path}; skipping to avoid a dependency loop`,
+        );
         return true;
       }
 
@@ -95,15 +132,29 @@ export class SVIImportPrompts {
         hash: promptHash,
       });
 
-      return this.loadImportedPromptsFromSvi(dependencySVI);
-    } else {
-      Logger.error(`Failed to load imported prompt from dependency ${path}`);
-
-      return false;
+      if (dependencySVI?.prompt) {
+        Logger.trace(
+          "Loading nested imported prompts from SVI dependency for path: " +
+            path,
+        );
+        result = this.loadImportedPromptsFromSvi(dependencySVI);
+      } else {
+        result = true;
+      }
     }
+
+    if (!result) {
+      Logger.error(`Failed to load imported prompt from dependency ${path}`);
+      this.sviParser.logParseMessages();
+    }
+    return result;
   }
 
   private hashExists(hash: string): boolean {
     return this.importedPrompts.some((imp) => imp.hash === hash);
+  }
+
+  private fileHasSviExtension(filePath: string): boolean {
+    return fileHasExtension(filePath, ".svi");
   }
 }

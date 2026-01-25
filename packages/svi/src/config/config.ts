@@ -24,14 +24,14 @@ export class Config {
 
   constructor(fileName: string = "svi.json") {
     logger.trace(
-      `Searching configuration file (svi.json) with name: ${fileName}`
+      `Searching configuration file (svi.json) with name: ${fileName}`,
     );
 
     let resolvedPath: string;
 
     if (path.isAbsolute(fileName)) {
       logger.debug(
-        `Absolute path provided for configuration file: ${fileName}`
+        `Absolute path provided for configuration file: ${fileName}`,
       );
 
       if (fileUtils.isFile(fileName)) {
@@ -39,18 +39,23 @@ export class Config {
         resolvedPath = fileName;
       } else {
         logger.debug(
-          `Given absolute path is not a file. Looking for svi.json inside the directory: ${fileName}`
+          `Given absolute path is not a file. Looking for svi.json inside the directory: ${fileName}`,
         );
         resolvedPath = path.join(fileName, "svi.json");
       }
     } else {
       logger.debug(
-        `Relative path provided for configuration file: ${fileName}. Resolving relative to current working directory.`
+        `The following path is not an absolute one: ${fileName}. Resolving relative to current working directory.`,
       );
       resolvedPath = path.resolve(process.cwd(), fileName);
     }
 
     if (!fs.existsSync(resolvedPath)) {
+      logger.error(
+        `Configuration file not found at path: ${resolvedPath}.
+Please run the command in a directory containing svi.json file; usually it should be your project root.
+If you haven't created svi.json yet, you can run 'svi init' command.`,
+      );
       throw new Error(`Configuration file not found: ${resolvedPath}`);
     }
 
@@ -64,7 +69,7 @@ export class Config {
       this.configData = JSON.parse(raw) as SviConfig;
     } catch (e) {
       throw new Error(
-        `Invalid JSON in file ${this.configPath}: ${(e as Error).message}`
+        `Invalid JSON in file ${this.configPath}: ${(e as Error).message}`,
       );
     }
 
@@ -74,8 +79,8 @@ export class Config {
       `Configuration loaded. Programming Language: ${
         this.configData.programmingLanguage
       }, Search Paths: ${this.configData.searchPaths.join(
-        ", "
-      )}, Ignore Paths: ${this.configData.ignorePaths.join(", ")}`
+        ", ",
+      )}, Ignore Paths: ${this.configData.ignorePaths.join(", ")}`,
     );
   }
 

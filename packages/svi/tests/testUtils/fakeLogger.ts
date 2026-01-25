@@ -73,6 +73,10 @@ export default class FakeLogger {
     }
   }
 
+  public hasErrors(): boolean {
+    return this.errorLines.length > 0;
+  }
+
   public getLogLines(): string[] {
     return this.logLines;
   }

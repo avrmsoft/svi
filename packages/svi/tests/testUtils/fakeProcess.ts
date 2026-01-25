@@ -12,6 +12,10 @@ export function checkProcessExitCalledWith(code: number) {
   expect(exitSpy).toHaveBeenCalledWith(code);
 }
 
+export function checkProcessExitNotCalled() {
+  expect(exitSpy).not.toHaveBeenCalled();
+}
+
 export function restoreProcessExit() {
   exitSpy.mockRestore();
 }

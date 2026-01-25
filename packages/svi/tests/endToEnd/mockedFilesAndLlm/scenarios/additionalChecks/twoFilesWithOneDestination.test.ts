@@ -1,18 +1,18 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { runCli } from "../../../../../src/commands/entryPoint";
 import { fakeFileSystem } from "../../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
 } from "../../templates/simpleTest";
-import FakeLogger from "../../../../testUtils/fakeLogger";
 import {
   mockProcessExit,
   checkProcessExitCalledWith,
   restoreProcessExit,
 } from "../../../../testUtils/fakeProcess";
+import FakeLogger from "../../../../testUtils/fakeLogger";
 
-describe("Dependency File is Incorrect (E2E)", () => {
+describe("Two files Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
   let fakeLogger: FakeLogger;
 
@@ -25,11 +25,11 @@ describe("Dependency File is Incorrect (E2E)", () => {
   });
 
   afterEach(() => {
-    restoreProcessExit();
     afterEachSimpleTest(fakeFs, fakeLogger);
+    restoreProcessExit();
   });
 
-  it("Check that the target file is not generated when dependency file is incorrect, and that error message is raised", async () => {
+  it("Check if svi noticed that the result of one *.svi can be lost and raised error", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -43,7 +43,7 @@ describe("Dependency File is Incorrect (E2E)", () => {
     );
 
     fakeFs.addFile(
-      "folder\\test.svi",
+      "test.svi",
       `
 # Destination File
 test.js
@@ -53,15 +53,25 @@ test.js
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
-../projectDescription.svi
 # Prompt
 Test prompt
 `,
     );
 
     fakeFs.addFile(
-      "projectDescription.svi",
-      "Incorrect file content that does not conform to .svi format",
+      "test2.svi",
+      `
+# Destination File
+test.js
+# Input parameters
+# Output
+# Options
+Active=True
+ProgrammingLanguage=node.js
+# Import prompts
+# Prompt
+Test prompt 2
+`,
     );
 
     fakeFs.applyMocks();
@@ -78,25 +88,12 @@ Test prompt
 
     checkProcessExitCalledWith(1);
 
-    expect(fakeFs.fileExists("folder\\test.js")).toBe(false);
+    expect(fakeFs.fileExists("test.js")).toBe(false);
 
-    expect(
-      fakeLogger.containsErrorLogRegex(
-        /.*Failed to parse SVI file: .*projectDescription.svi/,
-      ),
-    ).toBe(true);
-
-    /*expect(
-      fakeLogger.containsErrorLogRegex(
-        /.*SVI file .*projectDescription\.svi could not be parsed successfully/,
-      ),
-    ).toBe(true);*/
-
-    expect(fakeLogger.containsErrorLog("projectDescription.svi")).toBe(true);
     expect(
       fakeLogger.containsErrorLog(
-        "Error(s) occured during processing, not all operations were successful",
+        "Multiple SVI files are configured to generate the same destination file",
       ),
-    ).toBe(true);
+    );
   });
 });

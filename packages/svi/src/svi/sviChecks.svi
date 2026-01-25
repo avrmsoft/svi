@@ -1,0 +1,33 @@
+# Destination File
+sviChecks.ts
+# Input parameters
+import { SVIParser } from "./sviParser";
+import { SVIFile } from "./types";
+# Output
+export default class SviChecker
+main methods:
+constructor(sviParser: SVIParser)
+public check(sviFilePaths: string[]): boolean
+public logErrors
+the main method is check
+# Options
+Active=True
+# Import prompts
+../projectDescription.svi
+sviFileFormatDescr.svi
+types.ts
+sviParser.ts
+# Prompt
+Please create a class performing checks on correctness of all the *.svi files in the project.
+Input - a list of full paths to SVI files.
+For now, let it be one check:
+- If several *.svi files have the same destination file (target path after resolution)
+Then output error about it. 
+Output format example:
+-------
+Error: Multiple SVI files are configured to generate the same destination file: 'C:\temp\test.js':
+- C:\temp\test.svi
+- C:\temp\test2.svi
+----
+The error is critical because a file can be overwritten. With a big probability,
+it can happen due to a human error

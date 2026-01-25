@@ -6,7 +6,7 @@ import {
   afterEachSimpleTest,
 } from "../templates/simpleTest";
 
-describe("Two files Test (E2E)", () => {
+describe("A case with the 'Import prompts' parameter, two files (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe("Two files Test (E2E)", () => {
     afterEachSimpleTest(fakeFs);
   });
 
-  it("Generate two files", async () => {
+  it("Generate one file considering additional context from the 'Import prompts' parameter", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -32,34 +32,33 @@ describe("Two files Test (E2E)", () => {
     );
 
     fakeFs.addFile(
-      "test.svi",
+      "test1.svi",
       `
 # Destination File
-test.js
+test1.js
 # Input parameters
 # Output
 # Options
 Active=True
-ProgrammingLanguage=node.js
 # Import prompts
+test2.svi
 # Prompt
-Test prompt
+A prompt from test1.
 `,
     );
 
     fakeFs.addFile(
       "test2.svi",
-      `
-# Destination File
+      `# Destination File
 test2.js
 # Input parameters
 # Output
 # Options
 Active=True
-ProgrammingLanguage=node.js
 # Import prompts
+test1.svi
 # Prompt
-Test prompt 2
+A prompt from test2.
 `,
     );
 
@@ -75,26 +74,16 @@ Test prompt 2
       "testKey",
     ]);
 
-    expect(fakeFs.fileExists("test.js")).toBe(true);
+    expect(fakeFs.fileExists("test1.js")).toBe(true);
 
-    const content = fakeFs.fileContent("test.js");
+    const content = fakeFs.fileContent("test1.js");
 
-    expect(content).toContain("Test prompt");
-    expect(content).toContain("Please return only the code");
-    expect(content).toContain("without any explanations");
-    expect(content).toContain("installation manual");
-    expect(content).toContain(
-      "The code should fulfill the following requirements",
-    );
+    expect(content).toContain("A prompt from test1");
+    expect(content).toContain("A prompt from test2");
 
+    expect(fakeFs.fileExists("test2.js")).toBe(true);
     const content2 = fakeFs.fileContent("test2.js");
-
-    expect(content2).toContain("Test prompt 2");
-    expect(content2).toContain("Please return only the code");
-    expect(content2).toContain("without any explanations");
-    expect(content2).toContain("installation manual");
-    expect(content2).toContain(
-      "The code should fulfill the following requirements",
-    );
+    expect(content2).toContain("A prompt from test2");
+    expect(content2).toContain("A prompt from test1");
   });
 });

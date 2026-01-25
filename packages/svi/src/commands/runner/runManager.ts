@@ -1,9 +1,13 @@
 // src/commands/runner/runManager.ts
 import { SviConfig } from "../../config/config";
 import { SviLoader } from "../../svi/sviLoader";
+import { SVIParser } from "../../svi/sviParser";
 import { processSVIFile } from "../../svi/sviProcessor";
 import { LLMProcessor } from "../../llm/llm";
 import logger from "../../utils/logger";
+import CheckerForRunManager from "./checkerForRunManager";
+import RunStatistics from "./runStatistics";
+import SviChecks from "../../svi/sviChecks";
 
 /**
  * RunManager
@@ -54,6 +58,12 @@ export class RunManager {
 
       logger.info(`Number of found .svi files: ${sviFiles.length}`);
 
+      logger.trace("RunManager: Additional checks before run...");
+      if (!this.additionalChecksBeforeRun(sviFiles)) {
+        logger.error("Finishing due to pre-run check errors.");
+        return false;
+      }
+
       // Init LLM
       const llm = new LLMProcessor({
         modelName: this.model || "",
@@ -62,6 +72,19 @@ export class RunManager {
       });
 
       let result = true;
+
+      if (sviFiles.length > 0) {
+        if (
+          !(await CheckerForRunManager.checkOptions({
+            modelName: this.model || "",
+            service: this.service,
+            apiKey: this.apiKey,
+          }))
+        ) {
+          logger.error("Finishing due to LLM parameter errors.");
+          return false;
+        }
+      }
 
       for (const sviPath of sviFiles) {
         try {
@@ -84,11 +107,28 @@ export class RunManager {
         logger.error("RunManager: Some files failed to process.");
       }
 
+      logger.info("Number of found .svi files: " + sviFiles.length);
+      logger.info(
+        "Number of processed .svi files: " +
+          RunStatistics.getInstance().getTotalFilesProcessed(),
+      );
+      RunStatistics.getInstance().logWrittenFiles();
+
       return result;
     } catch (err) {
       logger.error("RunManager: Severe error: " + (err as Error).message);
       throw err;
     }
+  }
+
+  public additionalChecksBeforeRun(sviFiles: string[]): boolean {
+    const sviParser = new SVIParser();
+    const sviChecks = new SviChecks(sviParser);
+    const result = sviChecks.check(sviFiles);
+    if (!result) {
+      sviChecks.logErrors();
+    }
+    return result;
   }
 }
 

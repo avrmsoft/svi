@@ -56,7 +56,7 @@ export function writeJSON(filePath: string, data: any): void {
  */
 export function createFileIfNotExists(
   filePath: string,
-  content: string = ""
+  content: string = "",
 ): void {
   if (!exists(filePath)) {
     const dir = path.dirname(filePath);
@@ -71,7 +71,7 @@ export function createFileIfNotExists(
  * Holt den aktuellen Projekt-Stammordner (wo `svi.json` liegt)
  */
 export function getProjectRoot(
-  startDir: string = process.cwd()
+  startDir: string = process.cwd(),
 ): string | null {
   let current = startDir;
 
@@ -105,7 +105,7 @@ export function getPathFromFile(fullPath: string): string {
 
 export function constructFullPath(
   folderPathOrAnotherFileFullPath: string,
-  filename: string
+  filename: string,
 ): string {
   let filePath: string = folderPathOrAnotherFileFullPath;
   if (isFile(filePath)) {
@@ -117,4 +117,16 @@ export function constructFullPath(
   } else {
     return path.join(filePath, filename);
   }
+}
+
+export function fileNameContainsExtension(fileName: string): boolean {
+  return path.extname(fileName) !== "";
+}
+
+export function getFileExtension(fileName: string): string {
+  return path.extname(fileName);
+}
+
+export function fileHasExtension(fileName: string, extension: string): boolean {
+  return path.extname(fileName).toLowerCase() === extension.toLowerCase();
 }

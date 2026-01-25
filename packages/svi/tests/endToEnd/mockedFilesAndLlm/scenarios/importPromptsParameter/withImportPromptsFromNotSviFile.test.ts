@@ -6,13 +6,8 @@ import {
   afterEachSimpleTest,
 } from "../../templates/simpleTest";
 import FakeLogger from "../../../../testUtils/fakeLogger";
-import {
-  mockProcessExit,
-  checkProcessExitCalledWith,
-  restoreProcessExit,
-} from "../../../../testUtils/fakeProcess";
 
-describe("Dependency File is Incorrect (E2E)", () => {
+describe("A case with the 'Import prompts' parameter from not *.svi file (E2E)", () => {
   let fakeFs: fakeFileSystem;
   let fakeLogger: FakeLogger;
 
@@ -21,15 +16,13 @@ describe("Dependency File is Incorrect (E2E)", () => {
     fakeLogger = new FakeLogger();
     fakeLogger.setSuppressOutputDuringTest(false);
     beforeEachSimpleTest(fakeFs, fakeLogger);
-    mockProcessExit();
   });
 
   afterEach(() => {
-    restoreProcessExit();
     afterEachSimpleTest(fakeFs, fakeLogger);
   });
 
-  it("Check that the target file is not generated when dependency file is incorrect, and that error message is raised", async () => {
+  it("Generate one file considering additional context from imported prompts from not *.svi file", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -43,7 +36,19 @@ describe("Dependency File is Incorrect (E2E)", () => {
     );
 
     fakeFs.addFile(
-      "folder\\test.svi",
+      "someCode.js",
+      `
+export interface TestInterface {
+  field1: string;
+  field2: number;
+
+  someMethod(): string;
+}
+`,
+    );
+
+    fakeFs.addFile(
+      "test.svi",
       `
 # Destination File
 test.js
@@ -53,15 +58,10 @@ test.js
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
-../projectDescription.svi
+someCode.js
 # Prompt
-Test prompt
+Please write an implementation class for the given interface.
 `,
-    );
-
-    fakeFs.addFile(
-      "projectDescription.svi",
-      "Incorrect file content that does not conform to .svi format",
     );
 
     fakeFs.applyMocks();
@@ -76,27 +76,15 @@ Test prompt
       "testKey",
     ]);
 
-    checkProcessExitCalledWith(1);
+    expect(fakeFs.fileExists("test.js")).toBe(true);
 
-    expect(fakeFs.fileExists("folder\\test.js")).toBe(false);
+    const content = fakeFs.fileContent("test.js");
 
-    expect(
-      fakeLogger.containsErrorLogRegex(
-        /.*Failed to parse SVI file: .*projectDescription.svi/,
-      ),
-    ).toBe(true);
+    expect(content).toContain(
+      "Please write an implementation class for the given interface",
+    );
+    expect(content).toContain("export interface TestInterface");
 
-    /*expect(
-      fakeLogger.containsErrorLogRegex(
-        /.*SVI file .*projectDescription\.svi could not be parsed successfully/,
-      ),
-    ).toBe(true);*/
-
-    expect(fakeLogger.containsErrorLog("projectDescription.svi")).toBe(true);
-    expect(
-      fakeLogger.containsErrorLog(
-        "Error(s) occured during processing, not all operations were successful",
-      ),
-    ).toBe(true);
+    expect(fakeLogger.hasErrors()).toBe(false);
   });
 });

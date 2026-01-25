@@ -1,5 +1,6 @@
 import fs from "fs";
 import { SVIFile, SVIOptionValue } from "./types";
+import SviFileClass from "./sviFileClass";
 import logger from "../utils/logger";
 
 /**
@@ -11,7 +12,13 @@ export class SVIParser {
    * Reads and parses a .svi file.
    * @param filePath Full path to the .svi file.
    */
+  private parseErrors: string[] = [];
+  private parseWarnings: string[] = [];
+
   public parseFile(filePath: string): SVIFile | null {
+    this.parseErrors = [];
+    this.parseWarnings = [];
+
     if (!fs.existsSync(filePath)) {
       throw new Error(`File not found: ${filePath}`);
     }
@@ -20,8 +27,8 @@ export class SVIParser {
     const parsedSvi = this.parseContent(raw, filePath);
 
     if (!parsedSvi.prompt && !parsedSvi.importPrompts) {
-      logger.error(
-        `[SVIParser] No 'Prompt' or 'Import Prompts' section found in file ${filePath}, looks like file has incorrect format.
+      this.parseErrors.push(
+        `[SVIParser] No 'Prompt' or 'Import Prompts' section found in file ${filePath}, looks like the file has incorrect format.
 An example of the correct format:
 =====================================
 # Destination File
@@ -65,9 +72,7 @@ Test prompt
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const svi: SVIFile = {};
-    //let currentHeader: string | null = null;
-    //let currentContent: string[] = [];
+    const svi: SVIFile = new SviFileClass();
 
     for (const rawSection of sections) {
       const [headerLine, ...bodyLines] = rawSection.split("\n");
@@ -101,7 +106,7 @@ Test prompt
 
         default:
           if (header.length > 0) {
-            logger.warn(
+            this.parseWarnings.push(
               `[SVIParser] Unknown section '${header}' in file ${
                 filePath ?? "<string>"
               }`,
@@ -114,6 +119,16 @@ Test prompt
     svi.filePath = filePath;
 
     return svi;
+  }
+
+  public logParseMessages() {
+    for (const msg of this.parseWarnings) {
+      logger.warn(msg);
+    }
+
+    for (const msg of this.parseErrors) {
+      logger.error(msg);
+    }
   }
 
   /**
