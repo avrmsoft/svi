@@ -1,5 +1,10 @@
 export type SVIOptionValue = string | boolean;
 
+export interface ImportPromptPath {
+  relativePath: string;
+  fullPath: string;
+}
+
 export interface SVIFile {
   filePath?: string;
   destinationFile?: string;
@@ -12,5 +17,5 @@ export interface SVIFile {
   getSviFileName(): string;
   getSviFileDirectory(): string;
   getDestinationFileFullPath(): string | undefined;
-  getImportPromptsFullPaths(): string[];
+  getImportPromptsFullPaths(): ImportPromptPath[];
 }
