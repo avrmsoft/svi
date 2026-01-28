@@ -1,5 +1,5 @@
-import * as path from 'path';
-import { SVIFile, SVIOptionValue } from "./types";
+import * as path from "node:path";
+import { SVIFile, ImportPromptPath, SVIOptionValue } from "./types";
 
 export default class SviFileClass implements SVIFile {
   filePath?: string;
@@ -23,28 +23,36 @@ export default class SviFileClass implements SVIFile {
   }
 
   getSviFileName(): string {
-    return this.filePath ? path.basename(this.filePath) : '';
+    if (!this.filePath) {
+      return "";
+    }
+    return path.basename(this.filePath);
   }
 
   getSviFileDirectory(): string {
-    return this.filePath ? path.dirname(this.filePath) : '';
+    if (!this.filePath) {
+      return "";
+    }
+    return path.dirname(this.filePath);
   }
 
   getDestinationFileFullPath(): string | undefined {
     if (!this.filePath || !this.destinationFile) {
       return undefined;
     }
-    const sviFileDir = this.getSviFileDirectory();
-    return path.resolve(sviFileDir, this.destinationFile);
+    const sviDirectory = this.getSviFileDirectory();
+    return path.resolve(sviDirectory, this.destinationFile);
   }
 
-  getImportPromptsFullPaths(): string[] {
+  getImportPromptsFullPaths(): ImportPromptPath[] {
     if (!this.filePath || !this.importPrompts || this.importPrompts.length === 0) {
       return [];
     }
-    const sviFileDir = this.getSviFileDirectory();
-    return this.importPrompts.map(importPath =>
-      path.resolve(sviFileDir, importPath)
-    );
+
+    const sviDirectory = this.getSviFileDirectory();
+    return this.importPrompts.map((relativePath) => ({
+      relativePath: relativePath,
+      fullPath: path.resolve(sviDirectory, relativePath),
+    }));
   }
 }
