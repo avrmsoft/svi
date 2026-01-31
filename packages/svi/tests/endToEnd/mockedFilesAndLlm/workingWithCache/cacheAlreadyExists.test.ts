@@ -29,7 +29,7 @@ describe("A test when cache already exists (E2E)", () => {
           "*"
         ],
         "ignorePaths": []
-      }`
+      }`,
     );
 
     fakeFs.addFile(
@@ -45,14 +45,15 @@ ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
 Test prompt not cached
-`
+`,
     );
 
     fakeFs.addFile("test.js", "Old content that shouldn't be replaced");
     fakeFs.addFile(
       ".svicache",
-      `test.svi:
-  hash: 929d49c0a006da8dfa4397b2d67caec6c1be76259b98dd349abf1b27bc9bc470`
+      `ProcessedSviFilesHash:
+  test.svi:
+    hash: 929d49c0a006da8dfa4397b2d67caec6c1be76259b98dd349abf1b27bc9bc470`,
     );
 
     fakeFs.applyMocks();

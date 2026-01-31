@@ -38,7 +38,7 @@ export default class Logger {
       return;
     }
     console.log(
-      `${colors.fgGreen}[${LogLevel.SUCCESS}]${colors.reset} ${message}`
+      `${colors.fgGreen}[${LogLevel.SUCCESS}]${colors.reset} ${message}`,
     );
   }
 
@@ -47,13 +47,17 @@ export default class Logger {
       return;
     }
     console.warn(
-      `${colors.fgYellow}[${LogLevel.WARN}]${colors.reset} ${message}`
+      `${colors.fgYellow}[${LogLevel.WARN}]${colors.reset} ${message}`,
     );
+  }
+
+  static warning(message: string) {
+    this.warn(message);
   }
 
   static error(message: string, err?: any) {
     console.error(
-      `${colors.fgRed}[${LogLevel.ERROR}]${colors.reset} ${message}`
+      `${colors.fgRed}[${LogLevel.ERROR}]${colors.reset} ${message}`,
     );
     if (err) {
       console.error(err);
@@ -71,7 +75,7 @@ export default class Logger {
     }
     //if (process.env.DEBUG === "true") {
     console.debug(
-      `${colors.fgCyan}[${LogLevel.DEBUG}]${colors.reset} ${message}`
+      `${colors.fgCyan}[${LogLevel.DEBUG}]${colors.reset} ${message}`,
     );
     //}
   }
@@ -82,7 +86,7 @@ export default class Logger {
     }
     //if (process.env.DEBUG === "true") {
     console.log(
-      `${colors.fgCyan}[${LogLevel.TRACE}]${colors.reset} ${message}`
+      `${colors.fgCyan}[${LogLevel.TRACE}]${colors.reset} ${message}`,
     );
     //}
   }

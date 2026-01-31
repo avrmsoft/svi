@@ -84,8 +84,8 @@ Test prompt
           svi.destinationFile = body || undefined;
           break;
 
-        case "input parameters":
-          svi.inputParameters = this.splitList(body);
+        case "dependencies":
+          svi.dependencies = this.splitList(body);
           break;
 
         case "output":

@@ -18,4 +18,5 @@ in later.
 Please use the 'path' library, don't try to write the algorithm from scratch:
 getting absolute path, resolving paths, etc
 This ensures working of production code and tests in various environments 
-(windows, linux, mac)
+(windows, linux, mac).
+constructor of SviFileClass should have no mandatory parameters

@@ -1,0 +1,118 @@
+# Destination File
+sviDependencies.ts
+
+# Dependencies
+
+# Output
+export default class SviDependencies
+
+# Options
+Active=True
+
+# Import prompts
+../projectDescription.svi
+
+# Prompt
+
+Declarations from external files for reference, don't add them in the generated code
+They are provided for reference, please don't redefine them. You are 
+generating a production ready code!!!
+--- Dependencies declarations start
+
+Uses interface from types.ts (in the same folder)
+export interface SVIFile {
+  ...
+  dependencies?: string[];
+  ...
+
+  getSviFileName(): string;
+  getSviFileDirectory(): string;
+  getDestinationFileFullPath(): string | undefined;
+  getImportPromptsFullPaths(): ImportPromptPath[];
+}
+
+class LLMProcessor in file ../llm/llm.ts
+class LLMProcessor {
+  ...
+  public async ask(prompt: string, systemPrompt?: string): Promise<string>
+}
+
+in file ../config/config.ts
+export interface SviConfig {
+  programmingLanguage: string;
+  searchPaths: string[];
+  ignorePaths: string[];
+  configDir: string;
+}
+
+export const extractDeclarationsPromptTemplate 
+from file ./prompts/extractDeclarations.ts
+
+class CacheManager form file cacheManager.ts
+export default class CacheManager {
+  constructor(directory: string);
+  ...
+  public isFileExportsCacheValid(dependencyFilename: string): boolean;
+  public getFileExportsFromCache(dependencyFilename: string): string | null;
+  public updateFileExportsInCache(dependencyFilename: string, exports: string): void;
+}
+
+import logger from "../utils/logger";
+logger.trace, logger.debug, logger.info, logger.warning, logger.error
+
+--- Dependencies declarations end
+
+The SviDependencies.constructor takes a variable of type LLMProcessor and a
+variable of type Config.
+It's main method is:
+async loadDependenciesDeclarations
+
+Algorithm:
+1. Loop through dependencies
+2. One dependency is a filename. It can be eigher a full path or relative path.
+If file is not found in that location, output error via logger and return false
+in the end.
+Message: 
+"File <filepath as in sviFile> from 'Dependencies' section not found in the path <resolved path>".
+(fix english language errors in message if any)
+3. Check cache. Create instance of CacheManager with directory = directory where
+the dependency file is located.
+Run method isFileExportsCacheValid. If true then get the cached declarations by
+method getFileExportsFromCache, and go to the next dependency in cycle.
+Otherwise go to the next step and generate declarations by LLM.
+4. Ask LLM with prompt extractDeclarationsPromptTemplate, replacing substring
+{{programmingLanguage}} with the phrase 
+'programming language <config.programmingLanguage>' or empty if
+config.programmingLanguage is empty.
+Substring {{sourceCode}} replace with dependency file content.
+If LLM returned no result, it is error, log it and return false in the end.
+5. Update cache by calling method CacheManager.updateFileExportsInCache
+6. Continue for the next dependency file
+7. Save all the dependencies declarations in attributes of a class
+8. Return true in case of success and false in case of error
+
+method getDependenciesDeclarationsAsString
+returns dependencies declaration loaded by loadDependenciesDeclarations
+
+The string contains information about declaration of all the dependencies in the
+following format:
+<dependency file name> (as written in sviFile.dependencies) declarations
+empty line
+The declarations
+empty line 
+Next declaration (if any)
+
+Add trace records by logger to show a chain of algorithm going for declarations
+generation.
+Use logger.info for the following places:
+- If LLM will be called, inform that LLM will be called to generate declaration
+for the following file (output file name)
+- In the end, show a brief information, that dependencies declaraions were retrieved and 
+added to them main prompt, and provide a list of files that were generated 
+by llm and a list of those that were taken from cache
+- In case of any errors, output them as described above; in case of any errors
+return false
+
+When importing fs and path, please do it in the following way (or my tests don't mock):
+import fs from "fs";
+import path from "path";
