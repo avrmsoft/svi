@@ -42,9 +42,9 @@ output.txt
 
 /* Multi-line
 comment */
-# Input Parameters
-param1
-param2
+# Dependencies
+dep1
+dep2
 
 # Output
 result.txt
@@ -63,7 +63,7 @@ Generate something cool
     const result = parser.parseContent(content);
 
     expect(result.destinationFile).toBe("output.txt");
-    expect(result.inputParameters).toEqual(["param1", "param2"]);
+    expect(result.dependencies).toEqual(["dep1", "dep2"]);
     expect(result.output).toEqual(["result.txt"]);
     expect(result.importPrompts).toEqual(["file1.svi", "file2.svi"]);
     expect(result.prompt).toBe("Generate something cool");
@@ -86,10 +86,10 @@ Generate something cool
   });
 
   it("should return empty arrays for empty list sections", () => {
-    const content = `# Input Parameters\n\n# Output\n\n# Import Prompts\n`;
+    const content = `# Dependencies\n\n# Output\n\n# Import Prompts\n`;
     const result = parser.parseContent(content);
 
-    expect(result.inputParameters).toEqual([]);
+    expect(result.dependencies).toEqual([]);
     expect(result.output).toEqual([]);
     expect(result.importPrompts).toEqual([]);
   });
@@ -116,11 +116,13 @@ Language=Node.js
   // --- splitList (private) indirectly tested above, but also edge case -----
 
   it("should split comma-separated lists correctly", () => {
-    const content = `# Input Parameters
-a, b, c
+    const content = `# Dependencies
+file1.js
+file2.js
+file3.js
 `;
     const result = parser.parseContent(content);
-    expect(result.inputParameters).toEqual(["a", "b", "c"]);
+    expect(result.dependencies).toEqual(["file1.js", "file2.js", "file3.js"]);
   });
 
   // --- edge case: empty or whitespace-only content --------------------------

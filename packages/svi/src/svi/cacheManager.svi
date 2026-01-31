@@ -1,0 +1,74 @@
+# Destination File
+cacheManager.ts
+
+# Dependencies
+
+# Output
+export default class CacheManager
+
+# Options
+Active=True
+
+# Import prompts
+../projectDescription.svi
+
+# Prompt
+The cache class contains stores cached data and parameters in the .svicache file 
+in the directory where the cached files are located.
+.svicache is a YAML file with the following format:
+-----
+ProcessedSviFilesHash:
+  <sviFile1.svi>:
+    hash: <hash_of_svi_file>
+  <sviFile2.svi>:
+    hash: <hash_of_svi_file>
+GeneratedDepenenciesExports:
+  <dependency1>
+    hash: <hash_of_dependency_file>
+    exports: |
+      export class Class1
+        method1(param1: string) : string;
+        method2(param2: string) : number;
+  <dependency2>
+    hash: ...
+-----
+
+Methods:
+* constructor(directory: string);
+* isSviCacheValid(filename: string) : boolean
+Algorithm:
+  - Load .svicache from the given directory
+  - In the ProcessedSviFilesHash section find subsection = filename
+  - If not found, return false
+  - If found, then calculate a new cache for the file and compare; if equal return true, 
+  otherwise false
+* updateSviCache(sviFileName)
+Algorithm:
+  - Load .svicache
+  - Compute hash for the file sviFileName
+  - Save .svicache with the updated hash in: ProcessedSviFilesHash -> <sviFileName> -> hash
+  Important! Only one parameter must be updated, other data should be kept
+* isFileExportsCacheValid(dependencyFilename : string) : boolean
+  - Load .svicache
+  - Load section GeneratedDepenenciesExports -> <depencyFilename>
+  - Compute hash of file dependencyFilename, if it is equal to the hash parameter of
+  the section, return true, otherwise false
+* getFileExportsFromCache(dependencyFilename : string) : string | null
+  Same as isExportsCacheValid, but when the section is found and if hash is equal,
+  return the 'exports' parameter from the section, otherwise null
+* updateFileExportsInCache(depencyFilename: string, exports: string)
+  - Load .svicache
+  - Compute hash for the file dependencyFielename
+  - Create / update a new section GeneratedDepenenciesExports -> <dependencyFilename>
+    with parameters 'hash' and 'exports', take these values correspondingly
+  - Save .svicache keeping all it contents out of the updated section untouched 
+
+Use the following imports:
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+import yaml from "js-yaml";
+import logger from "../utils/logger";
+
+filename and dependencyFilename can come as full paths and as filenames, should
+be considered

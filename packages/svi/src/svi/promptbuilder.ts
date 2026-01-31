@@ -4,20 +4,26 @@ import { generatorPromptTemplate } from "./prompts/generate";
 import { optionValueAsString } from "../utils/utils";
 import { SVIImportPrompts } from "./sviImportPrompts";
 import { SviConfig } from "../config/config";
+import SviDependencies from "./sviDependencies";
+import { LLMProcessor } from "../llm/llm";
 
 /**
  * Build a final prompt text based on a SVI-File.
  * @param svi The parsed SVI file.
  * @returns The final prompt string for the LLM.
  */
-export function buildPrompt(svi: SVIFile, config: SviConfig): string {
+export async function buildPrompt(
+  svi: SVIFile,
+  config: SviConfig,
+  llm: LLMProcessor,
+): Promise<string> {
   const programmingLanguage = optionValueAsString(
     svi.options?.ProgrammingLanguage || config.programmingLanguage || "Node.js",
   );
 
   const inputParams =
-    svi.inputParameters && svi.inputParameters.length > 0
-      ? `Input parameters: ${svi.inputParameters.join(", ")}.`
+    svi.dependencies && svi.dependencies.length > 0
+      ? `Input parameters: ${svi.dependencies.join(", ")}.`
       : "";
 
   const outputParams =
@@ -32,6 +38,20 @@ export function buildPrompt(svi: SVIFile, config: SviConfig): string {
   // Prompt from #Prompt section
   const mainPrompt = svi.prompt || "";
 
+  // Add the dependencies declarations if any
+  let declarationsFromDependencies = "";
+  if (svi.dependencies && svi.dependencies.length > 0) {
+    const sviDependencies = new SviDependencies(llm, config);
+    const loaded = await sviDependencies.loadDependenciesDeclarations(svi);
+    if (!loaded) {
+      throw new Error(
+        `Failed to load dependencies declarations for file ${svi.getSviFileName()}.`,
+      );
+    }
+    declarationsFromDependencies =
+      sviDependencies.getDependenciesDeclarationsAsString();
+  }
+
   // Import Prompts
   const importPrompter = new SVIImportPrompts(svi);
   if (!importPrompter.loadImportedPrompts()) {
@@ -42,7 +62,7 @@ export function buildPrompt(svi: SVIFile, config: SviConfig): string {
   // Build the final prompt
   let finalPrompt = generatorPromptTemplate
     .replace("{{programmingLanguage}}", programmingLanguage)
-    .replace("{{inputParameters}}", inputParams)
+    .replace("{{dependencies}}", declarationsFromDependencies)
     .replace("{{outputParameters}}", outputParams)
     .replace("{{mainPrompt}}", mainPrompt)
     .replace("{{importedPrompts}}", importedPrompts);

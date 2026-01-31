@@ -7,9 +7,13 @@ Section 'Destination File'
 Target file name with generated code, e.g. code.js
 The parameter is optional in cases when *.svi file is a reusable piece of prompt, not a final
 prompt for code generation
-Section 'Input parameters'
-e.g. class Storage from utils/storage.js
-It should describe input parameters to tell AI which imports from other modules are necessary.
+Section 'Dependencies'
+<Path to other files with source code>
+It should list other source code files which our current source code depend on.
+Unline import prompt section, the SVI won't add to the build prompt he whole content of
+the dependencies. Instead, it will generate a shortened list of all exposed objects, 
+variables, constants, etc which can be imported/included by our current source code.
+LLM will be used to convert the whole source code into the list of exposed artifacts.
 Section 'Output'
 It should describe what is exported outside module that other modules should know
 Section 'Options'

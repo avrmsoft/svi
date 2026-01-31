@@ -1,8 +1,6 @@
 # Destination File
 sviChecks.ts
-# Input parameters
-import { SVIParser } from "./sviParser";
-import { SVIFile } from "./types";
+# Dependencies
 # Output
 export default class SviChecker
 main methods:
@@ -18,6 +16,10 @@ sviFileFormatDescr.svi
 types.ts
 sviParser.ts
 # Prompt
+Imports:
+import { SVIParser } from "./sviParser";
+import { SVIFile } from "./types";
+
 Please create a class performing checks on correctness of all the *.svi files in the project.
 Input - a list of full paths to SVI files.
 For now, let it be one check:

@@ -11,7 +11,9 @@ export default class FakeLogger {
   private allLines: string[] = [];
   private suppressOutputDuringTest: boolean = true;
 
-  constructor() {}
+  constructor(suppressOutputDuringTestIn: boolean = true) {
+    this.suppressOutputDuringTest = suppressOutputDuringTestIn;
+  }
 
   public applyMocks() {
     const originalLog = console.log;
