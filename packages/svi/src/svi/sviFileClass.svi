@@ -1,7 +1,8 @@
 # Destination File
 sviFileClass.ts
 # Input parameters
-import { SVIFile } from "./types";
+../config/config.ts
+../utils/file.ts
 # Output
 export default class SviFileClass
 # Options
@@ -20,3 +21,7 @@ getting absolute path, resolving paths, etc
 This ensures working of production code and tests in various environments 
 (windows, linux, mac).
 constructor of SviFileClass should have no mandatory parameters
+
+Algorithm of getSviFileRelativePath():
+* Get config instance by using Config.getInstance() from ../config/config.ts
+* Use function getRelativePath from ../utils/file.ts passing this.filePath and config.dir as base path

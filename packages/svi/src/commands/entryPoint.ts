@@ -60,6 +60,10 @@ initProg
  */
 let runProg = program
   .command("run")
+  .argument(
+    "[files...]",
+    "Lets you run for certain .svi file(s) instead of the whole project (via svi.json)",
+  )
   .description("Run the main process based on svi.json and .svi files");
 
 for (const option of runOptions) {
@@ -70,14 +74,15 @@ for (const option of runOptions) {
   );
 }
 
-runProg.action(async (options) => {
+runProg.action(async (files: string[], options) => {
   const possibleOptions: string[] = runOptions.map((opt) => opt.paramName);
   console.log("Options = ", options);
   enrichOptionsFromEnv(options, possibleOptions);
   Logger.setLogLevel(options.loglevel);
-  //Logger.info("imhere");
+  Logger.setShowPrompts(options.showPrompts);
+  //console.log(files);
   try {
-    await runCommand({
+    await runCommand(files, {
       model: options.model,
       service: options.service,
       apiKey: options.key,

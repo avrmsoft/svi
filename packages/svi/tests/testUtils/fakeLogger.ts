@@ -10,6 +10,7 @@ export default class FakeLogger {
   private traceLines: string[] = [];
   private allLines: string[] = [];
   private suppressOutputDuringTest: boolean = true;
+  private llmLines: string[] = [];
 
   constructor(suppressOutputDuringTestIn: boolean = true) {
     this.suppressOutputDuringTest = suppressOutputDuringTestIn;

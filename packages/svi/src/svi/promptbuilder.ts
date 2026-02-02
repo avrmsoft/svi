@@ -21,11 +21,6 @@ export async function buildPrompt(
     svi.options?.ProgrammingLanguage || config.programmingLanguage || "Node.js",
   );
 
-  const inputParams =
-    svi.dependencies && svi.dependencies.length > 0
-      ? `Input parameters: ${svi.dependencies.join(", ")}.`
-      : "";
-
   const outputParams =
     svi.output && svi.output.length > 0
       ? `Output parameters: ${svi.output.join(", ")}.`
@@ -58,6 +53,7 @@ export async function buildPrompt(
     return "";
   }
   const importedPrompts = importPrompter.getImportedPromptsAsString();
+  const sviRelativePath = svi.getSviFileRelativePath();
 
   // Build the final prompt
   let finalPrompt = generatorPromptTemplate
@@ -65,7 +61,8 @@ export async function buildPrompt(
     .replace("{{dependencies}}", declarationsFromDependencies)
     .replace("{{outputParameters}}", outputParams)
     .replace("{{mainPrompt}}", mainPrompt)
-    .replace("{{importedPrompts}}", importedPrompts);
+    .replace("{{importedPrompts}}", importedPrompts)
+    .replace("{{sviFilePath}}", sviRelativePath);
 
   return finalPrompt.trim();
 }

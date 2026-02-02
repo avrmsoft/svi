@@ -1,35 +1,46 @@
 # Destination File
 # Input parameters
-import { runCli } from "../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../testUtils/fakeFileSystem";
 # Output
 # Options
 Active=True
 ProgrammingLanguage=
 # Import prompts
-../../testPrompts.svi
+../endToEndPrompts.svi
 # Prompt
+LLM is mocked in a way that it returns the input prompts. Thus, the correctness of
+input prompts can be tested.
+
 A typical example
-----------------------------------------------
+```ts
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { runCli } from "../../../src/commands/entryPoint";
 import { fakeFileSystem } from "../../testUtils/fakeFileSystem";
 import {
-  enableFakeLLMProcessor,
-  disableFakeLLMProcessor,
-} from "../../testUtils/fakeLLM";
+  beforeEachSimpleTest,
+  afterEachSimpleTest,
+} from "../templates/simpleTest";
+import FakeLogger from "../../testUtils/fakeLogger"; // If logging checks necessary
+import {
+  mockProcessExit,
+  checkProcessExitCalledWith,
+  restoreProcessExit,
+} from "../../../testUtils/fakeProcess"; // If mocking process.exit() is necessary
+// Levels of import may vary depending on location of a certain file
 
 describe("Simple Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
+  let fakeLogger: FakeLogger; // If logging checks needed
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
+    fakeLogger = new FakeLogger(false);
+    beforeEachSimpleTest(fakeFs, fakeLogger);
+    mockProcessExit();
   });
 
   afterEach(() => {
-    disableFakeLLMProcessor();
-    fakeFs.restoreMocks();
-    vi.clearAllMocks();
+    afterEachSimpleTest(fakeFs, fakeLogger);
+    restoreProcessExit();
   });
 
   it("Generate one file", async () => {
@@ -63,28 +74,30 @@ Test prompt
 
     fakeFs.applyMocks();
 
-    enableFakeLLMProcessor({ apiKey: "testKey" });
-
     await runCli([
       "node",
       "svi",
       "run",
-      "-m",
+      "-m", // model name
       "gemini-2.5-flash",
-      "-k",
+      "-k", // api key
       "testKey",
     ]);
 
     expect(fakeFs.fileExists("test.js")).toBe(true);
 
+    checkProcessExitCalledWith(1); // If necessary
+
     const content = fakeFs.fileContent("test.js");
 
     expect(content).toContain("Test prompt");
-    expect(content).toContain("Please return only the code");
-    expect(content).toContain("without any explanations");
-    expect(content).toContain("installation manual");
-    expect(content).toContain(
-      "The code should fulfill the following requirements"
-    );
+
+    // Logging checks example
+    expect(
+      fakeLogger.containsErrorLog(
+        "Some error",
+      ),
+    ).toBe(true);
   });
 });
+```

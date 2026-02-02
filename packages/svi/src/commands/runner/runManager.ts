@@ -26,6 +26,7 @@ export class RunManager {
   private service?: string;
   private apiKey?: string;
   private envPath?: string;
+  private onlyLoadFiles: string[] = [];
 
   constructor(
     config: SviConfig,
@@ -43,13 +44,33 @@ export class RunManager {
     this.envPath = opts?.envPath;
   }
 
+  public setOnlyLoadFiles(files: string[]) {
+    this.onlyLoadFiles = files;
+  }
+
   /**
    * Main method to run the process
    */
   public async run(): Promise<boolean> {
     try {
       logger.info("RunManager: Search for .svi files...");
-      const sviFiles = new SviLoader(this.config).loadAll();
+
+      let sviFiles: string[] = [];
+
+      if (this.onlyLoadFiles.length > 0) {
+        logger.info(
+          `RunManager: Loading specific .svi files: ${this.onlyLoadFiles.join(", ")}`,
+        );
+        sviFiles = new SviLoader(this.config).loadSpecificFiles(
+          this.onlyLoadFiles,
+        );
+        logger.trace(
+          `Number of specified .svi files to process: ${sviFiles.length}`,
+        );
+      } else {
+        logger.info("RunManager: Loading all .svi files...");
+        sviFiles = new SviLoader(this.config).loadAll();
+      }
 
       if (!sviFiles || sviFiles.length === 0) {
         logger.info("No .svi files found. Nothing to do.");

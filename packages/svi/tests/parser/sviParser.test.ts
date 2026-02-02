@@ -62,6 +62,9 @@ Generate something cool
 
     const result = parser.parseContent(content);
 
+    expect(result).not.toBeNull();
+    if (!result) return;
+
     expect(result.destinationFile).toBe("output.txt");
     expect(result.dependencies).toEqual(["dep1", "dep2"]);
     expect(result.output).toEqual(["result.txt"]);
@@ -89,6 +92,9 @@ Generate something cool
     const content = `# Dependencies\n\n# Output\n\n# Import Prompts\n`;
     const result = parser.parseContent(content);
 
+    expect(result).not.toBeNull();
+    if (!result) return;
+
     expect(result.dependencies).toEqual([]);
     expect(result.output).toEqual([]);
     expect(result.importPrompts).toEqual([]);
@@ -105,6 +111,10 @@ Language=Node.js
 `;
 
     const result = parser.parseContent(content);
+
+    expect(result).not.toBeNull();
+    if (!result) return;
+
     expect(result.options).toEqual({
       Flag: true,
       EmptyValue: "",
@@ -122,6 +132,10 @@ file2.js
 file3.js
 `;
     const result = parser.parseContent(content);
+
+    expect(result).not.toBeNull();
+    if (!result) return;
+
     expect(result.dependencies).toEqual(["file1.js", "file2.js", "file3.js"]);
   });
 

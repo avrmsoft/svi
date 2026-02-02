@@ -24,9 +24,10 @@ export class LLMProcessor {
   public async ask(prompt: string, systemPrompt?: string): Promise<string> {
     let options: Options = {};
 
-    logger.debug(
+    /*logger.debug(
       "Planning to ask LLM, prompt: " + preparePromptForLogs(prompt),
-    );
+    );*/
+    logger.prompt(prompt);
 
     if (this.options.modelName) {
       options.model = this.options.modelName;
@@ -144,9 +145,10 @@ export class LLMProcessor {
   }
 
   public traceResultIfNeeded(result: string): string {
-    logger.trace(
+    logger.llmResponse(result);
+    /*logger.trace(
       `LLM response, length ${result.length}: ${preparePromptForLogs(result)}`,
-    );
+    );*/
     return result;
   }
 

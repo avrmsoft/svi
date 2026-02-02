@@ -21,9 +21,14 @@ const colors = {
 
 export default class Logger {
   private static logLevel: LogLevel = LogLevel.INFO;
+  private static showPrompts: boolean = false;
 
   static setLogLevel(level: LogLevel) {
     this.logLevel = level;
+  }
+
+  static setShowPrompts(show: boolean) {
+    this.showPrompts = show;
   }
 
   static info(message: string) {
@@ -89,5 +94,29 @@ export default class Logger {
       `${colors.fgCyan}[${LogLevel.TRACE}]${colors.reset} ${message}`,
     );
     //}
+  }
+
+  static prompt(message: string) {
+    if (this.showPrompts) {
+      this.info(
+        `${colors.fgCyan}[PROMPT]${colors.reset}\n===================\n${message}\n===================\n`,
+      );
+    } else {
+      this.debug(
+        `LLM prompt, length ${message.length}: ${message.substring(0, 100)}...`,
+      );
+    }
+  }
+
+  static llmResponse(message: string) {
+    if (this.showPrompts) {
+      this.info(
+        `${colors.fgCyan}[LLM RESPONSE]${colors.reset}\n===================\n${message}\n===================`,
+      );
+    } else {
+      this.trace(
+        `LLM response, length ${message.length}: ${message.substring(0, 100)}...`,
+      );
+    }
   }
 }

@@ -1,27 +1,24 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { runCli } from "../../../../../src/commands/entryPoint";
-import { fakeFileSystem } from "../../../../testUtils/fakeFileSystem/fakeFileSystem";
+import { runCli } from "../../../../src/commands/entryPoint";
+import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../../templates/simpleTest";
-import FakeLogger from "../../../../testUtils/fakeLogger";
+} from "../templates/simpleTest";
 
-describe("Simple Test (E2E)", () => {
+describe("Prompt with markdown (E2E)", () => {
   let fakeFs: fakeFileSystem;
-  let fakeLogger: FakeLogger;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
-    fakeLogger = new FakeLogger(false);
-    beforeEachSimpleTest(fakeFs, fakeLogger);
+    beforeEachSimpleTest(fakeFs);
   });
 
   afterEach(() => {
-    afterEachSimpleTest(fakeFs, fakeLogger);
+    afterEachSimpleTest(fakeFs);
   });
 
-  it("Generate one file", async () => {
+  it("Generate one file with prompt containing markdown in a code block", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -47,6 +44,11 @@ ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
 Test prompt
+Please consider SVI file format:
+\`\`\`markdown
+# Prompt
+Some prompt
+\`\`\`
 `,
     );
 
@@ -73,9 +75,6 @@ Test prompt
     expect(content).toContain(
       "The code should fulfill the following requirements",
     );
-
-    expect(fakeLogger.containsWarningLog("[SVIParser] Unknown section")).toBe(
-      true,
-    );
+    expect(content).toContain("# Prompt");
   });
 });

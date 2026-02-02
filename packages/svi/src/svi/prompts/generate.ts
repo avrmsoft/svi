@@ -2,15 +2,17 @@ export const generatorPromptTemplate: string = `
 Write a code in programming language {{programmingLanguage}}.
 Please return only the code, without any explanations, installation manual,
 or additional text.
+Relative file path of the *.svi file is {{sviFilePath}}.
 The code should fulfill the following requirements:
-Declarations that can be used in the written code:
-{{dependencies}}
+
+The main specification goes below:
+{{mainPrompt}}
 
 Output parameters:
 {{outputParameters}}.
 
-The main specification goes below:
-{{mainPrompt}}
+Declarations that can be used in the written code:
+{{dependencies}}
 
 Additional context:
 {{importedPrompts}}

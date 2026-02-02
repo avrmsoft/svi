@@ -1,7 +1,6 @@
-mockedFilesAndLlmPrompts.svi:
-  hash: 502563d2c33c84cd99b9c8cea282c82c1801378be5b75598550a90bb0ec278f4
 ProcessedSviFilesHash:
   E:\projects\js\svi\packages\svi\tests\endToEnd\mockedFilesAndLlm\mockedFilesAndLlmPrompts.svi:
     hash: ''
   mockedFilesAndLlmPrompts.svi:
-    hash: 502563d2c33c84cd99b9c8cea282c82c1801378be5b75598550a90bb0ec278f4
+    hash: ec0f7e4897678f38cc8e5dc8f04f3f5345f2f2933c6c2f465d1cfdcacebf457d
+GeneratedDepenenciesExports: {}
