@@ -5,23 +5,20 @@ import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
 } from "../../templates/simpleTest";
-import FakeLogger from "../../../../testUtils/fakeLogger";
 
-describe("Simple Test (E2E)", () => {
+describe("Test with one specific (E2E)", () => {
   let fakeFs: fakeFileSystem;
-  let fakeLogger: FakeLogger;
 
   beforeEach(() => {
     fakeFs = new fakeFileSystem();
-    fakeLogger = new FakeLogger(false);
-    beforeEachSimpleTest(fakeFs, fakeLogger);
+    beforeEachSimpleTest(fakeFs);
   });
 
   afterEach(() => {
-    afterEachSimpleTest(fakeFs, fakeLogger);
+    afterEachSimpleTest(fakeFs);
   });
 
-  it("Generate one file", async () => {
+  it("Run for one file", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -35,10 +32,10 @@ describe("Simple Test (E2E)", () => {
     );
 
     fakeFs.addFile(
-      "test.svi",
+      "specific.svi",
       `
 # Destination File
-test.js
+specific.js
 # Input parameters
 # Output
 # Options
@@ -46,7 +43,23 @@ Active=True
 ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
-Test prompt
+Test prompt specific file
+`,
+    );
+
+    fakeFs.addFile(
+      "another.svi",
+      `
+# Destination File
+another.js
+# Input parameters
+# Output
+# Options
+Active=True
+ProgrammingLanguage=node.js
+# Import prompts
+# Prompt
+Test prompt another file
 `,
     );
 
@@ -56,26 +69,19 @@ Test prompt
       "node",
       "svi",
       "run",
+      "specific.svi",
       "-m",
       "gemini-2.5-flash",
       "-k",
       "testKey",
     ]);
 
-    expect(fakeFs.fileExists("test.js")).toBe(true);
+    expect(fakeFs.fileExists("specific.js")).toBe(true);
 
-    const content = fakeFs.fileContent("test.js");
+    const content = fakeFs.fileContent("specific.js");
 
-    expect(content).toContain("Test prompt");
-    expect(content).toContain("Please return only the code");
-    expect(content).toContain("without any explanations");
-    expect(content).toContain("installation manual");
-    expect(content).toContain(
-      "The code should fulfill the following requirements",
-    );
+    expect(content).toContain("Test prompt specific file");
 
-    expect(fakeLogger.containsWarningLog("[SVIParser] Unknown section")).toBe(
-      true,
-    );
+    expect(fakeFs.fileExists("another.js")).toBe(false);
   });
 });

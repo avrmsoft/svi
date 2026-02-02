@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { SviConfig } from "../config/config";
 import Logger from "../utils/logger";
+import { emitKeypressEvents } from "readline";
 
 export class SviLoader {
   private config: SviConfig;
@@ -17,7 +18,7 @@ export class SviLoader {
   }
 
   /**
-   * Lädt alle .svi-Dateien entsprechend SearchPaths und IgnorePaths
+   * Load all .svi-files according to SearchPaths and IgnorePaths
    */
   public loadAll(): string[] {
     const results: string[] = [];
@@ -41,11 +42,38 @@ export class SviLoader {
     return results;
   }
 
+  public loadSpecificFiles(files: string[]): string[] {
+    const results: string[] = [];
+
+    for (const file of files) {
+      const absPath = path.isAbsolute(file)
+        ? file
+        : path.resolve(this.rootDir, file);
+
+      if (!fs.existsSync(absPath)) {
+        throw new Error(`File not found: ${absPath}`);
+      }
+
+      if (this.isIgnored(absPath)) {
+        throw new Error(`File is ignored by ignorePaths: ${absPath}`);
+      }
+
+      if (!absPath.endsWith(".svi")) {
+        Logger.warn(`Skipping non-.svi file: ${absPath}`);
+        continue;
+      }
+
+      results.push(absPath);
+    }
+
+    return results;
+  }
+
   /**
-   * Rekursives Durchsuchen eines Verzeichnisses
+   * Recursive search in folders
    */
   private walkDirectory(dir: string, results: string[]) {
-    // Wenn Pfad ignoriert werden soll → skippen
+    // When path must be ignored - skip
     if (this.isIgnored(dir)) {
       return;
     }
@@ -63,7 +91,7 @@ export class SviLoader {
   }
 
   /**
-   * Prüfen, ob Pfad in IgnorePaths fällt
+   * Check if path is contained in IgnorePaths
    */
   private isIgnored(targetPath: string): boolean {
     return this.config.ignorePaths.some((ignorePath) => {

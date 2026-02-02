@@ -8,6 +8,9 @@ explanations, or additional text.
 Return all the information about declarations that can be useful for writing
 referencing files: class/interface names, method/function signatures, 
 types, constants, etc.
+Don't return private declarations: private/protected attributes and methods, that
+cannot be referenced by external code, not exported classes and functions, other
+private and internal declarations according to the chosen programming language.
 The extracted information should not be a syntaxically correct code, 
 but should contain all necessary details to understand how to use
 the declared entities.

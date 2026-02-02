@@ -1,0 +1,36 @@
+# Destination File
+wrongDependency.test.ts
+# Dependencies
+../../../testUtils/fakeLogger.ts
+# Output
+# Options
+Active=True
+ProgrammingLanguage=
+# Import prompts
+dependenciesSectionPrompts.svi
+# Prompt
+Given.
+One file mainFile.svi has wrongDependency.js in Dependencies section.
+However, the wrongDependency file does not exist.
+What should be checked:
+1. Error log is not empty
+2. Process exit code = 1
+3. The following phrase should exist in errors log:
+from 'Dependencies' section not found. It was attempted to be found at
+
+Correct imports for this level are:
+import { runCli } from "../../../../src/commands/entryPoint";
+import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
+import {
+  beforeEachSimpleTest,
+  afterEachSimpleTest,
+} from "../templates/simpleTest";
+import FakeLogger from "../../../testUtils/fakeLogger";
+import {
+  mockProcessExit,
+  checkProcessExitCalledWith,
+  restoreProcessExit,
+} from "../../../testUtils/fakeProcess";
+
+When declaring a test svi.json, please don't add comments to json (//),
+this makes it invalid.

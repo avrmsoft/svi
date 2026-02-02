@@ -2,6 +2,7 @@
 import fs from "fs";
 import path from "path";
 import logger from "./logger";
+import { getRelativePath } from "./file2";
 
 /**
  * Prüft, ob ein Pfad existiert
@@ -130,3 +131,5 @@ export function getFileExtension(fileName: string): string {
 export function fileHasExtension(fileName: string, extension: string): boolean {
   return path.extname(fileName).toLowerCase() === extension.toLowerCase();
 }
+
+export { getRelativePath };
