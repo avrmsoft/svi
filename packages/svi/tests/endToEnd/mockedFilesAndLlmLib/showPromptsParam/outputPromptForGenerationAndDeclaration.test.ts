@@ -48,7 +48,7 @@ describe("A parameter to output prompts in stdout (E2E)", () => {
       {
         "programmingLanguage": "node.js",
         "searchPaths": [
-          "*"
+          "**/*"
         ],
         "ignorePaths": []
       }`,

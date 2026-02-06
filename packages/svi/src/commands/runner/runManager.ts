@@ -69,7 +69,7 @@ export class RunManager {
         );
       } else {
         logger.info("RunManager: Loading all .svi files...");
-        sviFiles = new SviLoader(this.config).loadAll();
+        sviFiles = await new SviLoader(this.config).loadAll();
       }
 
       if (!sviFiles || sviFiles.length === 0) {
@@ -137,7 +137,12 @@ export class RunManager {
 
       return result;
     } catch (err) {
-      logger.error("RunManager: Severe error: " + (err as Error).message);
+      logger.error(
+        "RunManager: Severe error: " +
+          (err as Error).message +
+          "\n" +
+          (err as Error).stack,
+      );
       throw err;
     }
   }

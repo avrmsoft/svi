@@ -1,0 +1,49 @@
+# Destination File
+fakeFileSystemHelper.ts
+# Dependencies
+types.ts
+globToRegExp.ts
+# Output
+export default class FakeFileSystemHelper
+public async fg(
+    patterns: string | string[],
+    options: { cwd?: string; absolute?: boolean } = {}
+  ): Promise<string[]>
+# Options
+Active=False
+ProgrammingLanguage=
+# Import prompts
+# Prompt
+export default class FakeFileSystemHelper constructor getting 
+  private files: testFile[] = [];
+  private fakeCwd: string;
+
+  and one public method fg, working just like the fast-global lib
+  for example:
+```ts
+  const files = await fg(patterns, {
+  cwd,
+  absolute: true
+});
+```
+
+Use function globToRegExp from globToRegExp.ts to convert global mask 
+to regular expression.
+
+But don't use it, use elementary TS operations on a 'virtual' file system having
+relative or absolute files in this.files, relative should be 
+resolved in folder fakeCwd.
+Consider that the path can be a windows path and a linux/macos path.
+
+-------------------------------------
+Examples to be considered:
+public async fg(
+    ["**/*"],
+    { cwd: "C:\\temp"; absolute: true }
+  )
+
+file: "C:/temp/svi.json" -> true
+
+--------------------------------------
+Be aware of the following errors:
+path.match(/.../) does not return a boolean result

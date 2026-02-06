@@ -4,7 +4,7 @@ import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../templates/simpleTest";
+} from "../../templates/simpleTest";
 
 describe("Simple Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
@@ -28,7 +28,7 @@ describe("Simple Test (E2E)", () => {
           "*"
         ],
         "ignorePaths": []
-      }`
+      }`,
     );
 
     fakeFs.addFile(
@@ -44,7 +44,7 @@ ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
 Test prompt
-`
+`,
     );
 
     fakeFs.applyMocks();
@@ -68,7 +68,7 @@ Test prompt
     expect(content).toContain("without any explanations");
     expect(content).toContain("installation manual");
     expect(content).toContain(
-      "The code should fulfill the following requirements"
+      "The code should fulfill the following requirements",
     );
   });
 });

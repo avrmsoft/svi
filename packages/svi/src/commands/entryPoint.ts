@@ -38,11 +38,15 @@ initProg
   .description(
     "Initialize svi configuration in the current directory or create a new .svi file",
   )
-  .action(async (options) => {
+  .action(async (file: string | undefined, options) => {
+    if (!options) {
+      options = {};
+    }
+
     enrichOptionsFromEnv(options);
     Logger.setLogLevel(options.loglevel);
     try {
-      const result: number = initCommand(options.file);
+      const result: number = initCommand(file, options);
       if (result !== 0) {
         Logger.error("❌ Initialization failed");
         process.exit(result);

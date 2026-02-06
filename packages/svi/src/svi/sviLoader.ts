@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { fastGlobWrapper } from "../utils/fastGlobWrapper";
 import { SviConfig } from "../config/config";
 import Logger from "../utils/logger";
 import { emitKeypressEvents } from "readline";
@@ -20,14 +21,29 @@ export class SviLoader {
   /**
    * Load all .svi-files according to SearchPaths and IgnorePaths
    */
-  public loadAll(): string[] {
-    const results: string[] = [];
+  public async loadAll(): Promise<string[]> {
+    let results: string[] = [];
 
-    for (const searchPath of this.config.searchPaths) {
-      let absSearchPath: string;
-      if (searchPath === "*") {
-        absSearchPath = this.rootDir;
-      } else {
+    //results = await fg(this.config.searchPaths, {
+    results = await fastGlobWrapper.fg(this.config.searchPaths, {
+      cwd: this.rootDir,
+      absolute: true,
+    });
+
+    // filter out only *.svi files and ignore ignored paths
+    results = results.filter((file) => {
+      if (!file.endsWith(".svi")) {
+        return false;
+      }
+
+      return !this.isIgnored(file);
+    });
+
+    //for (const searchPath of this.config.searchPaths) {
+    //let absSearchPath: string;
+    //if (searchPath === "*" || searchPath === "**/*") {
+    //  absSearchPath = this.rootDir;
+    /*} else {
         absSearchPath = path.resolve(this.rootDir, searchPath);
       }
 
@@ -37,7 +53,7 @@ export class SviLoader {
       }
 
       this.walkDirectory(absSearchPath, results);
-    }
+    }*/
 
     return results;
   }

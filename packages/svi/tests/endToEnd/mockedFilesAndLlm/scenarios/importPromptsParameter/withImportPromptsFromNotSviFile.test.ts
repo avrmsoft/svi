@@ -4,7 +4,7 @@ import { fakeFileSystem } from "../../../../testUtils/fakeFileSystem/fakeFileSys
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../../templates/simpleTest";
+} from "../../../templates/simpleTest";
 import FakeLogger from "../../../../testUtils/fakeLogger";
 
 describe("A case with the 'Import prompts' parameter from not *.svi file (E2E)", () => {

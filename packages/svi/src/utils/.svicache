@@ -1,4 +1,6 @@
 ProcessedSviFilesHash:
   file2.svi:
     hash: b0c51caf1e12b2bc8fec5b2da924da56e11894983fbf2eadabbd537ac2e87b9b
+  fastGlobWrapper.svi:
+    hash: dae4eda8ed7a90d4f7c01b4345e9956da46f956340e90aef346a60598d960a70
 GeneratedDepenenciesExports: {}

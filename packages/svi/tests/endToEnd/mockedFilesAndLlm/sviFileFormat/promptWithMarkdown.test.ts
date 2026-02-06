@@ -4,7 +4,7 @@ import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../templates/simpleTest";
+} from "../../templates/simpleTest";
 
 describe("Prompt with markdown (E2E)", () => {
   let fakeFs: fakeFileSystem;

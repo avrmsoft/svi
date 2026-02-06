@@ -44,7 +44,7 @@ function createGlobalConfig(options: InitOptions = {}): number {
     return 1;
   }
 
-  config.searchPaths.push("*");
+  config.searchPaths.push("**/*");
 
   writeJSON(targetPath, config);
   Logger.success(`Configuration created: ${targetPath}`);

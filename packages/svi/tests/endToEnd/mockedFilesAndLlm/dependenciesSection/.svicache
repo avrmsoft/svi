@@ -1,4 +1,6 @@
 ProcessedSviFilesHash:
   wrongDependency.svi:
-    hash: bb4d752d53064fc99b4b37012f2528a9ad02694fbb62a8195a6974e370457b80
+    hash: dab16a435a30be8a4d7c00317666e5940c7553d78fa21ebf323474fce40dfccc
+  dependencyInImportedPrompt.svi:
+    hash: d2122ec8bfcee2ef1467b4b5231a0160557d92e220ffd1b657ce97e597be32d2
 GeneratedDepenenciesExports: {}

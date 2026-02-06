@@ -9,7 +9,7 @@ import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../templates/simpleTest";
+} from "../../templates/simpleTest";
 
 describe("File svi.json path parameter (-p) (E2E)", () => {
   let fakeFs: fakeFileSystem;
@@ -36,7 +36,7 @@ describe("File svi.json path parameter (-p) (E2E)", () => {
       fakeFs,
       "--configPath",
       "D:\\test\\svi_custom.json",
-      "svi_custom.json"
+      "svi_custom.json",
     );
   });
 });
@@ -45,7 +45,7 @@ async function runTests(
   fakeFs: fakeFileSystem,
   parameterKey: string,
   parameterValue: string,
-  sviFilename: string = "svi.json"
+  sviFilename: string = "svi.json",
 ) {
   fakeFs.addFile(
     `D:\\test\\${sviFilename}`,
@@ -56,7 +56,7 @@ async function runTests(
           "*"
         ],
         "ignorePaths": []
-      }`
+      }`,
   );
 
   fakeFs.addFile(
@@ -72,13 +72,13 @@ ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
 Test prompt
-`
+`,
   );
 
   fakeFs.addFile(
     "D:\\test\\svi.env",
     `API_KEY=testKey
-       MODEL_NAME=gemini-2.5-flash`
+       MODEL_NAME=gemini-2.5-flash`,
   );
 
   fakeFs.applyMocks();
@@ -96,6 +96,6 @@ Test prompt
   expect(content).toContain("without any explanations");
   expect(content).toContain("installation manual");
   expect(content).toContain(
-    "The code should fulfill the following requirements"
+    "The code should fulfill the following requirements",
   );
 }
