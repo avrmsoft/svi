@@ -71,6 +71,7 @@ export class Config {
       logger.error(
         `Configuration file not found at path: ${resolvedPath}.
 Please run the command in a directory containing svi.json file; usually it should be your project root.
+Or you can use parameter --configPath/-p to set the path to the configuration file explicitly.
 If you haven't created svi.json yet, you can run 'svi init' command.`,
       );
       throw new Error(`Configuration file not found: ${resolvedPath}`);
