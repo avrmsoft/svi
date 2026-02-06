@@ -1,0 +1,38 @@
+# Destination File
+depencencyInImportedPrompt.test.ts
+# Dependencies
+../../../testUtils/fakeLogger.ts
+../../../testUtils/fakeFileSystem/fakeFileSystem.ts
+# Output
+# Options
+Active=True
+ProgrammingLanguage=
+# Import prompts
+dependenciesSectionPrompts.svi
+# Prompt
+Given.
+One file folder\\mainFile.svi (having mainfile.js as a destination file)
+has a link to file 'imported.svi' in the root folder 
+in its 'Import prompts' section 
+(the link should be relative to the referencing file, e.g., ../imported.svi).
+File 'imported.svi' has the 'Dependencies' section referring 
+to file 'dependency.js', but it has no destination file (just for prompt,
+no generation).
+Destination file is relative to the source *.svi file location.
+E.g., if source *.svi is located in folder/file.svi, than destination file is
+relative to the folder. Usually destination file is in the same folder as *.svi
+file and thus should have no path 'Destination file' section.
+When.
+Run the cli.
+Then.
+The target file should contain contents of files 'imported.svi' and 'dependency.js'.
+Also, it should contain the phrase 
+"Your task is to extract all declarations from the code".
+
+Recommended import:
+import {
+  beforeEachSimpleTest,
+  afterEachSimpleTest,
+} from "../../templates/simpleTest";
+
+Please don't suppress output while using fakeLogger.

@@ -9,6 +9,11 @@ ProgrammingLanguage=
 # Prompt
 LLM is mocked in a way that it returns the input prompts. Thus, the correctness of
 input prompts can be tested.
+Guidelines: 
+* Don't use fakeFs.setCwd explicitly in test or in 'beforeEach' unless
+requested in prompt (default folder will be set automatically in this case).
+* Don't use checkProcessExitCalledWith(0) for code 0; in this case, process.exit(0)
+is not called in the CLI explicitly.
 
 A typical example
 ```ts
@@ -50,7 +55,7 @@ describe("Simple Test (E2E)", () => {
       {
         "programmingLanguage": "node.js",
         "searchPaths": [
-          "*"
+          "*"`
         ],
         "ignorePaths": []
       }`

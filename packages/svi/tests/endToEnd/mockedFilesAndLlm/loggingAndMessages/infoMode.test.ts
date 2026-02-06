@@ -5,7 +5,7 @@ import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
   prepareSimpleTest,
-} from "../templates/simpleTest";
+} from "../../templates/simpleTest";
 import { runCli } from "../../../../src/commands/entryPoint";
 
 describe("Test logger output in debug mode", () => {
@@ -59,7 +59,7 @@ describe("Test logger output in debug mode", () => {
 
     //expect(fakeLogger.containsDebugLog("Prompt for*was built")).toBe(true);
     expect(fakeLogger.containsDebugLogRegex(/Prompt for .* was built/)).toBe(
-      false
+      false,
     );
   });
 });

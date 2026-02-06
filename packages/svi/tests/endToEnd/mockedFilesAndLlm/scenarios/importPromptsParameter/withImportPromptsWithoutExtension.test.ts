@@ -4,7 +4,7 @@ import { fakeFileSystem } from "../../../../testUtils/fakeFileSystem/fakeFileSys
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../../templates/simpleTest";
+} from "../../../templates/simpleTest";
 
 describe("A case with the 'Import prompts' parameter without extension (E2E)", () => {
   let fakeFs: fakeFileSystem;
@@ -25,7 +25,7 @@ describe("A case with the 'Import prompts' parameter without extension (E2E)", (
       {
         "programmingLanguage": "node.js",
         "searchPaths": [
-          "*"
+          "**/*"
         ],
         "ignorePaths": []
       }`,

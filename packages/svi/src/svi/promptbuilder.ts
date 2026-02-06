@@ -48,8 +48,8 @@ export async function buildPrompt(
   }
 
   // Import Prompts
-  const importPrompter = new SVIImportPrompts(svi);
-  if (!importPrompter.loadImportedPrompts()) {
+  const importPrompter = new SVIImportPrompts(svi, llm, config);
+  if (!(await importPrompter.loadImportedPrompts())) {
     return "";
   }
   const importedPrompts = importPrompter.getImportedPromptsAsString();

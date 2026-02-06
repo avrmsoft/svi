@@ -1,0 +1,27 @@
+ProcessedSviFilesHash:
+  fakeFileSystemHelper.svi:
+    hash: df23e1dc62e825daf58c3daffd0396cd1b7eaba5fa963df2afb0335930c6436b
+GeneratedDepenenciesExports:
+  fakeFileSystem.ts:
+    hash: c68b807b5123e597c9415d92eb9561a7dcb9fe51628bb46bee891372a2338b24
+    exports: |-
+      class fakeFileSystem {
+        constructor();
+        addFile(fullOrRelativePath: string, content?: string): void;
+        changeFileContent(fullOrRelativePath: string, newContent: string): void;
+        setCwd(fakePath: string): void;
+        getCwd(): string;
+        applyMocks(): void;
+        restoreMocks(): void;
+        fileContent(fullOrRelativePath: string): string | undefined;
+        fileExists(fullOrRelativePath: string): boolean;
+      }
+  types.ts:
+    hash: 3aa1e062895c424d07b09a64eb09cb09caa4281fb0a3a1e29c748a26aa3e6e0b
+    exports: |-
+      ```
+      interface testFile {
+        fullPath: string;
+        content?: string;
+      }
+      ```

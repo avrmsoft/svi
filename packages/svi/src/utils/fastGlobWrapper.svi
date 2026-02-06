@@ -1,0 +1,11 @@
+# Destination File
+fastGlobWrapper.ts
+# Input parameters
+# Output
+# Options
+Active=False
+# Import prompts
+utilsPrompts.svi
+# Prompt
+Create a wrapper around the fast-glob library.
+I need it to easily mock (with vi.spyOn)

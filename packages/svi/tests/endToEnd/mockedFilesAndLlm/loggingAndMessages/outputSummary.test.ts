@@ -4,7 +4,7 @@ import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../templates/simpleTest";
+} from "../../templates/simpleTest";
 import FakeLogger from "../../../testUtils/fakeLogger";
 
 describe("Two files Test (E2E)", () => {

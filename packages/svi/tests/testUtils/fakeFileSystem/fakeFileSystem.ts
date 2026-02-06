@@ -1,9 +1,12 @@
 import { vi } from "vitest";
 import fs from "fs";
 import path from "path";
+//import fg from "fast-glob";
 import { convertPathToAbsolute } from "../testUtils";
 import { type testFile } from "./types";
 import { FakeFsStatResult } from "./fakeFsStatResult";
+import FakeFileSystemHelper from "./fakeFileSystemHelper";
+import { fastGlobWrapper } from "../../../src/utils/fastGlobWrapper";
 
 /*interface testFile {
   fullPath: string;
@@ -45,8 +48,13 @@ class fakeFileSystem {
     this.fakeCwd = fakePath;
   }
 
+  public getCwd(): string {
+    return this.fakeCwd;
+  }
+
   private convPath(fullOrRelativePath: string): string {
-    return convertPathToAbsolute(fullOrRelativePath, this.fakeCwd);
+    const absPath = convertPathToAbsolute(fullOrRelativePath, this.fakeCwd);
+    return this.convertToUnixPath(absPath);
   }
 
   public applyMocks(): void {
@@ -56,7 +64,11 @@ class fakeFileSystem {
       const absPath = this.convPath(filePath.toString());
 
       // Full equality check
-      if (this.files.some((f) => this.convPath(f.fullPath) === absPath)) {
+      if (
+        this.files.some(
+          (f) => this.convPath(f.fullPath) === this.convertToUnixPath(absPath),
+        )
+      ) {
         return true;
       }
 
@@ -205,6 +217,8 @@ class fakeFileSystem {
         return fakeStat as unknown as fs.Stats;
       },
     );
+
+    this.applyMockOnFastGlob();
   }
 
   public restoreMocks(): void {
@@ -222,6 +236,35 @@ class fakeFileSystem {
     return this.files.some(
       (f) => this.convPath(f.fullPath) === this.convPath(fullOrRelativePath),
     );
+  }
+
+  private applyMockOnFastGlob(): void {
+    vi.spyOn(fastGlobWrapper, "fg").mockImplementation(
+      async (
+        pattern: string | string[],
+        options?: import("fast-glob").Options,
+      ): Promise<string[]> => {
+        const fsh = new FakeFileSystemHelper(this.files, this.fakeCwd);
+        return await fsh.fg(pattern, options);
+      },
+    );
+    /*vi.mock("fast-glob", () => ({
+      default: vi.fn(),
+    }));
+
+    vi.mocked(fg).mockImplementation(
+      async (
+        pattern: string | string[],
+        options?: fg.Options,
+      ): Promise<string[]> => {
+        const fsh = new FakeFileSystemHelper(this.files, this.fakeCwd);
+        return await fsh.fg(pattern, options);
+      },
+    );*/
+  }
+
+  private convertToUnixPath(fullOrRelativePath: string): string {
+    return fullOrRelativePath.replace(/\\/g, "/");
   }
 }
 
