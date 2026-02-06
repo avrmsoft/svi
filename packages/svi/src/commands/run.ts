@@ -28,7 +28,7 @@ export async function runCommand(
       );
       config = Config.getInstance(options.sviJsonPath);
     } else {
-      config = Config.getInstance();
+      config = Config.getInstance(undefined, files.length > 0);
     }
 
     Logger.info("Configuration successfully loaded.");
@@ -41,6 +41,7 @@ export async function runCommand(
       model: options.model,
       apiKey: options.apiKey,
       envPath: options.envPath,
+      sviJsonPath: options.sviJsonPath,
     });
 
     if (files && files.length > 0) {

@@ -26,6 +26,7 @@ export class RunManager {
   private service?: string;
   private apiKey?: string;
   private envPath?: string;
+  private sviJsonPath?: string;
   private onlyLoadFiles: string[] = [];
 
   constructor(
@@ -35,6 +36,7 @@ export class RunManager {
       service?: string;
       apiKey?: string;
       envPath?: string;
+      sviJsonPath?: string;
     },
   ) {
     this.config = config;
@@ -42,6 +44,7 @@ export class RunManager {
     this.service = opts?.service;
     this.apiKey = opts?.apiKey;
     this.envPath = opts?.envPath;
+    this.sviJsonPath = opts?.sviJsonPath;
   }
 
   public setOnlyLoadFiles(files: string[]) {
@@ -61,9 +64,11 @@ export class RunManager {
         logger.info(
           `RunManager: Loading specific .svi files: ${this.onlyLoadFiles.join(", ")}`,
         );
-        sviFiles = new SviLoader(this.config).loadSpecificFiles(
-          this.onlyLoadFiles,
-        );
+        sviFiles = new SviLoader(
+          this.config,
+          undefined,
+          this.sviJsonPath !== undefined,
+        ).loadSpecificFiles(this.onlyLoadFiles);
         logger.trace(
           `Number of specified .svi files to process: ${sviFiles.length}`,
         );

@@ -21,13 +21,19 @@ export class LLMProcessor {
     this.options = optionsIn;
   }
 
-  public async ask(prompt: string, systemPrompt?: string): Promise<string> {
+  public async ask(
+    prompt: string,
+    systemPrompt?: string,
+    promptDescription?: string,
+  ): Promise<string> {
     let options: Options = {};
 
     /*logger.debug(
       "Planning to ask LLM, prompt: " + preparePromptForLogs(prompt),
     );*/
-    logger.prompt(prompt);
+    logger.prompt(
+      `Start of prompt ${promptDescription}:\n\n ${prompt}\n\nEnd of prompt ${promptDescription}`,
+    );
 
     if (this.options.modelName) {
       options.model = this.options.modelName;

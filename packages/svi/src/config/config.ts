@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import * as fileUtils from "../utils/file.js";
 import logger from "../utils/logger.js";
+import ConfigFinder from "./configFinder";
 
 /**
  * Interface for the structure of svi.json configuration file
@@ -27,7 +28,10 @@ export class Config {
   /**
    * Private constructor – use getInstance()
    */
-  private constructor(fileName: string = "svi.json") {
+  private constructor(
+    fileName: string = "svi.json",
+    tryToFindConfigInParentDirs: boolean = false,
+  ) {
     logger.trace(
       `Searching configuration file (svi.json) with name: ${fileName}`,
     );
@@ -46,6 +50,21 @@ export class Config {
       }
     } else {
       resolvedPath = path.resolve(process.cwd(), fileName);
+    }
+
+    if (!fs.existsSync(resolvedPath) && tryToFindConfigInParentDirs) {
+      logger.debug(
+        `Configuration file not found at provided path: ${resolvedPath}. Trying to find in parent directories...`,
+      );
+      const foundInParents = this.tryToFindConfigInParentDirs(process.cwd());
+      if (foundInParents) {
+        logger.debug(
+          `Configuration file found in parent directory: ${foundInParents}`,
+        );
+        resolvedPath = foundInParents;
+      } else {
+        logger.debug(`Configuration file not found in any parent directories.`);
+      }
     }
 
     if (!fs.existsSync(resolvedPath)) {
@@ -86,9 +105,12 @@ If you haven't created svi.json yet, you can run 'svi init' command.`,
   /**
    * Returns the singleton instance
    */
-  public static getInstance(fileName?: string): Config {
+  public static getInstance(
+    fileName?: string,
+    tryToFindConfigInParentDirs?: boolean,
+  ): Config {
     if (!Config.instance) {
-      Config.instance = new Config(fileName);
+      Config.instance = new Config(fileName, tryToFindConfigInParentDirs);
     }
     return Config.instance;
   }
@@ -117,5 +139,11 @@ If you haven't created svi.json yet, you can run 'svi init' command.`,
 
   public get ignorePaths(): string[] {
     return this.configData.ignorePaths;
+  }
+
+  private tryToFindConfigInParentDirs(startingFolder: string): string | null {
+    const finder = new ConfigFinder();
+    const foundPath = finder.findConfigFile(startingFolder);
+    return foundPath;
   }
 }

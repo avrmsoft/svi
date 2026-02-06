@@ -9,11 +9,15 @@ export class SviLoader {
   private config: SviConfig;
   private rootDir: string;
 
-  constructor(config: SviConfig, rootDir: string = process.cwd()) {
+  constructor(
+    config: SviConfig,
+    rootDir: string = process.cwd(),
+    configDirIsPrioritized: boolean = true,
+  ) {
     this.config = config;
     this.rootDir = rootDir;
 
-    if (this.config.configDir) {
+    if (this.config.configDir && configDirIsPrioritized) {
       this.rootDir = this.config.configDir;
     }
   }
