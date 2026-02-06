@@ -71,7 +71,7 @@ export function createFileIfNotExists(
 /**
  * Holt den aktuellen Projekt-Stammordner (wo `svi.json` liegt)
  */
-export function getProjectRoot(
+/*export function getProjectRoot(
   startDir: string = process.cwd(),
 ): string | null {
   let current = startDir;
@@ -88,7 +88,7 @@ export function getProjectRoot(
   }
 
   return null;
-}
+}*/
 
 export async function ensureDir(dirPath: string): Promise<void> {
   try {

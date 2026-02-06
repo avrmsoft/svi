@@ -54,6 +54,7 @@ export async function buildPrompt(
   }
   const importedPrompts = importPrompter.getImportedPromptsAsString();
   const sviRelativePath = svi.getSviFileRelativePath();
+  const destinationRelativePath = svi.getDestinationFileRelativePath() || "";
 
   // Build the final prompt
   let finalPrompt = generatorPromptTemplate
@@ -62,7 +63,8 @@ export async function buildPrompt(
     .replace("{{outputParameters}}", outputParams)
     .replace("{{mainPrompt}}", mainPrompt)
     .replace("{{importedPrompts}}", importedPrompts)
-    .replace("{{sviFilePath}}", sviRelativePath);
+    .replace("{{sviFilePath}}", sviRelativePath)
+    .replace("{{destinationFilePath}}", destinationRelativePath);
 
   return finalPrompt.trim();
 }

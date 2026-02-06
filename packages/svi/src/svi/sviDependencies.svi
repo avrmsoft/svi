@@ -60,6 +60,9 @@ export default class CacheManager {
 import logger from "../utils/logger";
 logger.trace, logger.debug, logger.info, logger.warning, logger.error
 
+import { getRelativePath } from ../utils/file.ts;
+function getRelativePath(fileOrFolderFullPath: string, basePath: string): string
+
 --- Dependencies declarations end
 
 The SviDependencies.constructor takes a variable of type LLMProcessor and a
@@ -89,6 +92,8 @@ If LLM returned no result, it is error, log it and return false in the end.
 5. Update cache by calling method CacheManager.updateFileExportsInCache
 6. Continue for the next dependency file
 7. Save all the dependencies declarations in attributes of a class
+along with relative paths of dependencies files relative to project folder;
+for this use function getRelativePath(dependencyFullPath,config.configDir)
 8. Return true in case of success and false in case of error
 
 method getDependenciesDeclarationsAsString
@@ -96,7 +101,7 @@ returns dependencies declaration loaded by loadDependenciesDeclarations
 
 The string contains information about declaration of all the dependencies in the
 following format:
-<dependency file name> (as written in sviFile.dependencies) declarations
+Declarations from file: <dependency file name with relative path according config.configDir>
 empty line
 The declarations
 empty line 

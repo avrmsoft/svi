@@ -18,5 +18,6 @@ export interface SVIFile {
   getSviFileDirectory(): string;
   getSviFileRelativePath(): string;
   getDestinationFileFullPath(): string | undefined;
+  getDestinationFileRelativePath(): string | undefined;
   getImportPromptsFullPaths(): ImportPromptPath[];
 }

@@ -82,9 +82,11 @@ This is a test prompt that should not be processed due to the missing dependency
 
     // 3. The specified phrase should exist in the error log
     expect(
-      fakeLogger.containsErrorLog(
-        "from 'Dependencies' section not found. It was attempted to be found at",
-      ),
+      fakeLogger.containsErrorLog("from 'Dependencies' section not found"),
     ).toBe(true);
+
+    expect(fakeLogger.containsErrorLog("C:\\temp\\wrongDependency.js")).toBe(
+      true,
+    );
   });
 });

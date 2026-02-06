@@ -112,10 +112,16 @@ Please write a function add(a, b) that returns the sum of a and b.
     expect(content).toContain(
       "Please write a function add(a, b) that returns the sum of a and b",
     );
+
+    // Must contain relative path to imported file according to project structure
+    expect(content).toContain("folder\\partDescription.svi");
     expect(content).toContain("This module is responsible for computing");
     expect(content).toContain(
       "We are building a simple application that can add numbers",
     );
+
+    // Must contain relative path to imported file according to project structure
+    expect(content).toContain("folder\\additionalContext.svi");
 
     expect(content).toContain(
       "Additional context: This is a second file containing additional context",

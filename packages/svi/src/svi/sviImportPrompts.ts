@@ -4,7 +4,7 @@ import Logger from "../utils/logger";
 import fs from "fs";
 import { SVIParser } from "./sviParser";
 import { computeHashFromString } from "../utils/utils";
-import { fileHasExtension } from "../utils/file";
+import { fileHasExtension, getRelativePath } from "../utils/file";
 import SviDependencies from "./sviDependencies";
 import { LLMProcessor } from "../llm/llm";
 import { SviConfig } from "../config/config";
@@ -52,12 +52,10 @@ export class SVIImportPrompts {
     const promptPaths = sviFile.getImportPromptsFullPaths();
 
     for (const promptPath of promptPaths) {
-      // sviFile.importPrompts) {
-      //const resolvedPath = this.resolvePromptPath(promptPath, sviFile);
       if (
         await this.loadPromptForPath(
           promptPath.fullPath,
-          promptPath.relativePath,
+          //promptPath.relativePath,
         )
       ) {
         continue;
@@ -68,7 +66,7 @@ export class SVIImportPrompts {
         if (
           await this.loadPromptForPath(
             resolvedPathWithExtension,
-            promptPath.relativePath,
+            //promptPath.relativePath,
           )
         ) {
           continue;
@@ -81,21 +79,8 @@ export class SVIImportPrompts {
     return success;
   }
 
-  /*private resolvePromptPath(
-    promptPath: string,
-    relativeToSvi?: SVIFile,
-  ): string {
-    const relativeToSviFile = relativeToSvi || this.sviFile;
-    if (relativeToSviFile.filePath) {
-      const sviDir = relativeToSviFile.getSviFileDirectory(); // path.dirname(relativeToSviFile.filePath);
-      return path.resolve(sviDir, promptPath);
-    }
-    return promptPath;
-  }*/
-
   private loadSVIFile(filePath: string): SVIFile | null {
     try {
-      //const parser = new SVIParser();
       return this.sviParser.parseFile(filePath);
     } catch (error) {
       Logger.error(`Error loading SVI file ${filePath}: ${error}`);
@@ -109,7 +94,7 @@ export class SVIImportPrompts {
 
   private async loadPromptForPath(
     fullPath: string,
-    relativePath: string,
+    //relativePath: string,
   ): Promise<boolean> {
     let dependencySVI: SVIFile | null = null;
 
@@ -175,6 +160,8 @@ export class SVIImportPrompts {
         );
         return true;
       }
+
+      const relativePath = getRelativePath(fullPath, this.config.configDir);
 
       this.importedPrompts.push({
         path: relativePath,
