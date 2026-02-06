@@ -21,9 +21,14 @@ const colors = {
 
 export default class Logger {
   private static logLevel: LogLevel = LogLevel.INFO;
+  private static showPrompts: boolean = false;
 
   static setLogLevel(level: LogLevel) {
     this.logLevel = level;
+  }
+
+  static setShowPrompts(show: boolean) {
+    this.showPrompts = show;
   }
 
   static info(message: string) {
@@ -38,7 +43,7 @@ export default class Logger {
       return;
     }
     console.log(
-      `${colors.fgGreen}[${LogLevel.SUCCESS}]${colors.reset} ${message}`
+      `${colors.fgGreen}[${LogLevel.SUCCESS}]${colors.reset} ${message}`,
     );
   }
 
@@ -47,13 +52,17 @@ export default class Logger {
       return;
     }
     console.warn(
-      `${colors.fgYellow}[${LogLevel.WARN}]${colors.reset} ${message}`
+      `${colors.fgYellow}[${LogLevel.WARN}]${colors.reset} ${message}`,
     );
+  }
+
+  static warning(message: string) {
+    this.warn(message);
   }
 
   static error(message: string, err?: any) {
     console.error(
-      `${colors.fgRed}[${LogLevel.ERROR}]${colors.reset} ${message}`
+      `${colors.fgRed}[${LogLevel.ERROR}]${colors.reset} ${message}`,
     );
     if (err) {
       console.error(err);
@@ -71,7 +80,7 @@ export default class Logger {
     }
     //if (process.env.DEBUG === "true") {
     console.debug(
-      `${colors.fgCyan}[${LogLevel.DEBUG}]${colors.reset} ${message}`
+      `${colors.fgCyan}[${LogLevel.DEBUG}]${colors.reset} ${message}`,
     );
     //}
   }
@@ -82,8 +91,32 @@ export default class Logger {
     }
     //if (process.env.DEBUG === "true") {
     console.log(
-      `${colors.fgCyan}[${LogLevel.TRACE}]${colors.reset} ${message}`
+      `${colors.fgCyan}[${LogLevel.TRACE}]${colors.reset} ${message}`,
     );
     //}
+  }
+
+  static prompt(message: string) {
+    if (this.showPrompts) {
+      this.info(
+        `${colors.fgCyan}[PROMPT]${colors.reset}\n===================\n${message}\n===================\n`,
+      );
+    } else {
+      this.debug(
+        `LLM prompt, length ${message.length}: ${message.substring(0, 100)}...`,
+      );
+    }
+  }
+
+  static llmResponse(message: string) {
+    if (this.showPrompts) {
+      this.info(
+        `${colors.fgCyan}[LLM RESPONSE]${colors.reset}\n===================\n${message}\n===================`,
+      );
+    } else {
+      this.trace(
+        `LLM response, length ${message.length}: ${message.substring(0, 100)}...`,
+      );
+    }
   }
 }

@@ -48,5 +48,11 @@ export const runOptions: CliOption[] = [
     description: "Path to svi.json file",
     paramName: "configPath",
   },
+  {
+    shortFlag: "-P",
+    fullFlag: "--show-prompts",
+    description: "Output LLM prompts and responses in console output",
+    paramName: "showPrompts",
+  },
   ...initOptions,
 ];

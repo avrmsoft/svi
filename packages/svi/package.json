@@ -6,12 +6,14 @@
   "scripts": {
     "build": "tsc && copy package.json dist",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "svi": "svi run -l TRACE -P"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.7.2",
     "@vitest/coverage-v8": "^4.0.6",
+    "fast-glob": "^3.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.6"

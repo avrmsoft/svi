@@ -4,7 +4,7 @@ import { fakeFileSystem } from "../../../../testUtils/fakeFileSystem/fakeFileSys
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../../templates/simpleTest";
+} from "../../../templates/simpleTest";
 import FakeLogger from "../../../../testUtils/fakeLogger";
 import {
   mockProcessExit,
@@ -36,7 +36,7 @@ describe("Dependency File Not Found (E2E)", () => {
       {
         "programmingLanguage": "node.js",
         "searchPaths": [
-          "*"
+          "**/*"
         ],
         "ignorePaths": []
       }`,

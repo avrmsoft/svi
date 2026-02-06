@@ -5,6 +5,9 @@ import fs from "fs";
 import { SVIParser } from "./sviParser";
 import { computeHashFromString } from "../utils/utils";
 import { fileHasExtension } from "../utils/file";
+import SviDependencies from "./sviDependencies";
+import { LLMProcessor } from "../llm/llm";
+import { SviConfig } from "../config/config";
 
 interface ImportedPrompt {
   path: string;
@@ -16,9 +19,13 @@ export class SVIImportPrompts {
   private sviFile: SVIFile;
   private importedPrompts: ImportedPrompt[] = [];
   private sviParser: SVIParser = new SVIParser();
+  private llmProcessor: LLMProcessor;
+  private config: SviConfig;
 
-  constructor(sviFile: SVIFile) {
+  constructor(sviFile: SVIFile, llmProcessor: LLMProcessor, config: SviConfig) {
     this.sviFile = sviFile;
+    this.llmProcessor = llmProcessor;
+    this.config = config;
   }
 
   public getImportedPrompts(): ImportedPrompt[] {
@@ -31,11 +38,11 @@ export class SVIImportPrompts {
       .join("\n---\n");
   }
 
-  public loadImportedPrompts(): boolean {
-    return this.loadImportedPromptsFromSvi(this.sviFile);
+  public async loadImportedPrompts(): Promise<boolean> {
+    return await this.loadImportedPromptsFromSvi(this.sviFile);
   }
 
-  private loadImportedPromptsFromSvi(sviFile: SVIFile): boolean {
+  private async loadImportedPromptsFromSvi(sviFile: SVIFile): Promise<boolean> {
     if (!sviFile.importPrompts || sviFile.importPrompts.length === 0) {
       return true;
     }
@@ -48,7 +55,10 @@ export class SVIImportPrompts {
       // sviFile.importPrompts) {
       //const resolvedPath = this.resolvePromptPath(promptPath, sviFile);
       if (
-        this.loadPromptForPath(promptPath.fullPath, promptPath.relativePath)
+        await this.loadPromptForPath(
+          promptPath.fullPath,
+          promptPath.relativePath,
+        )
       ) {
         continue;
       }
@@ -56,7 +66,7 @@ export class SVIImportPrompts {
       if (!promptPath.fullPath.endsWith(".svi")) {
         const resolvedPathWithExtension = promptPath.fullPath + ".svi";
         if (
-          this.loadPromptForPath(
+          await this.loadPromptForPath(
             resolvedPathWithExtension,
             promptPath.relativePath,
           )
@@ -97,7 +107,10 @@ export class SVIImportPrompts {
     return computeHashFromString(content);
   }
 
-  private loadPromptForPath(fullPath: string, relativePath: string): boolean {
+  private async loadPromptForPath(
+    fullPath: string,
+    relativePath: string,
+  ): Promise<boolean> {
     let dependencySVI: SVIFile | null = null;
 
     if (this.fileHasSviExtension(fullPath)) {
@@ -130,6 +143,30 @@ export class SVIImportPrompts {
       Logger.trace(`Imported prompt loaded as raw file content: ${fullPath}`);
     }
 
+    if (dependencySVI?.dependencies && dependencySVI.dependencies.length > 0) {
+      Logger.trace(
+        `Loading SVI dependencies declarations for imported prompt, path: ${fullPath}`,
+      );
+      const sviDependencies = new SviDependencies(
+        this.llmProcessor,
+        this.config,
+      );
+      const loaded =
+        await sviDependencies.loadDependenciesDeclarations(dependencySVI);
+      if (loaded) {
+        const declarations =
+          sviDependencies.getDependenciesDeclarationsAsString();
+        promptContent = `${declarations}\n\n${promptContent}`;
+        Logger.trace(
+          `SVI dependencies declarations loaded and prepended to imported prompt content, path: ${fullPath}`,
+        );
+      } else {
+        Logger.error(
+          `Failed to load SVI dependencies declarations for imported prompt, path: ${fullPath}`,
+        );
+      }
+    }
+
     if (promptContent.length > 0) {
       promptHash = this.computeHash(promptContent);
       if (this.hashExists(promptHash)) {
@@ -150,7 +187,7 @@ export class SVIImportPrompts {
           "Loading nested imported prompts from SVI dependency for path: " +
             fullPath,
         );
-        result = this.loadImportedPromptsFromSvi(dependencySVI);
+        result = await this.loadImportedPromptsFromSvi(dependencySVI);
       } else {
         result = true;
       }

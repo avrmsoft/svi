@@ -10,3 +10,10 @@ The approach is writing a prompt for one single file on programming language.
 The prompt and other parameters are described in *.svi files, which generate the corresponding
 files with source code. Some files don't generate any file and are reused in another files
 as a part of a prompt (like 'require' in programming languages).
+
+General requirements:
+If you need to import fs and/or path, please import in the following way (not to break vitests)
+```ts
+import fs from "fs";
+import path from "path";
+```

@@ -4,7 +4,7 @@ import { fakeFileSystem } from "../../../../testUtils/fakeFileSystem/fakeFileSys
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
-} from "../../templates/simpleTest";
+} from "../../../templates/simpleTest";
 import {
   mockProcessExit,
   checkProcessExitCalledWith,

@@ -1,9 +1,12 @@
 import { vi } from "vitest";
 import fs from "fs";
 import path from "path";
+//import fg from "fast-glob";
 import { convertPathToAbsolute } from "../testUtils";
 import { type testFile } from "./types";
 import { FakeFsStatResult } from "./fakeFsStatResult";
+import FakeFileSystemHelper from "./fakeFileSystemHelper";
+import { fastGlobWrapper } from "../../../src/utils/fastGlobWrapper";
 
 /*interface testFile {
   fullPath: string;
@@ -28,12 +31,30 @@ class fakeFileSystem {
     this.files.push(file);
   }
 
+  public changeFileContent(
+    fullOrRelativePath: string,
+    newContent: string,
+  ): void {
+    const fullPath = convertPathToAbsolute(fullOrRelativePath, this.fakeCwd);
+    const file = this.files.find((f) => f.fullPath === fullPath);
+    if (file) {
+      file.content = newContent;
+    } else {
+      throw new Error(`File not found in mock: ${fullOrRelativePath}`);
+    }
+  }
+
   public setCwd(fakePath: string): void {
     this.fakeCwd = fakePath;
   }
 
+  public getCwd(): string {
+    return this.fakeCwd;
+  }
+
   private convPath(fullOrRelativePath: string): string {
-    return convertPathToAbsolute(fullOrRelativePath, this.fakeCwd);
+    const absPath = convertPathToAbsolute(fullOrRelativePath, this.fakeCwd);
+    return this.convertToUnixPath(absPath);
   }
 
   public applyMocks(): void {
@@ -43,7 +64,11 @@ class fakeFileSystem {
       const absPath = this.convPath(filePath.toString());
 
       // Full equality check
-      if (this.files.some((f) => this.convPath(f.fullPath) === absPath)) {
+      if (
+        this.files.some(
+          (f) => this.convPath(f.fullPath) === this.convertToUnixPath(absPath),
+        )
+      ) {
         return true;
       }
 
@@ -52,7 +77,7 @@ class fakeFileSystem {
         ? absPath
         : absPath + path.sep;
       return this.files.some((f) =>
-        this.convPath(f.fullPath).startsWith(dirPrefix)
+        this.convPath(f.fullPath).startsWith(dirPrefix),
       );
     });
 
@@ -61,12 +86,12 @@ class fakeFileSystem {
         // Path is a descriptor case - don't process for now
         if (typeof path === "number") {
           throw new Error(
-            "Mock fs.readFileSync does not support file descriptors"
+            "Mock fs.readFileSync does not support file descriptors",
           );
         }
 
         const file = this.files.find(
-          (f) => this.convPath(f.fullPath) === this.convPath(path.toString())
+          (f) => this.convPath(f.fullPath) === this.convPath(path.toString()),
         );
         if (!file) {
           throw new Error(`File not found in mock: ${path.toString()}`);
@@ -74,27 +99,27 @@ class fakeFileSystem {
 
         //return Buffer.from(file.content ?? "", "utf-8");
         return file.content ?? "";
-      }
+      },
     );
 
     vi.spyOn(fs, "writeFileSync").mockImplementation(
       (path: fs.PathOrFileDescriptor, data: any, options?: any) => {
         if (typeof path === "number") {
           throw new Error(
-            "Mock fs.writeFileSync does not support file descriptors"
+            "Mock fs.writeFileSync does not support file descriptors",
           );
         }
 
         const textData = typeof data === "string" ? data : data.toString();
         const existing = this.files.find(
-          (f) => this.convPath(f.fullPath) === this.convPath(path.toString())
+          (f) => this.convPath(f.fullPath) === this.convPath(path.toString()),
         );
         if (existing) {
           existing.content = textData;
         } else {
           this.files.push({ fullPath: path.toString(), content: textData });
         }
-      }
+      },
     );
 
     // --- writeFile (asynchronous) ---
@@ -103,7 +128,7 @@ class fakeFileSystem {
         path: fs.PathOrFileDescriptor,
         data: any,
         options: any,
-        callback?: (err: NodeJS.ErrnoException | null) => void
+        callback?: (err: NodeJS.ErrnoException | null) => void,
       ): any => {
         // handle optional 'options' parameter
         if (typeof options === "function") {
@@ -114,13 +139,13 @@ class fakeFileSystem {
         try {
           if (typeof path === "number") {
             throw new Error(
-              "Mock fs.writeFile does not support file descriptors"
+              "Mock fs.writeFile does not support file descriptors",
             );
           }
 
           const textData = typeof data === "string" ? data : data.toString();
           const existing = this.files.find(
-            (f) => f.fullPath === path.toString()
+            (f) => f.fullPath === path.toString(),
           );
           if (existing) {
             existing.content = textData;
@@ -132,7 +157,7 @@ class fakeFileSystem {
         } catch (err: any) {
           callback?.(err);
         }
-      }
+      },
     );
 
     vi.spyOn(fs, "readdirSync").mockImplementation(
@@ -151,7 +176,7 @@ class fakeFileSystem {
           if (!firstPart) continue;
 
           const isDir = filesInDir.some((sub) =>
-            sub.startsWith(prefix + "/" + firstPart + "/")
+            sub.startsWith(prefix + "/" + firstPart + "/"),
           );
           entries.set(firstPart, { name: firstPart, isDir });
         }
@@ -165,7 +190,7 @@ class fakeFileSystem {
         }
 
         return Array.from(entries.keys());
-      }
+      },
     );
 
     vi.spyOn(fs.promises, "mkdir").mockImplementation(
@@ -175,14 +200,14 @@ class fakeFileSystem {
         const isAlreadyThere = this.files.some(
           (f) =>
             this.convPath(f.fullPath) === abs ||
-            this.convPath(f.fullPath).startsWith(abs + path.sep)
+            this.convPath(f.fullPath).startsWith(abs + path.sep),
         );
         if (!isAlreadyThere) {
           this.files.push({ fullPath: abs, content: undefined });
         }
         // `recursive: true` ignorieren, aber kein Fehler werfen
         return abs;
-      }
+      },
     );
 
     vi.spyOn(fs, "statSync").mockImplementation(
@@ -190,8 +215,10 @@ class fakeFileSystem {
         const absPath = this.convPath(filePath.toString());
         const fakeStat = new FakeFsStatResult(absPath, this.files);
         return fakeStat as unknown as fs.Stats;
-      }
+      },
     );
+
+    this.applyMockOnFastGlob();
   }
 
   public restoreMocks(): void {
@@ -200,15 +227,44 @@ class fakeFileSystem {
 
   public fileContent(fullOrRelativePath: string): string | undefined {
     const file = this.files.find(
-      (f) => this.convPath(f.fullPath) === this.convPath(fullOrRelativePath)
+      (f) => this.convPath(f.fullPath) === this.convPath(fullOrRelativePath),
     );
     return file?.content;
   }
 
   public fileExists(fullOrRelativePath: string): boolean {
     return this.files.some(
-      (f) => this.convPath(f.fullPath) === this.convPath(fullOrRelativePath)
+      (f) => this.convPath(f.fullPath) === this.convPath(fullOrRelativePath),
     );
+  }
+
+  private applyMockOnFastGlob(): void {
+    vi.spyOn(fastGlobWrapper, "fg").mockImplementation(
+      async (
+        pattern: string | string[],
+        options?: import("fast-glob").Options,
+      ): Promise<string[]> => {
+        const fsh = new FakeFileSystemHelper(this.files, this.fakeCwd);
+        return await fsh.fg(pattern, options);
+      },
+    );
+    /*vi.mock("fast-glob", () => ({
+      default: vi.fn(),
+    }));
+
+    vi.mocked(fg).mockImplementation(
+      async (
+        pattern: string | string[],
+        options?: fg.Options,
+      ): Promise<string[]> => {
+        const fsh = new FakeFileSystemHelper(this.files, this.fakeCwd);
+        return await fsh.fg(pattern, options);
+      },
+    );*/
+  }
+
+  private convertToUnixPath(fullOrRelativePath: string): string {
+    return fullOrRelativePath.replace(/\\/g, "/");
   }
 }
 

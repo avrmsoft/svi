@@ -1,7 +1,9 @@
 import fs from "fs";
 import path from "path";
+import { fastGlobWrapper } from "../utils/fastGlobWrapper";
 import { SviConfig } from "../config/config";
 import Logger from "../utils/logger";
+import { emitKeypressEvents } from "readline";
 
 export class SviLoader {
   private config: SviConfig;
@@ -17,16 +19,31 @@ export class SviLoader {
   }
 
   /**
-   * Lädt alle .svi-Dateien entsprechend SearchPaths und IgnorePaths
+   * Load all .svi-files according to SearchPaths and IgnorePaths
    */
-  public loadAll(): string[] {
-    const results: string[] = [];
+  public async loadAll(): Promise<string[]> {
+    let results: string[] = [];
 
-    for (const searchPath of this.config.searchPaths) {
-      let absSearchPath: string;
-      if (searchPath === "*") {
-        absSearchPath = this.rootDir;
-      } else {
+    //results = await fg(this.config.searchPaths, {
+    results = await fastGlobWrapper.fg(this.config.searchPaths, {
+      cwd: this.rootDir,
+      absolute: true,
+    });
+
+    // filter out only *.svi files and ignore ignored paths
+    results = results.filter((file) => {
+      if (!file.endsWith(".svi")) {
+        return false;
+      }
+
+      return !this.isIgnored(file);
+    });
+
+    //for (const searchPath of this.config.searchPaths) {
+    //let absSearchPath: string;
+    //if (searchPath === "*" || searchPath === "**/*") {
+    //  absSearchPath = this.rootDir;
+    /*} else {
         absSearchPath = path.resolve(this.rootDir, searchPath);
       }
 
@@ -36,16 +53,43 @@ export class SviLoader {
       }
 
       this.walkDirectory(absSearchPath, results);
+    }*/
+
+    return results;
+  }
+
+  public loadSpecificFiles(files: string[]): string[] {
+    const results: string[] = [];
+
+    for (const file of files) {
+      const absPath = path.isAbsolute(file)
+        ? file
+        : path.resolve(this.rootDir, file);
+
+      if (!fs.existsSync(absPath)) {
+        throw new Error(`File not found: ${absPath}`);
+      }
+
+      if (this.isIgnored(absPath)) {
+        throw new Error(`File is ignored by ignorePaths: ${absPath}`);
+      }
+
+      if (!absPath.endsWith(".svi")) {
+        Logger.warn(`Skipping non-.svi file: ${absPath}`);
+        continue;
+      }
+
+      results.push(absPath);
     }
 
     return results;
   }
 
   /**
-   * Rekursives Durchsuchen eines Verzeichnisses
+   * Recursive search in folders
    */
   private walkDirectory(dir: string, results: string[]) {
-    // Wenn Pfad ignoriert werden soll → skippen
+    // When path must be ignored - skip
     if (this.isIgnored(dir)) {
       return;
     }
@@ -63,7 +107,7 @@ export class SviLoader {
   }
 
   /**
-   * Prüfen, ob Pfad in IgnorePaths fällt
+   * Check if path is contained in IgnorePaths
    */
   private isIgnored(targetPath: string): boolean {
     return this.config.ignorePaths.some((ignorePath) => {

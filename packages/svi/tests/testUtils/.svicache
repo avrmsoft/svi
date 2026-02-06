@@ -1,0 +1,40 @@
+ProcessedSviFilesHash: {}
+GeneratedDepenenciesExports:
+  fakeLogger.ts:
+    hash: 3f72fe697d283fe2e3d3880c024d98235b61e46f3081e71e9cafe5bd4e83cfaf
+    exports: |-
+      ```typescript
+      class FakeLogger {
+        private logSpy: any;
+        private logLines: string[];
+        private errorLines: string[];
+        private warnLines: string[];
+        private debugLines: string[];
+        private traceLines: string[];
+        private allLines: string[];
+        private suppressOutputDuringTest: boolean;
+        private llmLines: string[]; // This property is declared but not used or initialized explicitly in the constructor, but it's part of the declaration.
+
+        constructor(suppressOutputDuringTestIn?: boolean);
+
+        public applyMocks(): void;
+        public disableMocks(): void;
+        public hasErrors(): boolean;
+        public getLogLines(): string[];
+        public getErrorLines(): string[];
+        public getWarnLines(): string[];
+        public getDebugLines(): string[];
+        public getTraceLines(): string[];
+        public getAllLines(): string[];
+        public contain(text: string): boolean;
+        public containsLog(text: string): boolean;
+        public containsLogRegex(pattern: RegExp): boolean;
+        public containsErrorLog(text: string): boolean;
+        public containsErrorLogRegex(pattern: RegExp): boolean;
+        public containsWarningLog(text: string): boolean;
+        public containsDebugLog(text: string): boolean;
+        public containsDebugLogRegex(pattern: RegExp): boolean;
+        public containsTraceLog(text: string): boolean;
+        public setSuppressOutputDuringTest(suppress: boolean): void;
+      }
+      ```

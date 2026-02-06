@@ -10,7 +10,7 @@ export function getCliPathTs(): string {
 
 export function convertPathToAbsolute(
   fullOrRelativePath: string,
-  cwd: string
+  cwd: string,
 ): string {
   const fullPath = path.isAbsolute(fullOrRelativePath)
     ? fullOrRelativePath
@@ -27,4 +27,8 @@ export function popProcessEnv(): void {
     process.env = (globalThis as any)._savedProcessEnv;
     delete (globalThis as any)._savedProcessEnv;
   }
+}
+
+export function prepareForComparison(str: string | undefined): string {
+  return str?.toLowerCase().replace(/\s+/g, "") || "";
 }

@@ -44,7 +44,7 @@ function createGlobalConfig(options: InitOptions = {}): number {
     return 1;
   }
 
-  config.searchPaths.push("*");
+  config.searchPaths.push("**/*");
 
   writeJSON(targetPath, config);
   Logger.success(`Configuration created: ${targetPath}`);
@@ -78,9 +78,9 @@ function createSviFile(fileArg: string, options: InitOptions = {}): number {
   contentLines.push(sviFile.destinationFile || "");
 
   // Input Parameters
-  contentLines.push(`# Input parameters`);
-  if (sviFile.inputParameters && sviFile.inputParameters.length > 0) {
-    contentLines.push(...sviFile.inputParameters);
+  contentLines.push(`# Dependencies`);
+  if (sviFile.dependencies && sviFile.dependencies.length > 0) {
+    contentLines.push(...sviFile.dependencies);
   }
 
   // Output

@@ -1,0 +1,15 @@
+# Destination File
+# Input parameters
+# Output
+# Options
+Active=True
+ProgrammingLanguage=
+# Import prompts
+../testPrompts.svi
+# Prompt
+End-to-end prompts run the whole program starting from the cli function with parameters
+and ending with target files generation.
+LLM operations and file operations are mocked
+
+When declaring a test svi.json, please don't add comments to json (//),
+this makes it invalid.

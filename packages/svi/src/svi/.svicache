@@ -1,4 +1,10 @@
-sviChecks.svi:
-  hash: 97daa40e13847c3c119bea97c637a6644d0236161876bb759d4bd454a9f39300
-sviFileClass.svi:
-  hash: 0f2073cb547a8c1c0b9d4d48d59e8773ced2ae944894f980c38ac229e61cc247
+ProcessedSviFilesHash:
+  cacheManager.svi:
+    hash: 3b7287c642896086f43fca35223f875f8cdaffeb6e687cc2672953b28eead754
+  sviChecks.svi:
+    hash: f86054ac621389a2126c77ee4d5b37089d307a0a949de84e6a78c5cc61df2c19
+  sviFileClass.svi:
+    hash: dfbbbb218f66e8fb0f09539923e0c6c38f14b1c73d04c4e69f1ae8ca253991af
+  sviDependencies.svi:
+    hash: d6dfc15cab45e6939d1dea6275efd5d5adfdb71eea558997e4d7c112f8d8d5f1
+GeneratedDepenenciesExports: {}

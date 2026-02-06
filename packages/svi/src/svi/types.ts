@@ -8,7 +8,7 @@ export interface ImportPromptPath {
 export interface SVIFile {
   filePath?: string;
   destinationFile?: string;
-  inputParameters?: string[];
+  dependencies?: string[];
   output?: string[];
   options?: Record<string, SVIOptionValue>;
   importPrompts?: string[];
@@ -16,6 +16,7 @@ export interface SVIFile {
 
   getSviFileName(): string;
   getSviFileDirectory(): string;
+  getSviFileRelativePath(): string;
   getDestinationFileFullPath(): string | undefined;
   getImportPromptsFullPaths(): ImportPromptPath[];
 }

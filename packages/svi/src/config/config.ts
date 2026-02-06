@@ -14,15 +14,20 @@ export interface SviConfig {
 }
 
 /**
- * Class for loading and storing of configuration data
+ * Singleton class for loading and storing configuration data
  * (Read-only, no write operations)
  */
 export class Config {
+  private static instance: Config | null = null;
+
   private configPath: string;
   private configDir: string;
   private configData: SviConfig;
 
-  constructor(fileName: string = "svi.json") {
+  /**
+   * Private constructor – use getInstance()
+   */
+  private constructor(fileName: string = "svi.json") {
     logger.trace(
       `Searching configuration file (svi.json) with name: ${fileName}`,
     );
@@ -35,18 +40,11 @@ export class Config {
       );
 
       if (fileUtils.isFile(fileName)) {
-        logger.debug(`Configuration file found at absolute path: ${fileName}`);
         resolvedPath = fileName;
       } else {
-        logger.debug(
-          `Given absolute path is not a file. Looking for svi.json inside the directory: ${fileName}`,
-        );
         resolvedPath = path.join(fileName, "svi.json");
       }
     } else {
-      logger.debug(
-        `The following path is not an absolute one: ${fileName}. Resolving relative to current working directory.`,
-      );
       resolvedPath = path.resolve(process.cwd(), fileName);
     }
 
@@ -65,6 +63,7 @@ If you haven't created svi.json yet, you can run 'svi init' command.`,
     logger.trace(`Loading configuration from: ${this.configPath}`);
 
     const raw = fs.readFileSync(this.configPath, "utf-8");
+
     try {
       this.configData = JSON.parse(raw) as SviConfig;
     } catch (e) {
@@ -83,6 +82,18 @@ If you haven't created svi.json yet, you can run 'svi init' command.`,
       )}, Ignore Paths: ${this.configData.ignorePaths.join(", ")}`,
     );
   }
+
+  /**
+   * Returns the singleton instance
+   */
+  public static getInstance(fileName?: string): Config {
+    if (!Config.instance) {
+      Config.instance = new Config(fileName);
+    }
+    return Config.instance;
+  }
+
+  // ---------- getters ----------
 
   public get path(): string {
     return this.configPath;

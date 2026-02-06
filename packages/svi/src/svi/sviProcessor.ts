@@ -4,7 +4,7 @@ import fs from "fs";
 
 import { SVIParser } from "./sviParser";
 import { SVIFile } from "./types";
-import * as cacheManager from "./cacheManager";
+import CacheManager from "./cacheManager";
 import logger from "../utils/logger";
 import { buildPrompt } from "./promptBuilder";
 import { LLMProcessor } from "../llm/llm";
@@ -55,8 +55,8 @@ export async function processSVIFile(
     const fileFolder = path.dirname(filePath);
 
     // Check cache
-    const cache = new cacheManager.CacheManager(fileFolder);
-    if (cache.isCacheValid(filePath)) {
+    const cache = new CacheManager(fileFolder);
+    if (cache.isSviCacheValid(filePath)) {
       if (!fileUtils.exists(svi.getDestinationFileFullPath() || "")) {
         logger.info(
           `Destination file ${destinationFromSvi} does not exist. Regenerating...`,
@@ -67,7 +67,11 @@ export async function processSVIFile(
       }
     }
 
-    const prompt = buildPrompt(svi, config);
+    parser.logParseMessages();
+
+    logger.trace(`Building prompt for file: ${filePath}`);
+
+    const prompt = await buildPrompt(svi, config, llm);
 
     if (!prompt || prompt.trim().length === 0) {
       logger.error(`Error creating prompt for file: ${filePath}.`);
@@ -99,7 +103,7 @@ export async function processSVIFile(
     const fileIsNew = !(await fileUtils.exists(destPath));
     await fs.writeFileSync(destPath, clearedCode);
 
-    cache.updateCache(filePath);
+    cache.updateSviCache(filePath);
 
     const runStatistics = RunStatistics.getInstance();
     if (fileIsNew) {

@@ -1,20 +1,20 @@
-import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
-import fakeLogger from "../../../testUtils/fakeLogger";
+import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
+import fakeLogger from "../../testUtils/fakeLogger";
 import {
   enableFakeLLMProcessor,
   disableFakeLLMProcessor,
-} from "../../../testUtils/fakeLLM";
+} from "../../testUtils/fakeLLM";
 //import { vi } from "vitest";
 //import { pushProcessEnv, popProcessEnv } from "../../../testUtils/testUtils";
 import {
   beforeEachEndToEndTest,
   afterEachEndToEndTest,
-} from "../../endToEndTestUtils";
+} from "../endToEndTestUtils";
 
 export function beforeEachSimpleTest(
   fakeFs: fakeFileSystem,
   fakeLogger?: fakeLogger,
-  testApiKey: string = "testKey"
+  testApiKey: string = "testKey",
 ) {
   beforeEachEndToEndTest(fakeFs, fakeLogger);
   /*pushProcessEnv();
@@ -27,7 +27,7 @@ export function beforeEachSimpleTest(
 
 export function afterEachSimpleTest(
   fakeFs: fakeFileSystem,
-  fakeLogger?: fakeLogger
+  fakeLogger?: fakeLogger,
 ) {
   afterEachEndToEndTest(fakeFs, fakeLogger);
   /*
@@ -50,7 +50,7 @@ export function prepareSimpleTest(fakeFs: fakeFileSystem) {
           "*"
         ],
         "ignorePaths": []
-      }`
+      }`,
   );
 
   fakeFs.addFile(
@@ -66,6 +66,6 @@ ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
 Test prompt
-`
+`,
   );
 }

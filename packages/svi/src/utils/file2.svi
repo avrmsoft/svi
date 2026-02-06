@@ -1,0 +1,20 @@
+# Destination File
+file2.ts
+# Dependencies
+# Output
+# Options
+Active=True
+# Import prompts
+utilsPrompts.svi
+# Prompt
+```ts
+export function getRelativePath(fileOrFolderFullPath : string, basePath : string) : string;
+```
+Algorithm:
+* If fileOrFolderFullPath is a subpath of basePath, compute its relative path
+according to basePath.
+Example:
+getRelativePath("/usr/some/path/to/file.txt","/usr/some/path") -> "to/file.txt"
+getRelativePath("/usr/some/path/to/folder","/usr/some/path") -> "to/folder"
+* If fileOrFolderFullPath is not a subpath of basePath, just return
+fileOrFolderFullPath
