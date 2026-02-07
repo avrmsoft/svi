@@ -81,7 +81,8 @@ export async function processSVIFile(
     logger.debug(`Prompt for ${filePath} was built.`);
 
     logger.info(`Ask LLM for ${filePath}...`);
-    const generated = await llm.ask(prompt);
+    const promptDescription = `Generation for SVI file ${svi.getSviFileRelativePath()}`;
+    const generated = await llm.ask(prompt, undefined, promptDescription);
     if (!generated || generated.trim().length === 0) {
       logger.error(
         `LLM returned no result for ${filePath} or error occurred. Skipping.`,

@@ -140,6 +140,10 @@ export default class FakeLogger {
     return this.traceLines.some((line) => line.includes(text));
   }
 
+  public containsTraceLogRegex(pattern: RegExp): boolean {
+    return this.traceLines.some((line) => pattern.test(line));
+  }
+
   public setSuppressOutputDuringTest(suppress: boolean) {
     this.suppressOutputDuringTest = suppress;
   }

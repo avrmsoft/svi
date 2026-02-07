@@ -114,5 +114,13 @@ Test prompt from svi file
         "Please return only the extracted declarations, without any implementations",
       ),
     ).toBe(true);
+
+    expect(
+      fakeLogger.containsLogRegex(/End of prompt.*folder\\test\.svi/),
+    ).toBe(true);
+
+    expect(
+      fakeLogger.containsLogRegex(/End of prompt.*folder\\someCode\.js/),
+    ).toBe(true);
   });
 });

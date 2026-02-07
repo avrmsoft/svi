@@ -19,7 +19,7 @@ They are provided for reference, please don't redefine them. You are
 generating a production ready code!!!
 --- Dependencies declarations start
 
-Uses interface from types.ts (in the same folder)
+Uses interface from ./types.ts (in the same folder)
 export interface SVIFile {
   ...
   dependencies?: string[];
@@ -32,9 +32,9 @@ export interface SVIFile {
 }
 
 class LLMProcessor in file ../llm/llm.ts
-class LLMProcessor {
+export class LLMProcessor {
   ...
-  public async ask(prompt: string, systemPrompt?: string): Promise<string>
+  public async ask(prompt: string, systemPrompt?: string, promptDescription?: string): Promise<string>
 }
 
 in file ../config/config.ts
@@ -48,7 +48,7 @@ export interface SviConfig {
 export const extractDeclarationsPromptTemplate 
 from file ./prompts/extractDeclarations.ts
 
-class CacheManager form file cacheManager.ts
+class CacheManager form file ../svi/cacheManager.ts
 export default class CacheManager {
   constructor(directory: string);
   ...
@@ -68,7 +68,7 @@ function getRelativePath(fileOrFolderFullPath: string, basePath: string): string
 The SviDependencies.constructor takes a variable of type LLMProcessor and a
 variable of type Config.
 It's main method is:
-async loadDependenciesDeclarations
+async loadDependenciesDeclarations(sviFile: SVIFile)
 
 Algorithm:
 1. Loop through dependencies
@@ -88,6 +88,8 @@ Otherwise go to the next step and generate declarations by LLM.
 'programming language <config.programmingLanguage>' or empty if
 config.programmingLanguage is empty.
 Substring {{sourceCode}} replace with dependency file content.
+To parameter promptDescription pass string:
+'Declarations extraction from <relative path of the dependency file>'
 If LLM returned no result, it is error, log it and return false in the end.
 5. Update cache by calling method CacheManager.updateFileExportsInCache
 6. Continue for the next dependency file
