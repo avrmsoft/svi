@@ -1,6 +1,7 @@
 import logger from "../../utils/logger.js";
 //import { LLMServiceByModel } from "../../llm/llmServiceByModel";
 import { LLMProcessor } from "../../llm/llm";
+import { printEnvFileExampleAsError } from "../env";
 
 export default class CheckerForRunManager {
   public static async checkOptions(options: any): Promise<boolean> {
@@ -49,11 +50,13 @@ export default class CheckerForRunManager {
     }
 
     if (!isLLMParamsOkay) {
-      logger.error(".env file example:");
+      printEnvFileExampleAsError();
+    }
+    /*  logger.error(".env file example:");
       logger.error("MODEL_NAME=your-model-name");
       logger.error("SERVICE_NAME=your-service-name");
       logger.error("API_KEY=your-api-key");
-    }
+    }*/
 
     return isLLMParamsOkay;
   }

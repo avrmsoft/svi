@@ -25,6 +25,7 @@ export class RunManager {
   private model?: string;
   private service?: string;
   private apiKey?: string;
+  private llmBaseUrl?: string;
   private envPath?: string;
   private sviJsonPath?: string;
   private onlyLoadFiles: string[] = [];
@@ -35,11 +36,13 @@ export class RunManager {
       model?: string;
       service?: string;
       apiKey?: string;
+      llmBaseUrl?: string;
       envPath?: string;
       sviJsonPath?: string;
     },
   ) {
     this.config = config;
+    this.llmBaseUrl = opts?.llmBaseUrl;
     this.model = opts?.model;
     this.service = opts?.service;
     this.apiKey = opts?.apiKey;
@@ -94,6 +97,8 @@ export class RunManager {
       const llm = new LLMProcessor({
         modelName: this.model || "",
         apiKey: this.apiKey,
+        service: this.service,
+        llmBaseUrl: this.llmBaseUrl,
         envFile: this.envPath,
       });
 

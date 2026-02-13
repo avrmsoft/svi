@@ -5,6 +5,7 @@ export interface RequiredLLMOptions {
   modelName?: string;
   service?: string;
   apiKey?: string;
+  llmBaseUrl?: string;
 }
 
 let askSpy: any;
@@ -50,6 +51,15 @@ export function enableFakeLLMProcessor(requiredOptions?: RequiredLLMOptions) {
         ) {
           throw new Error(
             `Expected apiKey to be ${requiredOptions.apiKey}, but got ${options.apiKey}`,
+          );
+        }
+
+        if (
+          requiredOptions.llmBaseUrl &&
+          options.llmBaseUrl !== requiredOptions.llmBaseUrl
+        ) {
+          throw new Error(
+            `Expected llmBaseUrl to be ${requiredOptions.llmBaseUrl}, but got ${options.llmBaseUrl}`,
           );
         }
       }

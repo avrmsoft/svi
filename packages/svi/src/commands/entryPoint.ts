@@ -90,6 +90,7 @@ runProg.action(async (files: string[], options) => {
       model: options.model,
       service: options.service,
       apiKey: options.key,
+      llmBaseUrl: options.url,
       envPath: options.env,
       sviJsonPath: options.configPath,
     });

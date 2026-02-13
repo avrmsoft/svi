@@ -13,6 +13,7 @@ export async function runCommand(
     model?: string;
     service?: string;
     apiKey?: string;
+    llmBaseUrl?: string;
     envPath?: string;
     sviJsonPath?: string;
   },
@@ -40,6 +41,8 @@ export async function runCommand(
     const runManager = new RunManager(config.data, {
       model: options.model,
       apiKey: options.apiKey,
+      service: options.service,
+      llmBaseUrl: options.llmBaseUrl,
       envPath: options.envPath,
       sviJsonPath: options.sviJsonPath,
     });

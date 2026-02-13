@@ -11,6 +11,7 @@ export interface LLMOptions {
   modelName: string;
   service?: string;
   apiKey?: string;
+  llmBaseUrl?: string;
   envFile?: string;
 }
 
@@ -90,6 +91,11 @@ export class LLMProcessor {
           `Service provider is required for model ${this.options.modelName}. Please specify it explicitly or check model name.`,
         );
       }
+    }
+
+    if (this.options.llmBaseUrl) {
+      options.baseUrl = this.options.llmBaseUrl;
+      logger.debug("Using LLM base URL: " + options.baseUrl);
     }
 
     if (!options.max_tokens && options.service === "google") {

@@ -5,26 +5,52 @@ import { DEFAULT_ENV_FILE } from "../utils/constants";
 import { toCamelCase } from "../utils/utils.js";
 import Logger from "../utils/logger.js";
 import { isDirectory } from "../utils/file";
+import { get } from "http";
+
+export interface EnvOption {
+  key: string;
+  description: string;
+  exampleValue: string;
+}
+
+export const envOptions: EnvOption[] = [
+  {
+    key: "MODEL_NAME",
+    description: "The name of the model to use (e.g., gpt-4, gemini-2.5-flash)",
+    exampleValue: "gemini-2.5-flash",
+  },
+  {
+    key: "SERVICE",
+    description: "The service provider to use (e.g., google, openai)",
+    exampleValue: "google",
+  },
+  {
+    key: "API_KEY",
+    description: "The API key for authenticating with the LLM service",
+    exampleValue: "123456789abcdef",
+  },
+  {
+    key: "LLM_BASE_URL",
+    description:
+      "The base URL for the LLM API (useful for custom endpoints or proxies)",
+    exampleValue: "http://fake-llm-base-url.com",
+  },
+];
+
+function getPossibleKeys(): string[] {
+  return envOptions.map((option) => option.key);
+}
+
+function getPossibleKeysCamelCase(): string[] {
+  return envOptions.map((option) => toCamelCase(option.key));
+}
 
 export function enrichOptionsFromEnv(options: any, possibleOptions?: string[]) {
   Logger.trace("Enriching options from environment variables");
 
   tryLoadEnvFromEnvFile(options);
 
-  /*if (options.env) {
-    loadEnv({ path: path.resolve(options.env) });
-  } else if (fs.existsSync(path.resolve(DEFAULT_ENV_FILE))) {
-    loadEnv({ path: path.resolve(DEFAULT_ENV_FILE) });
-  } else if (
-    options.configPath &&
-    fs.existsSync(path.join(path.dirname(options.configPath), DEFAULT_ENV_FILE))
-  ) {
-    loadEnv({
-      path: path.join(path.dirname(options.configPath), DEFAULT_ENV_FILE),
-    });
-  }*/
-
-  let possibleKeys: string[] = ["modelName", "apiKey"];
+  let possibleKeys: string[] = getPossibleKeysCamelCase();
   if (possibleOptions) {
     possibleKeys = possibleKeys.concat(possibleOptions);
   }
@@ -47,12 +73,16 @@ export function enrichOptionsFromEnv(options: any, possibleOptions?: string[]) {
   if (options.apiKey && !options.key) {
     options.key = options.apiKey;
   }
+
+  if (options.llmBaseUrl && !options.url) {
+    options.url = options.llmBaseUrl;
+  }
 }
 
 function tryLoadEnvFromEnvFile(options: any) {
   if (options.env) {
     Logger.debug(
-      `Loading environment variables from ${options.env} (set via the corresponding start parameter)`
+      `Loading environment variables from ${options.env} (set via the corresponding start parameter)`,
     );
 
     loadEnv({ path: path.resolve(options.env) });
@@ -63,11 +93,11 @@ function tryLoadEnvFromEnvFile(options: any) {
 
   const pathToDefaultEnvFile = path.resolve(DEFAULT_ENV_FILE);
   Logger.trace(
-    `Trying to load environment variables from default environment file at ${pathToDefaultEnvFile}`
+    `Trying to load environment variables from default environment file at ${pathToDefaultEnvFile}`,
   );
   if (fs.existsSync(path.resolve(DEFAULT_ENV_FILE))) {
     Logger.debug(
-      `Loading environment variables from default environment file at ${pathToDefaultEnvFile}`
+      `Loading environment variables from default environment file at ${pathToDefaultEnvFile}`,
     );
     loadEnv({ path: path.resolve(DEFAULT_ENV_FILE) });
   } else {
@@ -76,23 +106,23 @@ function tryLoadEnvFromEnvFile(options: any) {
 
   if (!options.configPath) {
     Logger.trace(
-      "No config path set, therefore we can't load env file from config dir"
+      "No config path set, therefore we can't load env file from config dir",
     );
     return;
   }
 
   const pathToEnvFileInConfigDir = path.join(
     path.dirname(options.configPath),
-    DEFAULT_ENV_FILE
+    DEFAULT_ENV_FILE,
   );
 
   Logger.trace(
-    `Trying to load environment variables from environment file in config directory at ${pathToEnvFileInConfigDir}`
+    `Trying to load environment variables from environment file in config directory at ${pathToEnvFileInConfigDir}`,
   );
 
   if (fs.existsSync(pathToEnvFileInConfigDir)) {
     Logger.debug(
-      `Loading environment variables from environment file in config directory at ${pathToEnvFileInConfigDir}`
+      `Loading environment variables from environment file in config directory at ${pathToEnvFileInConfigDir}`,
     );
     loadEnv({
       path: path.join(path.dirname(options.configPath), DEFAULT_ENV_FILE),
@@ -100,31 +130,54 @@ function tryLoadEnvFromEnvFile(options: any) {
     return;
   } else {
     Logger.trace(
-      `No environment file found in config directory at path ${pathToEnvFileInConfigDir}`
+      `No environment file found in config directory at path ${pathToEnvFileInConfigDir}`,
     );
   }
 
   if (isDirectory(options.configPath)) {
     const pathToEnvFileInConfigDir2 = path.join(
       options.configPath,
-      DEFAULT_ENV_FILE
+      DEFAULT_ENV_FILE,
     );
 
     Logger.trace(
-      `The provided config path looks like a directory, trying to load environment file from there at ${pathToEnvFileInConfigDir2}`
+      `The provided config path looks like a directory, trying to load environment file from there at ${pathToEnvFileInConfigDir2}`,
     );
 
     if (fs.existsSync(pathToEnvFileInConfigDir2)) {
       Logger.debug(
-        `Loading environment variables from environment file in config directory at ${pathToEnvFileInConfigDir2}`
+        `Loading environment variables from environment file in config directory at ${pathToEnvFileInConfigDir2}`,
       );
       loadEnv({
         path: pathToEnvFileInConfigDir2,
       });
     } else {
       Logger.trace(
-        `No environment file found in config directory at path ${pathToEnvFileInConfigDir2}`
+        `No environment file found in config directory at path ${pathToEnvFileInConfigDir2}`,
       );
     }
+  }
+}
+
+export function getEnvFileExample(): string[] {
+  let example: string[] = [".env file example:"];
+  for (const option of envOptions) {
+    example.push(`# ${option.description}`);
+    example.push(`${option.key}=${option.exampleValue}\n`);
+  }
+  return example;
+}
+
+export function printEnvFileExample() {
+  const example = getEnvFileExample();
+  for (const line of example) {
+    Logger.info(line);
+  }
+}
+
+export function printEnvFileExampleAsError() {
+  const example = getEnvFileExample();
+  for (const line of example) {
+    Logger.error(line);
   }
 }

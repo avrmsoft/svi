@@ -15,6 +15,9 @@ export function beforeEachSimpleTest(
   fakeFs: fakeFileSystem,
   fakeLogger?: fakeLogger,
   testApiKey: string = "testKey",
+  testModel?: string, // = "gemini-2.5-flash",
+  testService?: string, // = "google",
+  testLlmBaseUrl?: string, //= "http://fake-llm-base-url.com",
 ) {
   beforeEachEndToEndTest(fakeFs, fakeLogger);
   /*pushProcessEnv();
@@ -22,7 +25,12 @@ export function beforeEachSimpleTest(
   if (fakeLogger) {
     fakeLogger.applyMocks();
   }*/
-  enableFakeLLMProcessor({ apiKey: testApiKey });
+  enableFakeLLMProcessor({
+    apiKey: testApiKey,
+    modelName: testModel,
+    service: testService,
+    llmBaseUrl: testLlmBaseUrl,
+  });
 }
 
 export function afterEachSimpleTest(

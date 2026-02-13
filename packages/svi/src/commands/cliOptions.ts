@@ -36,6 +36,12 @@ export const runOptions: CliOption[] = [
     paramName: "key",
   },
   {
+    shortFlag: "-u",
+    fullFlag: "--url <baseUrl>",
+    description: "Base URL for LLM provider",
+    paramName: "baseUrl",
+  },
+  {
     shortFlag: "-e",
     fullFlag: "--env <path>",
     description: "Path to .env file",
