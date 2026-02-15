@@ -10,7 +10,7 @@ import {
   checkProcessExitCalledWith,
   restoreProcessExit,
 } from "../../../testUtils/fakeProcess";
-import FakeLogger from "../../../testUtils/fakeLogger";
+import FakeLogger from "../../../testUtils/fakeLogger/fakeLogger";
 
 describe("A duplicate section test (E2E)", () => {
   let fakeFs: fakeFileSystem;

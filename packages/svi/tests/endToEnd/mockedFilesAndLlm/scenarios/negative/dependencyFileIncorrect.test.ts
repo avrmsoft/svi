@@ -5,7 +5,7 @@ import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
 } from "../../../templates/simpleTest";
-import FakeLogger from "../../../../testUtils/fakeLogger";
+import FakeLogger from "../../../../testUtils/fakeLogger/fakeLogger";
 import {
   mockProcessExit,
   checkProcessExitCalledWith,
@@ -82,7 +82,7 @@ Test prompt
 
     expect(
       fakeLogger.containsErrorLogRegex(
-        /.*Failed to parse SVI file: .*projectDescription.svi/,
+        /.*No 'Prompt' or 'Import Prompts' section found in file.*projectDescription.svi/,
       ),
     ).toBe(true);
 

@@ -18,7 +18,7 @@ import {
   checkProcessExitCalledWith,
   restoreProcessExit,
 } from "../../testUtils/fakeProcess";
-import FakeLogger from "../../testUtils/fakeLogger";
+import FakeLogger from "../../testUtils/fakeLogger/fakeLogger";
 
 function prepareExample(fakeFs: fakeFileSystem) {
   fakeFs.addFile(

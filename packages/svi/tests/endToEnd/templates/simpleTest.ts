@@ -1,5 +1,5 @@
 import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
-import fakeLogger from "../../testUtils/fakeLogger";
+import fakeLogger from "../../testUtils/fakeLogger/fakeLogger";
 import {
   enableFakeLLMProcessor,
   disableFakeLLMProcessor,

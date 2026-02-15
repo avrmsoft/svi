@@ -1,11 +1,11 @@
 import { fakeFileSystem } from "../testUtils/fakeFileSystem/fakeFileSystem";
-import fakeLogger from "../testUtils/fakeLogger";
+import fakeLogger from "../testUtils/fakeLogger/fakeLogger";
 import { vi } from "vitest";
 import { pushProcessEnv, popProcessEnv } from "../testUtils/testUtils";
 
 export function beforeEachEndToEndTest(
   fakeFs: fakeFileSystem,
-  fakeLogger?: fakeLogger
+  fakeLogger?: fakeLogger,
 ) {
   pushProcessEnv();
   fakeFs.applyMocks();
@@ -16,7 +16,7 @@ export function beforeEachEndToEndTest(
 
 export function afterEachEndToEndTest(
   fakeFs: fakeFileSystem,
-  fakeLogger?: fakeLogger
+  fakeLogger?: fakeLogger,
 ) {
   popProcessEnv();
   fakeFs.restoreMocks();

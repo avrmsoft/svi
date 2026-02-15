@@ -22,6 +22,7 @@ const colors = {
 export default class Logger {
   private static logLevel: LogLevel = LogLevel.INFO;
   private static showPrompts: boolean = false;
+  private static errorMessages: string[] = [];
 
   static setLogLevel(level: LogLevel) {
     this.logLevel = level;
@@ -67,6 +68,7 @@ export default class Logger {
     if (err) {
       console.error(err);
     }
+    this.errorMessages.push(message + (err ? ": " + err.toString() : ""));
   }
 
   static debug(message: string) {
@@ -117,6 +119,17 @@ export default class Logger {
       this.trace(
         `LLM response, length ${message.length}: ${message.substring(0, 100)}...`,
       );
+    }
+  }
+
+  static repeatErrorMessages() {
+    if (this.errorMessages.length > 0) {
+      console.error(
+        `${colors.fgRed}[${LogLevel.ERROR}]${colors.reset} Summary of error messages:`,
+      );
+      for (const msg of this.errorMessages) {
+        console.error(`- ${msg}`);
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 import { vi } from "vitest";
+import EnhancedFakeLogChecker from "./enhancedFakeLogChecker";
 
 //Please fake implementation for console.log, console.error, console.warn, console.debug, console.trace
 export default class FakeLogger {
@@ -128,6 +129,10 @@ export default class FakeLogger {
     return this.warnLines.some((line) => line.includes(text));
   }
 
+  public containsWarningLogRegex(pattern: RegExp): boolean {
+    return this.warnLines.some((line) => pattern.test(line));
+  }
+
   public containsDebugLog(text: string): boolean {
     return this.debugLines.some((line) => line.includes(text));
   }
@@ -146,5 +151,25 @@ export default class FakeLogger {
 
   public setSuppressOutputDuringTest(suppress: boolean) {
     this.suppressOutputDuringTest = suppress;
+  }
+
+  public enhancedCheckerForLog(): EnhancedFakeLogChecker {
+    return new EnhancedFakeLogChecker(this.allLines);
+  }
+
+  public enhancedCheckerForErrorLog(): EnhancedFakeLogChecker {
+    return new EnhancedFakeLogChecker(this.errorLines);
+  }
+
+  public enhancedCheckerForDebugLog(): EnhancedFakeLogChecker {
+    return new EnhancedFakeLogChecker(this.debugLines);
+  }
+
+  public enhancedCheckerForWarnLog(): EnhancedFakeLogChecker {
+    return new EnhancedFakeLogChecker(this.warnLines);
+  }
+
+  public enhancedCheckerForTraceLog(): EnhancedFakeLogChecker {
+    return new EnhancedFakeLogChecker(this.traceLines);
   }
 }

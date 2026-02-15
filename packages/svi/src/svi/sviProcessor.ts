@@ -33,9 +33,11 @@ export async function processSVIFile(
   try {
     const parser = new SVIParser(); //rawContent);
     const svi: SVIFile | null = parser.parseFile(filePath);
+    const runStatistics = RunStatistics.getInstance();
 
     if (!svi) {
       logger.error(`Failed to parse SVI file: ${filePath}`);
+      runStatistics.addFileFailed(filePath);
       return false;
     }
 
@@ -75,6 +77,7 @@ export async function processSVIFile(
 
     if (!prompt || prompt.trim().length === 0) {
       logger.error(`Error creating prompt for file: ${filePath}.`);
+      runStatistics.addFileFailed(filePath);
       return false;
     }
 
@@ -87,6 +90,7 @@ export async function processSVIFile(
       logger.error(
         `LLM returned no result for ${filePath} or error occurred. Skipping.`,
       );
+      runStatistics.addFileFailed(filePath);
       return false;
     }
 
@@ -106,7 +110,6 @@ export async function processSVIFile(
 
     cache.updateSviCache(filePath);
 
-    const runStatistics = RunStatistics.getInstance();
     if (fileIsNew) {
       runStatistics.addFileCreated(destPath);
     } else {

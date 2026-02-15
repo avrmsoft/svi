@@ -5,9 +5,14 @@ import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
 } from "../../templates/simpleTest";
+import {
+  mockProcessExit,
+  checkProcessExitCalledWith,
+  restoreProcessExit,
+} from "../../../testUtils/fakeProcess";
 import FakeLogger from "../../../testUtils/fakeLogger/fakeLogger";
 
-describe("Two files Test (E2E)", () => {
+describe("Output summary containing error messages (E2E)", () => {
   let fakeFs: fakeFileSystem;
   let fakeLogger: FakeLogger;
 
@@ -16,13 +21,15 @@ describe("Two files Test (E2E)", () => {
     fakeLogger = new FakeLogger();
     fakeLogger.setSuppressOutputDuringTest(false);
     beforeEachSimpleTest(fakeFs, fakeLogger);
+    mockProcessExit();
   });
 
   afterEach(() => {
     afterEachSimpleTest(fakeFs, fakeLogger);
+    restoreProcessExit();
   });
 
-  it("Generate two files", async () => {
+  it("Two files successful, one file failed", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -62,9 +69,32 @@ test2.js
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
+not_existing.svi
 # Prompt
 Test prompt 2
 `,
+    );
+
+    fakeFs.addFile(
+      "test3.svi",
+      `
+# Destination File
+test3.js
+# Input parameters
+# Output
+# Options
+Active=True
+ProgrammingLanguage=node.js
+# Import prompts
+# Prompt
+Test prompt 3
+`,
+    );
+
+    fakeFs.addFile(
+      "test3.js",
+      `
+      console.log("This is the old content of test3.js");`,
     );
 
     fakeFs.applyMocks();
@@ -77,17 +107,42 @@ Test prompt 2
       "gemini-2.5-flash",
       "-k",
       "testKey",
+      "-l",
+      "TRACE",
+      "-P",
     ]);
 
+    checkProcessExitCalledWith(1);
+
     expect(fakeFs.fileExists("test.js")).toBe(true);
-    expect(fakeFs.fileExists("test2.js")).toBe(true);
-    expect(fakeLogger.containsLog("Number of found .svi files: 2")).toBe(true);
+    expect(fakeFs.fileExists("test3.js")).toBe(true);
+    expect(fakeLogger.containsLog("Number of found .svi files: 3")).toBe(true);
     expect(fakeLogger.containsLog("Number of processed .svi files: 2")).toBe(
       true,
     );
+    expect(
+      fakeLogger.containsWarningLog(
+        "Number of .svi files that failed to process: 1",
+      ),
+    ).toBe(true);
 
     expect(fakeLogger.containsLog("- Created: C:\\temp\\test.js")).toBe(true);
 
-    expect(fakeLogger.containsLog("- Created: C:\\temp\\test2.js")).toBe(true);
+    expect(fakeLogger.containsLog("- Updated: C:\\temp\\test3.js")).toBe(true);
+
+    expect(
+      fakeLogger.containsWarningLogRegex(
+        /- Failed: (C:)?[\\/]+temp[\\/]+test2\.svi/,
+      ),
+    ).toBe(true);
+
+    expect(() =>
+      fakeLogger
+        .enhancedCheckerForLog()
+        .contains("RunManager: Some files failed to process.")
+        .and()
+        .previousNLines(3)
+        .contains("Error creating prompt for file"),
+    ).not.toThrow();
   });
 });

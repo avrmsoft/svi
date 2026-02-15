@@ -13,7 +13,7 @@ import {
   enableFakeMaximalistLLMJsModelUsage,
   disableFakeMaximalistLLMJsModelUsage,
 } from "../../../testUtils/fakeMaximalistLlmJsObjects/fakeMaximalistLlmJsModelUsage";
-import FakeLogger from "../../../testUtils/fakeLogger";
+import FakeLogger from "../../../testUtils/fakeLogger/fakeLogger";
 
 describe("A parameter to output prompts in stdout (E2E)", () => {
   let fakeFs: fakeFileSystem;

@@ -6,4 +6,5 @@ Active=True
 ProgrammingLanguage=
 # Import prompts
 # Prompt
-Tests are using vitest
+Tests are using vitest.
+Please use the 'describe(..   it(..   ) )' construction for tests.

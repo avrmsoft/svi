@@ -1,0 +1,36 @@
+# Destination File
+enhancedFakeLogChecker.ts
+# Dependencies
+# Output
+# Options
+Active=True
+ProgrammingLanguage=
+# Import prompts
+# Prompt
+Create a new class named EnhancedFakeLogChecker.
+(export default class EnhancedFakeLogChecker)
+
+constructor should take an array of string (log lines), and other necessary parameters
+to implement the required features (see below).
+
+It shoulds allow to perform the following checks like:
+
+Log contains some text and in the next 10 lines after it there is another text
+checker.contains("some text").and().nextNLines(10).contains("next text")
+
+Log contains some text and in the previous 10 lines before it there is another text
+checker.contains("some text").and().previousNLines(10).contains("next text")
+
+Log contains some text in one of the last 10 lines
+checker.lastNLines(10).contains("some text in the end")
+
+Apart from 'contains' method, 'containsRegex' method should be also available.
+
+If text not found, please throw an exception. If exception not thrown then the result
+is considered to be true.
+
+Please consider the following issues and avoid them:
+A 'this' type is available only in a non-static member of a class or interface.
+
+Please use this import declaration:
+import EnhancedFakeLogChecker from './../../testUtils/fakeLogger/enhancedFakeLogChecker';

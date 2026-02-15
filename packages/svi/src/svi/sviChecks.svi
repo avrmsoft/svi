@@ -22,8 +22,8 @@ import { SVIFile } from "./types";
 
 Please create a class performing checks on correctness of all the *.svi files in the project.
 Input - a list of full paths to SVI files.
-For now, let it be one check:
-- If several *.svi files have the same destination file (target path after resolution)
+A list of checks:
+* Check 1: If several *.svi files have the same destination file (target path after resolution)
 Then output error about it. 
 Output format example:
 -------
@@ -33,3 +33,11 @@ Error: Multiple SVI files are configured to generate the same destination file: 
 ----
 The error is critical because a file can be overwritten. With a big probability,
 it can happen due to a human error
+
+* Check 2: If *.svi file in the # Destination points to itself (destination filename
+equals to the file name itself including *.svi extension).
+When comparing, use relative path for svi file and destination file to be sure 
+that the comparison is correct.
+
+The error message:
+Error in file <path_to_svi_file>: The destination file cannot be the same as the source file. Please change the destination file and try again.

@@ -1,0 +1,67 @@
+ProcessedSviFilesHash:
+  enhancedFakeLogChecker.svi:
+    hash: a6ea2a3c47b21ffcca5a9d0062ac439c3d32e3c7d3a8db2ff79b4bcea600fd86
+GeneratedDepenenciesExports:
+  enhancedFakeLogChecker.ts:
+    hash: 8c4323626d6f2fb9fd61ceaeb011448d553e7459751ae5bf957826e8b7b8105f
+    exports: |-
+      ```
+      class EnhancedFakeLogChecker {
+        constructor(logLines: string[]);
+
+        /**
+         * Checks if any log line within the current search scope contains the specified text.
+         * Updates the internal state with matching line indexes.
+         * Throws an error if no match is found.
+         * @param text The text to search for.
+         * @returns The current EnhancedFakeLogChecker instance for chaining.
+         */
+        contains(text: string): this;
+
+        /**
+         * Checks if any log line within the current search scope matches the specified regular expression.
+         * Updates the internal state with matching line indexes.
+         * Throws an error if no match is found.
+         * @param regex The regular expression to test against log lines.
+         * @returns The current EnhancedFakeLogChecker instance for chaining.
+         */
+        containsRegex(regex: RegExp): this;
+
+        /**
+         * A connector for chaining conditions.
+         * It requires a preceding match to be valid for subsequent relative checks (like `nextNLines` or `previousNLines`).
+         * Primarily improves readability of the fluent API.
+         * Throws an error if no preceding match was found.
+         * @returns The current EnhancedFakeLogChecker instance for chaining.
+         */
+        and(): this;
+
+        /**
+         * Sets a pending scope to search in the 'n' lines immediately *after* the first line
+         * matched by the preceding 'contains' or 'containsRegex' call.
+         * Requires a preceding match to be valid.
+         * Throws an error if no preceding match was found.
+         * @param n The number of lines to search in after the last match.
+         * @returns The current EnhancedFakeLogChecker instance for chaining.
+         */
+        nextNLines(n: number): this;
+
+        /**
+         * Sets a pending scope to search in the 'n' lines immediately *before* the first line
+         * matched by the preceding 'contains' or 'containsRegex' call.
+         * Requires a preceding match to be valid.
+         * Throws an error if no preceding match was found.
+         * @param n The number of lines to search in before the last match.
+         * @returns The current EnhancedFakeLogChecker instance for chaining.
+         */
+        previousNLines(n: number): this;
+
+        /**
+         * Sets the search scope to the last 'n' lines of the log.
+         * This effectively starts a new search context, clearing any pending relative scopes.
+         * @param n The number of lines from the end of the log to search within.
+         * @returns The current EnhancedFakeLogChecker instance for chaining.
+         */
+        lastNLines(n: number): this;
+      }
+      ```

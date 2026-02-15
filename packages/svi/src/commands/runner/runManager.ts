@@ -135,6 +135,7 @@ export class RunManager {
       if (result) {
         logger.info("RunManager: Done.");
       } else {
+        logger.repeatErrorMessages();
         logger.error("RunManager: Some files failed to process.");
       }
 
@@ -143,7 +144,16 @@ export class RunManager {
         "Number of processed .svi files: " +
           RunStatistics.getInstance().getTotalFilesProcessed(),
       );
+      if (RunStatistics.getInstance().getTotalFilesFailed() > 0) {
+        logger.warn(
+          "Number of .svi files that failed to process: " +
+            RunStatistics.getInstance().getTotalFilesFailed(),
+        );
+      }
       RunStatistics.getInstance().logWrittenFiles();
+      if (RunStatistics.getInstance().getTotalFilesFailed() > 0) {
+        RunStatistics.getInstance().logErrorFiles();
+      }
 
       return result;
     } catch (err) {

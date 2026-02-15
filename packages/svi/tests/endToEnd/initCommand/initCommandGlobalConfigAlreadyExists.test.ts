@@ -6,7 +6,7 @@ import {
   afterEachSimpleTest,
 } from "../templates/simpleTest";
 import { prepareForComparison } from "../../testUtils/testUtils";
-import FakeLogger from "../../testUtils/fakeLogger";
+import FakeLogger from "../../testUtils/fakeLogger/fakeLogger";
 import {
   mockProcessExit,
   checkProcessExitCalledWith,

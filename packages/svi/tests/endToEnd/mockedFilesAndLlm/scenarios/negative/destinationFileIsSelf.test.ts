@@ -6,8 +6,13 @@ import {
   afterEachSimpleTest,
 } from "../../../templates/simpleTest";
 import FakeLogger from "../../../../testUtils/fakeLogger/fakeLogger";
+import {
+  mockProcessExit,
+  checkProcessExitCalledWith,
+  restoreProcessExit,
+} from "../../../../testUtils/fakeProcess";
 
-describe("A case with the 'Import prompts' parameter from not *.svi file (E2E)", () => {
+describe("Destination file lines to itself (E2E)", () => {
   let fakeFs: fakeFileSystem;
   let fakeLogger: FakeLogger;
 
@@ -16,51 +21,40 @@ describe("A case with the 'Import prompts' parameter from not *.svi file (E2E)",
     fakeLogger = new FakeLogger();
     fakeLogger.setSuppressOutputDuringTest(false);
     beforeEachSimpleTest(fakeFs, fakeLogger);
+    mockProcessExit();
   });
 
   afterEach(() => {
+    restoreProcessExit();
     afterEachSimpleTest(fakeFs, fakeLogger);
   });
 
-  it("Generate one file considering additional context from imported prompts from not *.svi file", async () => {
+  it("Check that the target file is not generated when destination file is self-referencing, and that error message is raised", async () => {
     fakeFs.addFile(
       "svi.json",
       `
       {
         "programmingLanguage": "node.js",
         "searchPaths": [
-          "*"
+          "**/*"
         ],
         "ignorePaths": []
       }`,
     );
 
     fakeFs.addFile(
-      "someCode.js",
-      `
-export interface TestInterface {
-  field1: string;
-  field2: number;
-
-  someMethod(): string;
-}
-`,
-    );
-
-    fakeFs.addFile(
-      "test.svi",
+      "folder\\test.svi",
       `
 # Destination File
-test.js
-# Input parameters
+test.svi
+# Dependencies
 # Output
 # Options
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
-someCode.js
 # Prompt
-Please write an implementation class for the given interface.
+Test prompt
 `,
     );
 
@@ -76,15 +70,23 @@ Please write an implementation class for the given interface.
       "testKey",
     ]);
 
-    expect(fakeFs.fileExists("test.js")).toBe(true);
+    checkProcessExitCalledWith(1);
 
-    const content = fakeFs.fileContent("test.js");
+    const sviFileAfterRun = fakeFs.fileContent("folder\\test.svi");
+    expect(sviFileAfterRun)
+      .contains("# Destination File")
+      .and.contains("test.svi")
+      .and.contains("# Dependencies")
+      .and.contains("# Output")
+      .and.contains("# Options")
+      .and.contains("Active=True")
+      .and.contains("ProgrammingLanguage=node.js")
+      .and.contains("# Import prompts")
+      .and.contains("# Prompt")
+      .and.contains("Test prompt");
 
-    expect(content).toContain(
-      "Please write an implementation class for the given interface",
+    fakeLogger.containsErrorLogRegex(
+      /Error in file.*test\.svi: The destination file cannot be the same as the source file\. Please change the destination file and try again\./,
     );
-    expect(content).toContain("export interface TestInterface");
-
-    expect(fakeLogger.hasErrors()).toBe(false);
   });
 });

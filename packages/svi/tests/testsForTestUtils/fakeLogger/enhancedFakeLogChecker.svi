@@ -1,0 +1,23 @@
+# Destination File
+enhancedFakeLogChecker.test.ts
+# Dependencies
+# Output
+# Options
+Active=True
+ProgrammingLanguage=
+# Import prompts
+../../testPrompts.svi
+../../testUtils/fakeLogger/enhancedFakeLogChecker.svi
+../../testUtils/fakeLogger/enhancedFakeLogChecker.ts
+# Prompt
+Please create unit test for testing enhancedFakeLogChecker.ts.
+Please see the specification for class EnhancedFakeLogChecker
+and examples below.
+
+Please limit considered test cases to the following list:
+1. Check if last N lines contains text - one positive case, one negative case
+2. The log contains a text, and in 3 previous line there is another text:
+   - One positive case
+   - One negative case when this text exists in some line but not in previous 3 lines
+3. Check ordinary contains - one positive case, one negative case
+4. Check ordinary containsRegex - one positive case, one negative case

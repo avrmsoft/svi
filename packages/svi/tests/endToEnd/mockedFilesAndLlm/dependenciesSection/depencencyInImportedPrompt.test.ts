@@ -5,7 +5,7 @@ import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
 } from "../../templates/simpleTest";
-import FakeLogger from "../../../testUtils/fakeLogger";
+import FakeLogger from "../../../testUtils/fakeLogger/fakeLogger";
 import {
   mockProcessExit,
   restoreProcessExit,
@@ -38,13 +38,13 @@ describe("Dependencies Section E2E", () => {
           "**/*"
         ],
         "ignorePaths": []
-      }`
+      }`,
     );
 
     // Setup the dependency file
     fakeFs.addFile(
       "dependency.js",
-      `console.log("This is content from dependency.js");`
+      `console.log("This is content from dependency.js");`,
     );
 
     // Setup the imported.svi file, which has a dependency
@@ -56,7 +56,7 @@ dependency.js
 # Prompt
 Your task is to extract all declarations from the code
 This is additional content from imported.svi.
-`
+`,
     );
 
     // Setup the mainFile.svi, which imports imported.svi and has a destination file
@@ -69,7 +69,7 @@ mainfile.js
 ../imported.svi
 # Prompt
 This is content from mainFile.svi.
-`
+`,
     );
 
     fakeFs.applyMocks();
@@ -95,13 +95,19 @@ This is content from mainFile.svi.
     expect(generatedContent).toBeDefined();
 
     // Assert that content from dependency.js is present
-    expect(generatedContent).toContain(`console.log("This is content from dependency.js");`);
+    expect(generatedContent).toContain(
+      `console.log("This is content from dependency.js");`,
+    );
 
     // Assert that the specific phrase from imported.svi is present
-    expect(generatedContent).toContain("Your task is to extract all declarations from the code");
+    expect(generatedContent).toContain(
+      "Your task is to extract all declarations from the code",
+    );
 
     // Assert that other content from imported.svi is present
-    expect(generatedContent).toContain("This is additional content from imported.svi.");
+    expect(generatedContent).toContain(
+      "This is additional content from imported.svi.",
+    );
 
     // Assert that content from mainFile.svi is present
     expect(generatedContent).toContain("This is content from mainFile.svi.");
