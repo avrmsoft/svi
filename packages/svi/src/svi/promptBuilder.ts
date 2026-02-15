@@ -6,6 +6,7 @@ import { SVIImportPrompts } from "./sviImportPrompts";
 import { SviConfig } from "../config/config";
 import SviDependencies from "./sviDependencies";
 import { LLMProcessor } from "../llm/llm";
+import RunStatistics from "../commands/runner/runStatistics";
 
 /**
  * Build a final prompt text based on a SVI-File.
@@ -27,6 +28,7 @@ export async function buildPrompt(
       : "";
 
   if (!svi.prompt) {
+    RunStatistics.getInstance().addFileFailed(svi.getSviFileFullPath());
     throw new Error("SVI file is missing the main prompt section.");
   }
 
@@ -39,6 +41,7 @@ export async function buildPrompt(
     const sviDependencies = new SviDependencies(llm, config);
     const loaded = await sviDependencies.loadDependenciesDeclarations(svi);
     if (!loaded) {
+      RunStatistics.getInstance().addFileFailed(svi.getSviFileFullPath());
       throw new Error(
         `Failed to load dependencies declarations for file ${svi.getSviFileName()}.`,
       );

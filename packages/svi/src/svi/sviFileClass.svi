@@ -23,9 +23,13 @@ This ensures working of production code and tests in various environments
 constructor of SviFileClass should have no mandatory parameters.
 
 Additional guidelines:
-Please generate class so that to avoid errors like incompatible types, and others.
+* Please generate class so that to avoid errors like incompatible types, and others.
 (e.g., if a method SVIFile interface return string, don't return string | undefined)
 in the corresponding implemented method.
+* Recommended import for Config:
+```typescript
+import { Config } from "../config/config";
+```
 
 Algorithm of getSviFileRelativePath():
 * Get config instance by using Config.getInstance() from ../config/config.ts
