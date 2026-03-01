@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 import LLM, { Input, Options } from "@themaximalist/llm.js";
 import LlmJsFactories from "../../../src/llm/theMaximalistLlmJs/LlmJsFactories";
+import { clearMarkdownBackticks } from "./../testUtils";
 //import LLMWrapper from "../../../src/llm/theMaximalistLlmJs/LlmJsClassWrapper";
 
 class FakeLlm {
@@ -40,12 +41,12 @@ class FakeLlm {
   async send() {
     if (this.options.model !== this.benchmarkModel) {
       throw new Error(
-        `Expected model=${this.benchmarkModel}, got ${this.options.model}`
+        `Expected model=${this.benchmarkModel}, got ${this.options.model}`,
       );
     }
     if (this.options.apiKey !== this.benchmarkApiKey) {
       throw new Error(
-        `Expected apiKey=${this.benchmarkApiKey}, got ${this.options.apiKey}`
+        `Expected apiKey=${this.benchmarkApiKey}, got ${this.options.apiKey}`,
       );
     }
     if (
@@ -53,19 +54,21 @@ class FakeLlm {
       this.options.service !== this.benchmarkService
     ) {
       throw new Error(
-        `Expected service=${this.benchmarkService}, got ${this.options.service}`
+        `Expected service=${this.benchmarkService}, got ${this.options.service}`,
       );
     } else if (!this.options.service) {
       throw new Error("Expected service to be defined and not empty");
     }
     const systemPrompt = this.input.messages.find(
-      (m: any) => m.role === "system"
+      (m: any) => m.role === "system",
     )?.content;
     const userPrompt = this.input.messages.find(
-      (m: any) => m.role === "user"
+      (m: any) => m.role === "user",
     )?.content;
 
-    return `Fake LLM answer for system prompt = ${systemPrompt}, user prompt = ${userPrompt}`;
+    const clearedUserPrompt = clearMarkdownBackticks(userPrompt);
+
+    return `Fake LLM answer for system prompt = ${systemPrompt}, user prompt = ${clearedUserPrompt}`;
   }
 
   addMessage(role: string, content: any) {
@@ -94,7 +97,7 @@ export function enableFakeMaximalistLLMJsLLM(requiredOptions: {
       const fake = new FakeLlm(input, options);
       fake.setBenchmarkOptions(requiredOptions);
       return fake as unknown as InstanceType<typeof LLM>;
-    }
+    },
   );
 }
 

@@ -36,7 +36,7 @@ describe("Two files test (E2E)", () => {
     disableFakeMaximalistLLMJsModelUsage();
   });
 
-  it("Generate one file", async () => {
+  it("Generate two files", async () => {
     fakeFs.addFile(
       "svi.json",
       `
@@ -46,7 +46,7 @@ describe("Two files test (E2E)", () => {
           "*"
         ],
         "ignorePaths": []
-      }`
+      }`,
     );
 
     fakeFs.addFile(
@@ -62,7 +62,7 @@ ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
 Test prompt
-`
+`,
     );
 
     fakeFs.addFile(
@@ -78,7 +78,7 @@ ProgrammingLanguage=node.js
 # Import prompts
 # Prompt
 Test prompt 2
-`
+`,
     );
 
     fakeFs.applyMocks();
@@ -102,7 +102,7 @@ Test prompt 2
     expect(content).toContain("without any explanations");
     expect(content).toContain("installation manual");
     expect(content).toContain(
-      "The code should fulfill the following requirements"
+      "The code should fulfill the following requirements",
     );
 
     const content2 = fakeFs.fileContent("test2.js");
@@ -112,7 +112,7 @@ Test prompt 2
     expect(content2).toContain("without any explanations");
     expect(content2).toContain("installation manual");
     expect(content2).toContain(
-      "The code should fulfill the following requirements"
+      "The code should fulfill the following requirements",
     );
   });
 });

@@ -1,0 +1,45 @@
+# Destination File
+codeClear.ts
+# Dependencies
+# Output
+export function clearCodeInLlmResponse(llmResponse: string) : string
+# Options
+Active=False
+# Import prompts
+# Prompt
+Cases:
+1. If the response contains one or more Markdown code blocks (```),
+extract and return only the content inside the code block(s), 
+without the Markdown markers.
+
+Ignore any text lines outside the code blocks.
+
+Example:
+=========
+Some line before code
+Line 2 before code
+```Python
+def hello():
+  print("Hello world")
+```
+Some text after code
+Line 2 after code
+========
+
+Result:
+========
+def hello():
+  print("Hello word")
+========
+
+2. If the response does not contain any Markdown code blocks,
+return the full response unchanged.
+
+Guidelines: Please don't use regular expressions.
+Instead, create an algorithm with a loop over code lines.
+example:
+```typescript
+...
+if(line.trim().startsWith(`\`\`\``)) {
+...
+```

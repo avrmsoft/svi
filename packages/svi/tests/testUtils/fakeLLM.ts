@@ -1,5 +1,6 @@
 import { vi } from "vitest";
 import { LLMProcessor } from "../../src/llm/llm";
+import { clearMarkdownBackticks } from "./testUtils";
 
 export interface RequiredLLMOptions {
   modelName?: string;
@@ -15,7 +16,10 @@ const SERVICE_MODEL_MAPPING = [
   { model: "gemini-2.5-flash", service: "gemini" },
 ];
 
-export function enableFakeLLMProcessor(requiredOptions?: RequiredLLMOptions) {
+export function enableFakeLLMProcessor(
+  requiredOptions?: RequiredLLMOptions,
+  returnResponse?: string,
+) {
   // ✅ Mock für Instanzmethode
   askSpy = vi
     .spyOn(LLMProcessor.prototype, "ask")
@@ -64,7 +68,11 @@ export function enableFakeLLMProcessor(requiredOptions?: RequiredLLMOptions) {
         }
       }
 
-      return `Fake LLM answer for system prompt = ${systemPrompt}, user prompt = ${prompt}`;
+      if (returnResponse) {
+        return returnResponse;
+      }
+      const clearedPrompt = clearMarkdownBackticks(prompt);
+      return `Fake LLM answer for system prompt = ${systemPrompt}, user prompt = ${clearedPrompt}`;
     });
 
   // ✅ Mock für STATISCHE Methode

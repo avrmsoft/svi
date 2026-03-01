@@ -32,3 +32,10 @@ export function popProcessEnv(): void {
 export function prepareForComparison(str: string | undefined): string {
   return str?.toLowerCase().replace(/\s+/g, "") || "";
 }
+
+export function clearMarkdownBackticks(prompt: string): string {
+  // Remove ALL occurrences of ```
+  const clearedPrompt = prompt.replace(/```/g, "");
+
+  return clearedPrompt;
+}

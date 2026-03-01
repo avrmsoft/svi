@@ -9,7 +9,7 @@ import logger from "../utils/logger";
 import { buildPrompt } from "./promptBuilder";
 import { LLMProcessor } from "../llm/llm";
 import * as fileUtils from "../utils/file";
-import { clearContentFromMarkdownCodeMarkers } from "../utils/utils";
+import { clearCodeInLlmResponse } from "../utils/codeClear";
 import { SviConfig } from "../config/config";
 import RunStatistics from "../commands/runner/runStatistics";
 
@@ -94,7 +94,7 @@ export async function processSVIFile(
       return false;
     }
 
-    const clearedCode = clearContentFromMarkdownCodeMarkers(generated);
+    const clearedCode = clearCodeInLlmResponse(generated);
 
     const destPath = fileUtils.constructFullPath(
       fileFolder,
