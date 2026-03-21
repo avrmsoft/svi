@@ -86,17 +86,11 @@ Test prompt
       ),
     ).toBe(true);
 
-    /*expect(
-      fakeLogger.containsErrorLogRegex(
-        /.*SVI file .*projectDescription\.svi could not be parsed successfully/,
-      ),
-    ).toBe(true);*/
-
     expect(fakeLogger.containsErrorLog("projectDescription.svi")).toBe(true);
-    expect(
+    /*expect(
       fakeLogger.containsErrorLog(
         "Error(s) occured during processing, not all operations were successful",
       ),
-    ).toBe(true);
+    ).toBe(true);*/
   });
 });

@@ -2,9 +2,88 @@ ProcessedSviFilesHash:
   cacheManager.svi:
     hash: 3b7287c642896086f43fca35223f875f8cdaffeb6e687cc2672953b28eead754
   sviChecks.svi:
-    hash: 6db52fbcd8c1446753257fd9cfb9534f9bdf425b86cb5ffc2ef05747eddfd5cd
+    hash: 865487db604d6dc238abd2eb306dc860b5ad43d9f9f91f636704dca7caa79670
   sviFileClass.svi:
     hash: 48b8a2280251dfea09ea4ab9d706c167f043d1deb42344eea1d6c986d3f1f5e9
   sviDependencies.svi:
-    hash: ffd85c02ac3bd229bbc942c24501f0c191abae38daa5b7b616243d621f217441
-GeneratedDepenenciesExports: {}
+    hash: cd9f6b71c2c296e2c54418df5ed2026848df104567dc60403e0c3f72d670b7f8
+  sviFileOrderOptimizer.svi:
+    hash: 19fc88db14441596ff7899cc723b8417e7d4580b9ed2cbec73fda4dcc4a14517
+GeneratedDepenenciesExports:
+  types.ts:
+    hash: 16cef8e12ebaa9acf59fd2eb79d571c7356d22688a178e838177f2d73ad36500
+    exports: |-
+      type SVIOptionValue = string | boolean;
+
+      interface ImportPromptPath {
+        relativePath: string;
+        fullPath: string;
+      }
+
+      interface SVIFile {
+        filePath?: string;
+        destinationFile?: string;
+        dependencies?: string[];
+        output?: string[];
+        options?: Record<string, SVIOptionValue>;
+        importPrompts?: string[];
+        prompt?: string;
+        getSviFileName(): string;
+        getSviFileDirectory(): string;
+        getSviFileRelativePath(): string;
+        getSviFileFullPath(): string;
+        getDestinationFileFullPath(): string | undefined;
+        getDestinationFileRelativePath(): string | undefined;
+        getImportPromptsFullPaths(): ImportPromptPath[];
+        getDependenciesFullPaths(): ImportPromptPath[];
+      }
+
+      interface SviFileToLoad {
+        filePath: string;
+        isPreliminary: boolean;
+      }
+  sviParser.ts:
+    hash: 79d4dab49963015c215d293d0d2f33b6395fe624407e426f1f97d03ea53c9b65
+    exports: |-
+      ```typescript
+      class SVIParser {
+        /**
+         * Reads and parses a .svi file.
+         * @param filePath Full path to the .svi file.
+         */
+        public parseFile(filePath: string): SVIFile | null;
+
+        /**
+         * Parses the raw content of a .svi file.
+         * @param content Raw text content
+         * @param filePath Optional (for error context)
+         */
+        public parseContent(content: string, filePath?: string): SVIFile | null;
+
+        public logParseMessages(): void;
+      }
+      ```
+  sviFileClass.ts:
+    hash: ebdc15fcccdc8758a7c38fcc734887d2ce8cbf81739099712b6bf11b764329ff
+    exports: |-
+      ```
+      class SviFileClass implements SVIFile {
+        filePath?: string;
+        destinationFile?: string;
+        dependencies?: string[];
+        output?: string[];
+        options?: Record<string, SVIOptionValue>;
+        importPrompts?: string[];
+        prompt?: string;
+
+        constructor(data?: Partial<SVIFile>);
+        getSviFileName(): string;
+        getSviFileDirectory(): string;
+        getSviFileRelativePath(): string;
+        getSviFileFullPath(): string;
+        getDestinationFileFullPath(): string | undefined;
+        getDestinationFileRelativePath(): string | undefined;
+        getImportPromptsFullPaths(): ImportPromptPath[];
+        getDependenciesFullPaths(): ImportPromptPath[];
+      }
+      ```

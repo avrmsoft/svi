@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import fs from "fs";
-import { SVIParser } from "../../src/svi/sviParser";
+import { SVIParser } from "../../src/svi/sviParser/sviParser";
 
 vi.mock("fs");
 

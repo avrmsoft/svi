@@ -20,8 +20,12 @@ The main specification goes below:
 Output parameters:
 {{outputParameters}}.
 
-Declarations that can be used in the written code:
+Declarations from external files that are dependencies of the generated file 
+and can be useful for writing the code.
+Note!!! Please don't redeclare them in the generated code; instead,
+import/include etc them from source files using programming language syntax!!!
 {{dependencies}}
+--- End of declarations from dependencies ---
 
 Additional context:
 {{importedPrompts}}

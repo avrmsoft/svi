@@ -1,0 +1,48 @@
+# Destination File
+sviDependencyFinder.ts
+
+# Dependencies
+../types.ts
+types.ts
+
+# Output
+export default class SviDependencyFinder
+
+# Options
+Active=True
+
+# Import prompts
+sviFileOrderOptimizerPrompt.svi
+
+# Prompt
+Methods
+* constructor(sviFiles: SVIFile[])
+Stores to an attribute
+
+* findDependencies() : SviDependencyFinder
+
+Step 1.
+For each SVIFile it detects target file with
+SVIFile.getDestinationFileFullPath
+
+Step 2.
+Then it loops through all the svi files, then for each file loops 
+at each file in dependencies (array which is result of 
+SVIFile.getDependenciesFullPaths()), and if a dependency file is among
+destination files found at step 1, then the source SVIFile for the destination
+is added to this SVI file dependencies (SviDependency.SviFilesItDependsOn).
+If no dependencies are found, an empty array is left in the SviDependency
+interface.
+
+The array of SviDependency elements for each of svi files is stored in class attribute.
+
+* getFoundDependencies() : SviDependency[]
+Returns dependencies found by findDependencies
+
+* fileDependsOnAnother(sviFile : SVIFile, sviFileItDependsOnOrNot : SVIFile) : boolean
+Find sviFile in the list of dependencies and check if sviFileItDependsOnOrNot is in
+its  SviDependency.SviFilesItDependsOn attribute
+
+Recommended imports:
+import { SVIFile } from "../types";
+import { SviDependency } from "./types";

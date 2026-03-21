@@ -1,0 +1,41 @@
+# Destination File
+sviDependencyCycleAnalyzer.ts
+
+# Dependencies
+../types.ts
+types.ts
+
+# Output
+export default class SviDependencyCycleAnalyzer
+
+# Options
+Active=True
+
+# Import prompts
+sviFileOrderOptimizerPrompt.svi
+
+# Prompt
+The main purpose of this class is to analyze dependencies and find cycled dependencies.
+Cycled dependencies is when a file depends on the other, and the other depends on the
+first one explicitly or through a chain of other dependencies.
+
+Methods of class
+
+* constructor(sviDependencies: SviDependency[])
+Stores in an attribute
+
+* findCycles
+Analyzes the sviDependencies[] array and prepares structures necessary for other methods
+
+* isFileInCycle(sviFile : SVIFile) : boolean
+If the file is contained in at least one cycle, then return true
+
+* areFilesInTheSameCycle(sviFile1 : SVIFile, sviFile2 : SVIFile) : boolean
+
+If both files are contained in the same dependency cycle, then return true
+
+Recommended imports:
+```ts
+import { SVIFile, SviFileToLoad, ImportPromptPath } from "../types";
+import { SviDependency } from "./types";
+```

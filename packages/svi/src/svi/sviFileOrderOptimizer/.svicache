@@ -1,0 +1,33 @@
+ProcessedSviFilesHash:
+  sviDependencyCycleAnalyzer.svi:
+    hash: e922f2ce4878a8bfb83254cf322abb94d42f7f1f69323a2e4143d09f6902ebe4
+  sviDependencyFinder.svi:
+    hash: d938ae8b76720218180647a3d65ef846f8d2211e21316357532006ead452d73e
+  sviFileOrderOptimizer.svi:
+    hash: 28b669a040d2df741ec1076832a36bf8df08fad7235bc539cb06273441f9269a
+GeneratedDepenenciesExports:
+  types.ts:
+    hash: b514293c616cea3358b88f029ff8e17c30727cbba52e4f52deac654ac76897a4
+    exports: |-
+      interface SviDependency
+        SVIFile: SVIFile
+        SviFilesItDependsOn: SVIFile[]
+  sviDependencyFinder.ts:
+    hash: dbbf00172300fbd253905ad2a79679c5e08dada630ab3e4919f3b1d395f0d1fd
+    exports: |-
+      `class SviDependencyFinder`
+        `constructor(sviFiles: SVIFile[])`
+        `findDependencies(): SviDependencyFinder`
+        `getFoundDependencies(): SviDependency[]`
+        `fileDependsOnAnother(sviFile: SVIFile, sviFileItDependsOnOrNot: SVIFile): boolean`
+  sviDependencyCycleAnalyzer.ts:
+    hash: 9cece6c09df357879978686f67ac72563c9990937ca505455d56b77e191b341b
+    exports: |-
+      ```
+      class SviDependencyCycleAnalyzer {
+        constructor(sviDependencies: SviDependency[]);
+        findCycles(): void;
+        isFileInCycle(sviFile: SVIFile): boolean;
+        areFilesInTheSameCycle(sviFile1: SVIFile, sviFile2: SVIFile): boolean;
+      }
+      ```

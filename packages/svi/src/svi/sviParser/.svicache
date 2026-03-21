@@ -1,0 +1,35 @@
+ProcessedSviFilesHash:
+  parsedSviDirectory.svi:
+    hash: 8d62484513d27eb43d78625fa5670ce8e713ce5407f616b101fa5c2b3cab3d22
+GeneratedDepenenciesExports:
+  sviParser.ts:
+    hash: 54060e0fcafd043f9d877f3bf8de1f8f9dab0a1667947fa84712946c4b65c648
+    exports: |-
+      ```typescript
+      export class SVIParser {
+        /**
+         * Reads and parses a .svi file.
+         * @param filePath Full path to the .svi file.
+         */
+        public parseFile(filePath: string): SVIFile | null;
+
+        /**
+         * Parses the raw content of a .svi file.
+         * @param content Raw text content
+         * @param filePath Optional (for error context)
+         */
+        public parseContent(content: string, filePath?: string): SVIFile | null;
+
+        public logParseMessages(): void;
+      }
+      ```
+  parsedSviDirectory.ts:
+    hash: 2c968b0b755dfd84242bad2eda07d5cbe0922cc24472f6c14849cd020ab6aa54
+    exports: |-
+      ```typescript
+      declare class ParsedSviDirectory {
+        static getInstance(): ParsedSviDirectory;
+        getParsedSviFile(sviFilePath: string): SVIFile | null;
+        logParseMessagesForFile(sviFilePath: string): void;
+      }
+      ```

@@ -17,7 +17,8 @@ Active=True
 Declarations from external files for reference, don't add them in the generated code
 They are provided for reference, please don't redefine them. You are 
 generating a production ready code!!!
---- Dependencies declarations start
+--- Dependencies declarations start; these declarations are declared in other files,
+don't redeclare them!!!
 
 Uses interface from ./types.ts (in the same folder)
 export interface SVIFile {
@@ -65,19 +66,21 @@ function getRelativePath(fileOrFolderFullPath: string, basePath: string): string
 
 --- Dependencies declarations end
 
-The SviDependencies.constructor takes a variable of type LLMProcessor and a
-variable of type Config.
+The SviDependencies.constructor takes a variable of type LLMProcessor, a
+variable of type Config, and a boolean flag isPreliminary.
 It's main method is:
 async loadDependenciesDeclarations(sviFile: SVIFile)
 
 Algorithm:
 1. Loop through dependencies
 2. One dependency is a filename. It can be eigher a full path or relative path.
-If file is not found in that location, output error via logger and return false
+If file is not found in that location and isPreliminary = false, then 
+we need to output error via logger and return false
 in the end.
 Message: 
 "File <filepath as in sviFile> from 'Dependencies' section not found in the path <resolved path>".
 (fix english language errors in message if any)
+If isPreliminary = true, then just skip the item and go to the next one.
 3. Check cache. Create instance of CacheManager with directory = directory where
 the dependency file is located.
 Run method isFileExportsCacheValid. If true then get the cached declarations by
@@ -93,10 +96,12 @@ To parameter promptDescription pass string:
 If LLM returned no result, it is error, log it and return false in the end.
 5. Update cache by calling method CacheManager.updateFileExportsInCache
 6. Continue for the next dependency file
-7. Save all the dependencies declarations in attributes of a class
+7. Save all the successfully loaded dependencies declarations in attributes of a class
 along with relative paths of dependencies files relative to project folder;
 for this use function getRelativePath(dependencyFullPath,config.configDir)
-8. Return true in case of success and false in case of error
+8. Return true in case of success and false in case of error;
+If isPreliminary = true, then even if some dependencies files were not found 
+(in step 2), then anyway return true.
 
 method getDependenciesDeclarationsAsString
 returns dependencies declaration loaded by loadDependenciesDeclarations

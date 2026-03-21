@@ -1,0 +1,36 @@
+# Destination File
+parsedSviDirectory.ts
+
+# Dependencies
+../types.ts
+sviParser.ts
+
+# Output
+export default class ParsedSviDirectory
+
+# Options
+Active=True
+
+# Import prompts
+../../projectDescription.svi
+
+# Prompt
+This is a registry of parsed objects of type SVIFile.
+It is a singleton.
+
+method public static getInstance(): ParsedSviDirectory
+method getParsedSviFile(sviFilePath : string) : SVIFile | null
+
+This method checks if parsed svi file is in the directory of SVI files.
+If not, it is parsed with the SVIParser class which returns SVIFile type.
+And the parsed file is stored to the directory.
+If parsing is unsuccessful, the method returns null.
+
+Additional requirements:
+* For each file being parsed a SVIParser instance should be created and stored in 
+a class attribute
+* Unsuccessfully parsed files also should be stored to avoid several attempts
+
+method logParseMessagesForFile(sviFilePath : string) : void
+It calls the method SVIParser.logParseMessages for the corresponding instance of
+the SVIParser class that correspond to this file.

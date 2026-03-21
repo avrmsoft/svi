@@ -21,4 +21,10 @@ export interface SVIFile {
   getDestinationFileFullPath(): string | undefined;
   getDestinationFileRelativePath(): string | undefined;
   getImportPromptsFullPaths(): ImportPromptPath[];
+  getDependenciesFullPaths(): ImportPromptPath[];
+}
+
+export interface SviFileToLoad {
+  filePath: string;
+  isPreliminary: boolean;
 }

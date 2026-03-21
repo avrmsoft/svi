@@ -2,7 +2,8 @@ import { SVIFile } from "./types";
 import Logger from "../utils/logger";
 //import path from "path";
 import fs from "fs";
-import { SVIParser } from "./sviParser";
+//import { SVIParser } from "./sviParser/sviParser";
+import ParsedSviDirectory from "./sviParser/parsedSviDirectory";
 import { computeHashFromString } from "../utils/utils";
 import { fileHasExtension, getRelativePath } from "../utils/file";
 import SviDependencies from "./sviDependencies";
@@ -18,14 +19,23 @@ interface ImportedPrompt {
 export class SVIImportPrompts {
   private sviFile: SVIFile;
   private importedPrompts: ImportedPrompt[] = [];
-  private sviParser: SVIParser = new SVIParser();
+  //private sviParser: SVIParser = new SVIParser();
   private llmProcessor: LLMProcessor;
   private config: SviConfig;
+  private isPreliminary: boolean;
+  private sviParserDirectory: ParsedSviDirectory =
+    ParsedSviDirectory.getInstance();
 
-  constructor(sviFile: SVIFile, llmProcessor: LLMProcessor, config: SviConfig) {
+  constructor(
+    sviFile: SVIFile,
+    llmProcessor: LLMProcessor,
+    config: SviConfig,
+    isPreliminary: boolean = false,
+  ) {
     this.sviFile = sviFile;
     this.llmProcessor = llmProcessor;
     this.config = config;
+    this.isPreliminary = isPreliminary;
   }
 
   public getImportedPrompts(): ImportedPrompt[] {
@@ -81,7 +91,7 @@ export class SVIImportPrompts {
 
   private loadSVIFile(filePath: string): SVIFile | null {
     try {
-      return this.sviParser.parseFile(filePath);
+      return this.sviParserDirectory.getParsedSviFile(filePath);
     } catch (error) {
       Logger.error(`Error loading SVI file ${filePath}: ${error}`);
       return null;
@@ -135,6 +145,7 @@ export class SVIImportPrompts {
       const sviDependencies = new SviDependencies(
         this.llmProcessor,
         this.config,
+        this.isPreliminary,
       );
       const loaded =
         await sviDependencies.loadDependenciesDeclarations(dependencySVI);
@@ -184,7 +195,8 @@ export class SVIImportPrompts {
       Logger.error(
         `Failed to load imported prompt from dependency ${fullPath}`,
       );
-      this.sviParser.logParseMessages();
+      //this.sviParser.logParseMessages();
+      this.sviParserDirectory.logParseMessagesForFile(fullPath);
     }
     return result;
   }

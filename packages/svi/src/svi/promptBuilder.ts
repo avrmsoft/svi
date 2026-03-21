@@ -17,6 +17,7 @@ export async function buildPrompt(
   svi: SVIFile,
   config: SviConfig,
   llm: LLMProcessor,
+  isPreliminary: boolean,
 ): Promise<string> {
   const programmingLanguage = optionValueAsString(
     svi.options?.ProgrammingLanguage || config.programmingLanguage || "Node.js",
@@ -38,7 +39,7 @@ export async function buildPrompt(
   // Add the dependencies declarations if any
   let declarationsFromDependencies = "";
   if (svi.dependencies && svi.dependencies.length > 0) {
-    const sviDependencies = new SviDependencies(llm, config);
+    const sviDependencies = new SviDependencies(llm, config, isPreliminary);
     const loaded = await sviDependencies.loadDependenciesDeclarations(svi);
     if (!loaded) {
       RunStatistics.getInstance().addFileFailed(svi.getSviFileFullPath());
@@ -51,7 +52,7 @@ export async function buildPrompt(
   }
 
   // Import Prompts
-  const importPrompter = new SVIImportPrompts(svi, llm, config);
+  const importPrompter = new SVIImportPrompts(svi, llm, config, isPreliminary);
   if (!(await importPrompter.loadImportedPrompts())) {
     return "";
   }

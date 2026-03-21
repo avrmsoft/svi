@@ -3,7 +3,10 @@ import path from "path";
 import { fastGlobWrapper } from "../utils/fastGlobWrapper";
 import { SviConfig } from "../config/config";
 import Logger from "../utils/logger";
-import { emitKeypressEvents } from "readline";
+import SviFileOrderOptimizer from "./sviFileOrderOptimizer/sviFileOrderOptimizer";
+import ParsedSviDirectory from "./sviParser/parsedSviDirectory";
+import { SVIFile, SviFileToLoad } from "./types";
+import { error } from "console";
 
 export class SviLoader {
   private config: SviConfig;
@@ -25,7 +28,7 @@ export class SviLoader {
   /**
    * Load all .svi-files according to SearchPaths and IgnorePaths
    */
-  public async loadAll(): Promise<string[]> {
+  public async loadAll(): Promise<SviFileToLoad[]> {
     let results: string[] = [];
 
     //results = await fg(this.config.searchPaths, {
@@ -43,26 +46,10 @@ export class SviLoader {
       return !this.isIgnored(file);
     });
 
-    //for (const searchPath of this.config.searchPaths) {
-    //let absSearchPath: string;
-    //if (searchPath === "*" || searchPath === "**/*") {
-    //  absSearchPath = this.rootDir;
-    /*} else {
-        absSearchPath = path.resolve(this.rootDir, searchPath);
-      }
-
-      if (!fs.existsSync(absSearchPath)) {
-        Logger.warn(`Search path not found: ${absSearchPath}`);
-        continue;
-      }
-
-      this.walkDirectory(absSearchPath, results);
-    }*/
-
-    return results;
+    return this.optimizeResults(results);
   }
 
-  public loadSpecificFiles(files: string[]): string[] {
+  public loadSpecificFiles(files: string[]): SviFileToLoad[] {
     const results: string[] = [];
 
     for (const file of files) {
@@ -86,13 +73,30 @@ export class SviLoader {
       results.push(absPath);
     }
 
-    return results;
+    return this.optimizeResults(results);
+  }
+
+  private optimizeResults(sviFilePaths: string[]): SviFileToLoad[] {
+    const parsedSviDirectory = ParsedSviDirectory.getInstance();
+    const sviFiles: SVIFile[] = [];
+    for (const sviFilePath of sviFilePaths) {
+      const sviFile = parsedSviDirectory.getParsedSviFile(sviFilePath);
+      if (!sviFile) {
+        const errorMessage = `Failed to parse SVI file at path: ${sviFilePath}.`;
+        Logger.error(errorMessage);
+        parsedSviDirectory.logParseMessagesForFile(sviFilePath);
+        throw new Error(errorMessage);
+      }
+      sviFiles.push(sviFile);
+    }
+    const optimizer = new SviFileOrderOptimizer(sviFiles);
+    return optimizer.computeOptimizedOrder().getOptimizedFiles();
   }
 
   /**
    * Recursive search in folders
    */
-  private walkDirectory(dir: string, results: string[]) {
+  /*private walkDirectory(dir: string, results: string[]) {
     // When path must be ignored - skip
     if (this.isIgnored(dir)) {
       return;
@@ -108,7 +112,7 @@ export class SviLoader {
         results.push(fullPath);
       }
     }
-  }
+  }*/
 
   /**
    * Check if path is contained in IgnorePaths

@@ -1,30 +1,37 @@
 # Destination File
 sviChecks.ts
+
 # Dependencies
+sviParser\parsedSviDirectory.ts
+types.ts
+
 # Output
 export default class SviChecker
 main methods:
-constructor(sviParser: SVIParser)
-public check(sviFilePaths: string[]): boolean
+constructor()
+public check(sviFilePaths: SviFileToLoad[]): boolean
 public logErrors
 the main method is check
 # Options
 Active=True
+
 # Import prompts
 ../projectDescription.svi
 sviFileFormatDescr.svi
-types.ts
-sviParser.ts
+
 # Prompt
 Imports:
-import { SVIParser } from "./sviParser";
-import { SVIFile } from "./types";
+import ParsedSviDirectory from "./sviParser/parsedSviDirectory";
+import { SVIFile, SviFileToLoad } from "./types";
 
 Please create a class performing checks on correctness of all the *.svi files in the project.
 Input - a list of full paths to SVI files.
 A list of checks:
-* Check 1: If several *.svi files have the same destination file (target path after resolution)
-Then output error about it. 
+* Check 1: If several *.svi files have the same destination file (target path after 
+resolution)
+Then output error about it.
+When performing this check, please ignore items with SviFileToLoad.isPreliminary = true
+as they can contain duplicated items, but it's okay.
 Output format example:
 -------
 Error: Multiple SVI files are configured to generate the same destination file: 'C:\temp\test.js':
@@ -41,3 +48,10 @@ that the comparison is correct.
 
 The error message:
 Error in file <path_to_svi_file>: The destination file cannot be the same as the source file. Please change the destination file and try again.
+
+* Check 3: If *.svi file in the # Destination contains more than one line
+with text separated by a line feed (/n)
+(empty lines please don't consider)
+
+The error message:
+Error in file <path_to_svi_file>: More than one item in the # Destination section

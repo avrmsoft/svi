@@ -1,13 +1,14 @@
 // src/commands/runner/runManager.ts
 import { SviConfig } from "../../config/config";
 import { SviLoader } from "../../svi/sviLoader";
-import { SVIParser } from "../../svi/sviParser";
+//import { SVIParser } from "../../svi/sviParser/sviParser";
 import { processSVIFile } from "../../svi/sviProcessor";
 import { LLMProcessor } from "../../llm/llm";
 import logger from "../../utils/logger";
 import CheckerForRunManager from "./checkerForRunManager";
 import RunStatistics from "./runStatistics";
 import SviChecks from "../../svi/sviChecks";
+import { SviFileToLoad } from "../../svi/types";
 
 /**
  * RunManager
@@ -61,7 +62,7 @@ export class RunManager {
     try {
       logger.info("RunManager: Search for .svi files...");
 
-      let sviFiles: string[] = [];
+      let sviFiles: SviFileToLoad[] = [];
 
       if (this.onlyLoadFiles.length > 0) {
         logger.info(
@@ -119,7 +120,7 @@ export class RunManager {
 
       for (const sviPath of sviFiles) {
         try {
-          logger.info(`Processing: ${sviPath}`);
+          logger.info(`Processing: ${sviPath.filePath}`);
 
           if (!(await processSVIFile(sviPath, llm, this.config))) {
             result = false;
@@ -167,9 +168,9 @@ export class RunManager {
     }
   }
 
-  public additionalChecksBeforeRun(sviFiles: string[]): boolean {
-    const sviParser = new SVIParser();
-    const sviChecks = new SviChecks(sviParser);
+  public additionalChecksBeforeRun(sviFiles: SviFileToLoad[]): boolean {
+    //const sviParser = new SVIParser();
+    const sviChecks = new SviChecks();
     const result = sviChecks.check(sviFiles);
     if (!result) {
       sviChecks.logErrors();

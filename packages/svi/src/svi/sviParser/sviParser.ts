@@ -1,7 +1,7 @@
 import fs from "fs";
-import { SVIFile, SVIOptionValue } from "./types";
-import SviFileClass from "./sviFileClass";
-import logger from "../utils/logger";
+import { SVIFile, SVIOptionValue } from "../types";
+import SviFileClass from "../sviFileClass";
+import logger from "../../utils/logger";
 
 /**
  * Parses a `.svi` file into structured sections.

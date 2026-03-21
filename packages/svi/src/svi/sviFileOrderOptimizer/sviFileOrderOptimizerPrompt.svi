@@ -1,0 +1,10 @@
+# Destination File
+# Dependencies
+# Output
+# Options
+Active=True
+# Import prompts
+../../projectDescription.svi
+# Prompt
+SVIFile's key is SVI File full path which can be obtained 
+with SVIFile.getSviFileFullPath
