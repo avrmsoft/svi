@@ -43,7 +43,7 @@ describe("Dependency File Not Found (E2E)", () => {
     );
 
     fakeFs.addFile(
-      "folder\\test.svi",
+      "folder\\section\\test.svi",
       `
 # Destination File
 test.js
@@ -53,10 +53,19 @@ test.js
 Active=True
 ProgrammingLanguage=node.js
 # Import prompts
-../projectDescription.svi
+../sectionDescription.svi
 # Prompt
 Test prompt
 `,
+    );
+
+    fakeFs.addFile(
+      "folder\\sectionDescription.svi",
+      `
+# Import prompts
+../projectDescription.svi
+# Prompt
+Test prompt`,
     );
 
     fakeFs.applyMocks();
@@ -76,8 +85,8 @@ Test prompt
     expect(fakeFs.fileExists("folder\\test.js")).toBe(false);
 
     expect(
-      fakeLogger.containsErrorLog(
-        "Failed to load imported prompt from dependency",
+      fakeLogger.containsErrorLogRegex(
+        /Error during processing file .*test\.svi.*: Failed to load imported prompt \(section #Import prompts\), it was expected at path/,
       ),
     ).toBe(true);
 

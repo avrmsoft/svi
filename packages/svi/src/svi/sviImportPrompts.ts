@@ -193,7 +193,7 @@ export class SVIImportPrompts {
 
     if (!result) {
       Logger.error(
-        `Failed to load imported prompt from dependency ${fullPath}`,
+        `Error during processing file ${this.sviFile.getSviFileFullPath()}: Failed to load imported prompt (section #Import prompts), it was expected at path ${fullPath}`,
       );
       //this.sviParser.logParseMessages();
       this.sviParserDirectory.logParseMessagesForFile(fullPath);
