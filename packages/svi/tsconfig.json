@@ -12,7 +12,7 @@
     "moduleResolution": "NodeNext",
     "sourceMap": true,
   },
-  "include": ["src/**/*", "bin", "tests/**/*"],
-  "exclude": ["dist", "node_modules"],
+  "include": ["src/**/*", "bin"],
+  "exclude": ["dist", "node_modules", "tests/**/*", "tests"],
   "extensions": [".ts", ".mts"]
 }
