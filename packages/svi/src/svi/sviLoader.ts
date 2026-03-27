@@ -6,11 +6,12 @@ import Logger from "../utils/logger";
 import SviFileOrderOptimizer from "./sviFileOrderOptimizer/sviFileOrderOptimizer";
 import ParsedSviDirectory from "./sviParser/parsedSviDirectory";
 import { SVIFile, SviFileToLoad } from "./types";
-import { error } from "console";
+//import { error } from "console";
 
 export class SviLoader {
   private config: SviConfig;
   private rootDir: string;
+  private ignoredFiles: Set<string> = new Set();
 
   constructor(
     config: SviConfig,
@@ -43,13 +44,27 @@ export class SviLoader {
         return false;
       }
 
-      return !this.isIgnored(file);
+      //const normalizedFile = path.resolve(file);
+
+      //return !this.isIgnored(file);
+      /*return !ignoredResults.find((ignoredPath) => {
+        const normalizedIgnored = path.resolve(ignoredPath);
+        return normalizedIgnored === normalizedFile;
+      });*/
+      return true;
     });
 
-    return this.optimizeResults(results);
+    const resultsAfterIgnore: string[] = [];
+    for (const file of results) {
+      if (!(await this.isIgnored(file))) {
+        resultsAfterIgnore.push(file);
+      }
+    }
+
+    return this.optimizeResults(resultsAfterIgnore);
   }
 
-  public loadSpecificFiles(files: string[]): SviFileToLoad[] {
+  public async loadSpecificFiles(files: string[]): Promise<SviFileToLoad[]> {
     const results: string[] = [];
 
     for (const file of files) {
@@ -61,7 +76,7 @@ export class SviLoader {
         throw new Error(`File not found: ${absPath}`);
       }
 
-      if (this.isIgnored(absPath)) {
+      if (await this.isIgnored(absPath)) {
         throw new Error(`File is ignored by ignorePaths: ${absPath}`);
       }
 
@@ -117,10 +132,30 @@ export class SviLoader {
   /**
    * Check if path is contained in IgnorePaths
    */
-  private isIgnored(targetPath: string): boolean {
+  /*private isIgnored(targetPath: string): boolean {
     return this.config.ignorePaths.some((ignorePath) => {
       const absIgnorePath = path.resolve(this.rootDir, ignorePath);
       return targetPath.startsWith(absIgnorePath);
     });
+  }*/
+
+  private async isIgnored(targetPath: string): Promise<boolean> {
+    if (this.config.ignorePaths.length === 0) {
+      return false;
+    }
+
+    if (this.ignoredFiles.size === 0) {
+      const ignoredResults = await fastGlobWrapper.fg(this.config.ignorePaths, {
+        cwd: this.rootDir,
+        absolute: true,
+      });
+      for (const ignoredPath of ignoredResults) {
+        const normalizedIgnored = path.resolve(ignoredPath);
+        this.ignoredFiles.add(normalizedIgnored);
+      }
+    }
+
+    const normalizedTarget = path.resolve(targetPath);
+    return this.ignoredFiles.has(normalizedTarget);
   }
 }

@@ -68,7 +68,7 @@ export class RunManager {
         logger.info(
           `RunManager: Loading specific .svi files: ${this.onlyLoadFiles.join(", ")}`,
         );
-        sviFiles = new SviLoader(
+        sviFiles = await new SviLoader(
           this.config,
           undefined,
           this.sviJsonPath !== undefined,

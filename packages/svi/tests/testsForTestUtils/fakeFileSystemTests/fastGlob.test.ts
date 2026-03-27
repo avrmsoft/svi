@@ -65,4 +65,18 @@ describe("Main fake FS tests", () => {
     expect(results).toContain(fakeFs["convPath"]("unixStyle.svi"));
     expect(results).toContain(fakeFs["convPath"]("anotherUnixStyle.svi"));
   });
+
+  it("In root and in subfolders", async () => {
+    fakeFs.setCwd("C:\\test");
+    fakeFs.addFile("inRoot.svi", "File in root content");
+    fakeFs.addFile("subfolder\\inSubfolder.svi", "File in subfolder content");
+
+    const results = await fastGlobWrapper.fg("**/*", {
+      cwd: fakeFs.getCwd(),
+      absolute: true,
+    });
+
+    expect(results).toContain(fakeFs["convPath"]("inRoot.svi"));
+    expect(results).toContain(fakeFs["convPath"]("subfolder\\inSubfolder.svi"));
+  });
 });
