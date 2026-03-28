@@ -62,15 +62,28 @@ function createSviFile(fileArg: string, options: InitOptions = {}): number {
     }
   }
 
+  // It can be not only a file name, but also a relative or absolute path. We need to handle all cases.
+  const requestedPath = path.isAbsolute(fileArg)
+    ? fileArg
+    : path.resolve(process.cwd(), fileArg);
+
   const base = path.basename(fileArg, ".svi");
   const fileName = `${base}.svi`;
-  const targetPath = path.resolve(process.cwd(), fileName);
+  const filePath = path.dirname(requestedPath);
+
+  const targetPath = path.resolve(filePath, fileName);
   if (exists(targetPath)) {
     Logger.error(
       `File ${fileName} already exists, the initialization cancelled`,
     );
     return 1;
   }
+
+  // Ensure the directory exists
+  if (!exists(filePath)) {
+    fs.mkdirSync(filePath, { recursive: true });
+  }
+
   const contentLines: string[] = [];
 
   // Destination File
