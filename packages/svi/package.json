@@ -1,5 +1,5 @@
 {
-  "name": "svi",
+  "name": "@avrm/svi",
   "version": "0.0.1",
   "description": "SVI - Structural Vibe Coding (SVI), CLI tools",
   "license": "MIT",
@@ -30,6 +30,9 @@
     "js-yaml": "^4.1.0"
   },
   "bin": {
-    "svi": "dist/bin/cli.mjs"
-  }
+    "svi": "dist/bin/cli.js"
+  },
+  "files": [
+    "dist"
+  ]
 }

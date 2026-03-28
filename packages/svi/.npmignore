@@ -1,0 +1,7 @@
+coverage/
+tests/
+src/
+*.log
+.svicache
+vitest.config.ts
+tsconfig.json

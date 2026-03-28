@@ -1,6 +1,6 @@
 # svi
 
-A vibe-coding file-based command line tool that helps you create maintainable projects with the help of AI
+A vibe-coding file-based command line tool that helps you create maintainable projects with the help of AI.
 
 # Build package
 
@@ -16,8 +16,8 @@ File Format
 ```bash
 # Destination File
 e.g. code.js
-# Input parameters
-e.g. class Storage from utils/storage.js
+# Dependencies
+utils/storage.js
 # Output
 e.g. class AwesomeAlg, methods doAwesome, doMagic
 # Options
