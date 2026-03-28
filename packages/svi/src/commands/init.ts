@@ -120,6 +120,6 @@ function createSviFile(fileArg: string, options: InitOptions = {}): number {
 
   // 5. Write the file
   fs.writeFileSync(targetPath, contentLines.join("\n"), "utf-8");
-  Logger.success(`SVI file created: ${targetPath}`);
+  Logger.success(`SVI file template created: ${targetPath}`);
   return 0;
 }

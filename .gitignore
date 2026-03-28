@@ -6,3 +6,4 @@
 *.log
 **/coverage/
 coverage/
+.npmrc

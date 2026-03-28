@@ -1,11 +1,16 @@
+import { expect } from "vitest";
 import path from "path";
+import fs from "fs";
 
 export function getCliPathInDist(): string {
   return path.join(__dirname, "../../dist/bin/cli.js");
 }
 
-export function getCliPathTs(): string {
-  return path.join(__dirname, "../../bin/cli.ts");
+export function assertCliPathExists(): boolean {
+  const cliPath = getCliPathInDist();
+  const exists = fs.existsSync(cliPath);
+  expect(exists, "Please run 'pnpm build', then run tests again").toBeTruthy();
+  return exists;
 }
 
 export function convertPathToAbsolute(

@@ -2,6 +2,12 @@
 
 A vibe-coding file-based command line tool that helps you create maintainable projects with the help of AI.
 
+Installation
+
+```bash
+npm install -g @avrm/svi
+```
+
 # Build package
 
 ```bash

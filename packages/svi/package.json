@@ -13,21 +13,17 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.7.2",
     "@vitest/coverage-v8": "^4.0.6",
-    "fast-glob": "^3.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.6"
   },
   "dependencies": {
-    "@langchain/anthropic": "^0.3.32",
-    "@langchain/core": "^0.3.78",
-    "@langchain/google-genai": "^1.0.0",
-    "@langchain/openai": "^0.6.16",
     "@themaximalist/llm.js": "^1.0.3",
     "commander": "^14.0.1",
     "dotenv": "^17.2.3",
     "execa": "^9.6.0",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "fast-glob": "^3.3.3"
   },
   "bin": {
     "svi": "dist/bin/cli.js"
