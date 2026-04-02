@@ -1,8 +1,9 @@
 # Destination File
 sviFileClass.ts
-# Input parameters
+# Dependencies
 ../config/config.ts
-../utils/file.ts
+../utils/file2.ts
+../utils/pathResolver.ts
 # Output
 export default class SviFileClass
 # Options
@@ -13,16 +14,17 @@ sviFileFormatDescr.svi
 types.ts
 # Prompt
 Please create an implementation of the SVIFile interface.
-When creating constructor, don't make its 'data' parameter mandatory.
-If not set, let attributes be undefined. In this case, they will be filled
-in later.
-Please use the 'path' library, don't try to write the algorithm from scratch:
-getting absolute path, resolving paths, etc
-This ensures working of production code and tests in various environments 
-(windows, linux, mac).
-constructor of SviFileClass should have no mandatory parameters.
 
 Additional guidelines:
+* When creating constructor, don't make its 'data' parameter mandatory.
+If not set, let attributes be undefined. In this case, they will be filled
+in later.
+* To resolve path, please use the resolvePath function from pathResolver.ts
+* Please use the 'path' library for other relevant operations, don't try
+to write the algorithm from scratch
+This ensures working of production code and tests in various environments 
+(windows, linux, mac).
+* constructor of SviFileClass should have no mandatory parameters.
 * Please generate class so that to avoid errors like incompatible types, and others.
 (e.g., if a method SVIFile interface return string, don't return string | undefined)
 in the corresponding implemented method.
@@ -33,4 +35,5 @@ import { Config } from "../config/config";
 
 Algorithm of getSviFileRelativePath():
 * Get config instance by using Config.getInstance() from ../config/config.ts
-* Use function getRelativePath from ../utils/file.ts passing this.filePath and config.dir as base path
+* Use function getRelativePath from ../utils/file.ts passing this.filePath 
+and config.dir as base path

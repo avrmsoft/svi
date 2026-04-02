@@ -1,0 +1,26 @@
+# Destination File
+pathResolver.ts
+# Dependencies
+../config/config.ts
+# Output
+export function resolvePath(path: string, basePath : string | null = null) : string
+# Options
+Active=True
+# Import prompts
+# Prompt
+The purpose of this function is to turn relative path to absolute considering
+various scenarios.
+
+Cases:
+* If the 'path' variable is an absolute path, just return it unchanged.
+* If the 'path' variable starts with @project_root, then replace the 
+@project_root variable with project path from config (the result of method dir()
+of Config class)
+* If the 'path' variable does not start with @, it is relative, and 'basePath'
+parameter is not null, then resolve the path as <path from basePath> plus 
+<path or filename from 'path'>
+* If the 'path' variable does not start with @, it is relative, and 'basePath'
+parameter is null, then resolve the path relative to project path from config
+
+Additional considerations
+* Use path.resolve to merge paths or path and filename

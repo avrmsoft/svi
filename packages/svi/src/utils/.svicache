@@ -5,4 +5,78 @@ ProcessedSviFilesHash:
     hash: dae4eda8ed7a90d4f7c01b4345e9956da46f956340e90aef346a60598d960a70
   codeClear.svi:
     hash: 8938b55bf9bfcea3e321502c2a0e68763746e38bf2cf9b550b6f2caa66823d23
-GeneratedDepenenciesExports: {}
+  pathResolver.svi:
+    hash: 0c25f9980abfbb59fa7331f94ae0900edfca7f2ff61d9035bde922a525921a73
+GeneratedDepenenciesExports:
+  file.ts:
+    hash: cf8fb96eb84a82b5c7578c2d1e6a273c06d507ccb9d52fe3161fe5eb2853667a
+    exports: |-
+      ```typescript
+      /**
+       * Prüft, ob ein Pfad existiert
+       */
+      function exists(filePath: string): boolean;
+
+      /**
+       * Prüft, ob ein Pfad ein Verzeichnis ist
+       */
+      function isDirectory(dirPath: string): boolean;
+
+      /**
+       * Prüft, ob ein Pfad eine Datei ist
+       */
+      function isFile(filePath: string): boolean;
+
+      /**
+       * Liest eine JSON-Datei
+       */
+      function readJSON<T = any>(filePath: string): T;
+
+      /**
+       * Schreibt eine JSON-Datei (mit schöner Formatierung)
+       */
+      function writeJSON(filePath: string, data: any): void;
+
+      /**
+       * Erstellt eine leere Datei mit Inhalt (falls sie nicht existiert)
+       */
+      function createFileIfNotExists(
+        filePath: string,
+        content: string = "",
+      ): void;
+
+      async function ensureDir(dirPath: string): Promise<void>;
+
+      function getPathFromFile(fullPath: string): string;
+
+      function constructFullPath(
+        folderPathOrAnotherFileFullPath: string,
+        filename: string,
+      ): string;
+
+      function fileNameContainsExtension(fileName: string): boolean;
+
+      function getFileExtension(fileName: string): string;
+
+      function fileHasExtension(fileName: string, extension: string): boolean;
+
+      // Re-exported from './file2'
+      declare const getRelativePath: (
+        from: string,
+        to: string,
+      ) => string; // Assuming signature based on typical path utility
+      ```
+  pathResolver.ts:
+    hash: 70fd90092fd681d12b8ab66303e10dbfe496532df5b80754463dcadd40ac2464
+    exports: >-
+      `function resolvePath(path: string, basePath: string | null = null):
+      string`
+  file2.ts:
+    hash: 54a704334931d373c01bb9a05be77ba7d9f80d2a1bf58931f803ea77edc66582
+    exports: >-
+      ```typescript
+
+      export function getRelativePath(fileOrFolderFullPath: string, basePath:
+      string): string;
+
+      ```

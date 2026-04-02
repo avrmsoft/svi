@@ -2,6 +2,7 @@
 sviDependencies.ts
 
 # Dependencies
+../utils/pathResolver.ts
 
 # Output
 export default class SviDependencies
@@ -73,12 +74,14 @@ async loadDependenciesDeclarations(sviFile: SVIFile)
 
 Algorithm:
 1. Loop through dependencies
-2. One dependency is a filename. It can be eigher a full path or relative path.
-If file is not found in that location and isPreliminary = false, then 
-we need to output error via logger and return false
-in the end.
+2. One dependency is a filename, let's call it <curDependency>.
+To convert <curDependency> to full path, use
+the resolvePath function from pathResolver.ts file.
+Then check the resolved path. If the target file is not found in that location
+and isPreliminary = false, then we need to output error via logger
+and return false in the end.
 Message: 
-"File <filepath as in sviFile> from 'Dependencies' section not found in the path <resolved path>".
+"File <curDependency> from 'Dependencies' section not found in the path <resolved path>".
 (fix english language errors in message if any)
 If isPreliminary = true, then just skip the item and go to the next one.
 3. Check cache. Create instance of CacheManager with directory = directory where

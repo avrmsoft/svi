@@ -1,4 +1,27 @@
 ProcessedSviFilesHash:
   configFinder.svi:
     hash: be42ce58e5a9622b5865439c40d70a83647378080cbd01d4b4674264e1aebb45
-GeneratedDepenenciesExports: {}
+GeneratedDepenenciesExports:
+  config.ts:
+    hash: 1e5030099b82f0180a71ba733bddeda0ab783558b8f951981c08801f575bd20f
+    exports: |-
+      interface SviConfig {
+        programmingLanguage: string;
+        searchPaths: string[];
+        ignorePaths: string[];
+        configDir: string;
+      }
+
+      class Config {
+        static getInstance(
+          fileName?: string,
+          tryToFindConfigInParentDirs?: boolean,
+        ): Config;
+
+        get path(): string;
+        get dir(): string;
+        get data(): SviConfig;
+        get programmingLanguage(): string;
+        get searchPaths(): string[];
+        get ignorePaths(): string[];
+      }

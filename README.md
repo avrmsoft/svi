@@ -66,7 +66,7 @@ Please refer to [this page](docs\reference\svi-file-format.md) for more informat
 
 ## Initialize the options
 
-1. Go to the root folder of your project
+1. Go to the root folder of your new project
 2. Create the svi.json file by the following command:
 
 ```bash

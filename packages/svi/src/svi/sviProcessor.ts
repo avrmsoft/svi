@@ -13,6 +13,7 @@ import * as fileUtils from "../utils/file";
 import { clearCodeInLlmResponse } from "../utils/codeClear";
 import { SviConfig } from "../config/config";
 import RunStatistics from "../commands/runner/runStatistics";
+import { resolvePath } from "../utils/pathResolver";
 
 /**
  * Check if file is active (according to options Active=true)
@@ -109,10 +110,11 @@ export async function processSVIFile(
 
     const clearedCode = clearCodeInLlmResponse(generated);
 
-    const destPath = fileUtils.constructFullPath(
+    /*const destPath = fileUtils.constructFullPath(
       fileFolder,
       destinationFromSvi,
-    );
+    );*/
+    const destPath = resolvePath(destinationFromSvi, fileFolder);
     const destDir = path.dirname(destPath);
     await fileUtils.ensureDir(destDir);
 
