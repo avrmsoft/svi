@@ -1,0 +1,47 @@
+# Destination File
+sviChecks.ts
+
+# Dependencies
+../types.ts
+types.ts
+checkDestinationPointsToSelf.ts
+checkMultipleLinesInDestination.ts
+checkSeveralSviFilesHaveSameDestination.ts
+
+# Output
+export default class SviChecker
+main methods:
+constructor()
+public check(sviFilePaths: SviFileToLoad[]): boolean
+public logErrors
+the main method is check
+
+# Options
+Active=True
+
+# Import prompts
+
+# Prompt
+This is the main class for various additional checks on *.svi files in the project.
+This class calls all the checks one by one, collects the results and messages, and
+returns the overall result.
+Each elementary check is contained in a separate class whose name starts with 
+SviCheck*. Each check class implements the OneSviCheck interface with method check.
+
+* method check
+Algorithm:
+1. Loop through all check classes; you can find names of these classes from
+the dependencies;
+2. Run each check, get its results as 'checkResults'
+3. For each result, save errors to a class attribute
+4. When all the checks have been executed, return the overall result: true only
+if all the checks are successful, otherwise false.
+
+* method logErrors
+Loop through all the error messages stored in the 'check' method and log them
+with the logger.error
+
+Additional guidelines:
+When importing single check classes, please import them correctly considering
+export default (without curly brackets) or just export (with curly brackets),
+don't make mistakes.

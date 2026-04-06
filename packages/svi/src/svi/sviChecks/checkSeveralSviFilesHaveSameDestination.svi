@@ -1,0 +1,29 @@
+# Destination File
+checkSeveralSviFilesHaveSameDestination.ts
+
+# Dependencies
+
+# Output
+export default class SviCheckSeveralFilesHaveSameDestination
+
+# Options
+Active=True
+
+# Import prompts
+singleCheckPrompt.svi
+
+# Prompt
+Check algorithm:
+If several *.svi files have the same destination file (target path after 
+resolution)
+Then output error about it.
+When performing this check, please ignore items with SviFileToLoad.isPreliminary = true
+as they can contain duplicated items, but it's okay.
+Output format example:
+-------
+Error: Multiple SVI files are configured to generate the same destination file: 'C:\temp\test.js':
+- C:\temp\test.svi
+- C:\temp\test2.svi
+----
+The error is critical because a file can be overwritten. With a big probability,
+it can happen due to a human error

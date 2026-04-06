@@ -11,29 +11,23 @@ Want to start right away? Go to the [Getting Started](#getting-started) section.
 - One more consideration is that your context lives while chat is active.
   When it is closed, the only place where context is contained is the source code.
   The approaches such as using MD files for context and other ways of storage try to address this issue, but we cannot be sure which file at which moment will be considered by agent and which won't be.
-
 - Another approach is using cheap or even free models for simple code generations in code-completion and chat mode. But this approach often involves copying code between chat and your source code files.
 
 # A solution we offer
 
 Unlike ordinary agentic approach, you get more control over your code.
 It helps you to create maintainable projects with the help of AI.
+Unlike copying-pasting from free chats, you won't need to copy/paste anything. Your prompts will be stored in files and sent automatically to LLM.
 
 ## A description of our Solution
 
 - We split our project into smaller pieces generally equal to single source code files;
 - Every file is generated separately, and LLM has to work with a limited context. You can choose source code file size accordingly to the quality of LLM you are using. Better (and more expensive) LLM can generate bigger files, and cheaper (or local) LLMs have to work with less files, and you can adjust their size yourself.
-- Prompts can be included just like modules and includes just like in programming languages; this way, prompt modularization is reached.
+- Prompts can be included just like modules and includes in a similar way as you do in programming languages; this way, prompt modularization and reusability is reached.
 
-## Why it works
+To get more information on what problems we address and what our advantages are, please refer to [this document](docs/solution-description.md).
 
-Each LLM needs context to provide consistent results. When the project is big, its code can contain hundreds of thousands of lines of code, and this context is far from limits of any LLM.
-In our solution, developer can have a full control over context which is provided to model. We split our projects into parts (source code files), and each file contains its own separated logic and references other files it depends on (dependencies).
-When a file is generated, LLM gets the main prompt for the file generation, information about dependencies, and additional reusable prompts if necessary.
-This approach allows using even free and local models by manually adjusting file size to models capabilities. Bigger and stronger models allow developer generate bigger and more complex files thus moving forward faster.
-The variation is less than in regular agentic approach because each code generation is strictly limited to only one source code file.
-
-To get more information on what problems we address and what our advantages are, please refer to [this document](docs\solution-description.md).
+To get the technical description of the solution, please go to [this document](docs/solution-technical-description.md).
 
 # Installation
 
@@ -60,7 +54,7 @@ Active=True
 # Prompt
 ```
 
-Please refer to [this page](docs\reference\svi-file-format.md) for more information about SVI file format.
+Please refer to [this page](docs/reference/svi-file-format.md) for more information about SVI file format.
 
 # Getting started
 
@@ -96,7 +90,7 @@ SERVICE=<service name>, e.g., google
 
 _Note:_ Important!!! Don't forget to add the .env file to .gitignore
 
-Please refer to [this file](docs\reference\svi-env-file-format.md) for more information on the svi.env file parameters.
+Please refer to [this file](docs/reference/svi-env-file-format.md) for more information on the svi.env file parameters.
 
 2. Go to the root directory of your project and just run:
 
@@ -106,10 +100,14 @@ svi run
 
 # Getting more information
 
-To review the full technical reference of the solution, please go to [reference contents](docs\reference\contents.md) and choose the necessary chapter.
+To review the full technical reference of the solution, please go to [reference contents](docs/reference/contents.md) and choose the necessary chapter.
 
-To get the business solution description, please refer to [this document](docs\solution-description.md).
+To get the business solution description, please refer to [this document](docs/solution-description.md).
 
-To get the technical description of the solution, please go to [this document](docs\solution-technical-description.md).
+To get the technical description of the solution, please go to [this document](docs/solution-technical-description.md).
 
-To get information on contribution, please refer to this [document](docs\CONTRIBUTION.md).
+To get information on contribution, please refer to this [document](docs/CONTRIBUTION.md).
+
+# Using other projects
+
+Bit thanks to the project [LLM.js](https://github.com/themaximalist/llm.js/) for the great library supporting working with many LLMs out of the box. By using this library, the support of many models has been added to the SVI project.

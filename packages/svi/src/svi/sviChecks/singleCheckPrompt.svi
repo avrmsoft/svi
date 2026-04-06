@@ -1,0 +1,24 @@
+# Destination File
+
+# Dependencies
+types.ts
+../types.ts
+
+# Output
+
+# Import prompts
+../../projectDescription.svi
+../sviParser/parsedSviDirectory.ts
+
+# Prompt
+Every single check should implement interface OneSviCheck
+and thus it should implement one method 'check'
+(of course, it can have any number of private methods internally)
+All the error messages must be collected and returned in the errors[] array
+of the checkResults resulting variable.
+
+Recommended imports:
+```ts
+import ParsedSviDirectory from "../sviParser/parsedSviDirectory";
+import { SVIFile, SviFileToLoad } from "../types";
+import { checkResults, OneSviCheck } from "./types";

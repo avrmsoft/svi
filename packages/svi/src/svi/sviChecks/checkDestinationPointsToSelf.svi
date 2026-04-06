@@ -1,0 +1,24 @@
+# Destination File
+checkDestinationPointsToSelf.ts
+
+# Dependencies
+
+# Output
+export default class SviCheckDestinationPointsToSelf
+
+# Options
+Active=True
+
+# Import prompts
+singleCheckPrompt.svi
+
+# Prompt
+Check algorithm:
+If *.svi file in the # Destination points to itself (destination filename
+equals to the file name itself including *.svi extension).
+When comparing, use relative path for svi file and destination file to be sure 
+that the comparison is correct.
+
+The error message:
+Error in file <path_to_svi_file>: The destination file cannot be the same
+as the source file. Please change the destination file and try again.

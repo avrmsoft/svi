@@ -8,5 +8,17 @@ Each part can have its own specification (prompt), it can include other specific
 
 ## The algorithm of processing
 
-At first, the SVI CLI tries to find the SVI project file usually called svi.json.
+### Init command
+
+TODO
+
+### Run command
+
+At first, the SVI CLI tries to find the SVI project file usually called svi.json (can be changed in parameter).
+If the CLI was executed for the whole project, e.g., without providing certain file names for generation, then the svi.json must exist in the current folder unless you explicitly set path with the -p parameter.
+Once the project file is found, its location is considered as the root folder of the project. All the \*.svi files are searched under this location by default. Additionally, you can adjust the paths being searched with the help of parameters 'searchPaths' and 'ignorePaths' in the [main SVI project configuration file](reference/svi-json-file-format.md).
+
+If the CLI was excecuted for certain file or several files, the project file can be searched not only in the current folder, but also in parent folders.
+
+On the next step, all the found files
 TODO

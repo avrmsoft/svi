@@ -1,0 +1,46 @@
+ProcessedSviFilesHash:
+  checkDestinationPointsToSelf.svi:
+    hash: aefb1588629788d13390800da79bbd5ed4a87f867b4b7ca53df555d992874f24
+  checkMultipleLinesInDestination.svi:
+    hash: 03c6714146251d34bc0b36c478db3973060c4d8ed465a8cc64989d56ab2dcdc4
+  checkSeveralSviFilesHaveSameDestination.svi:
+    hash: 19f30011ab04a633d161257da4de61281c5a3c7e185d00354b264fcc7d5fb8e2
+  sviChecks.svi:
+    hash: af38dcee86a46c5a3fd0775ceb9cedbb47098658fc32d74d581593ccbbb112a2
+GeneratedDepenenciesExports:
+  types.ts:
+    hash: 33514994ccbd4b84e512f431a43715a27973bcd0375ebb3349e45bc680a59926
+    exports: |-
+      interface checkResults {
+        isValid: boolean;
+        errors: string[];
+      }
+
+      interface OneSviCheck {
+        check(sviFilePaths: SviFileToLoad[]): checkResults;
+      }
+  checkDestinationPointsToSelf.ts:
+    hash: e44f947574117ad1a1e6f360edf1fe47823b4126795217144ff92346bfbfd492
+    exports: >-
+      ```typescript
+
+      export default class SviCheckDestinationPointsToSelf implements
+      OneSviCheck {
+        check(sviFilesToLoad: SviFileToLoad[]): checkResults;
+      }
+
+      ```
+  checkMultipleLinesInDestination.ts:
+    hash: 2b6b204ae442ca07b46f6b2c6abf0e869d98514c5fe378100ac1e677589274ca
+    exports: >-
+      export default class SviCheckDestinationPointsToSelf implements
+      OneSviCheck {
+        check(sviFilePaths: SviFileToLoad[]): checkResults;
+      }
+  checkSeveralSviFilesHaveSameDestination.ts:
+    hash: 86e7c457cc0c20f2bcbb7444e543924f58a75247ef4838ba8d84185e88aed9b3
+    exports: >-
+      export default class SviCheckSeveralFilesHaveSameDestination implements
+      OneSviCheck {
+        check(sviFilesToLoad: SviFileToLoad[]): checkResults;
+      }

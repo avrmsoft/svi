@@ -1,0 +1,22 @@
+# Destination File
+checkMultipleLinesInDestination.ts
+
+# Dependencies
+
+# Output
+export default class SviCheckMultipleLinesInDestination
+
+# Options
+Active=True
+
+# Import prompts
+singleCheckPrompt.svi
+
+# Prompt
+Check algorithm:
+If *.svi file in the # Destination contains more than one line
+with text separated by a line feed (/n)
+(please don't consider empty lines)
+
+The error message:
+Error in file <path_to_svi_file>: More than one item in the # Destination section

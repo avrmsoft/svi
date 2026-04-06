@@ -15,12 +15,13 @@ When it is closed, the only place where context is contained is the source code.
 
 Unlike ordinary agentic approach, you get more control over your code.
 It helps you to create maintainable projects with the help of AI.
+Unlike copying-pasting from free chats, you won't need to copy/paste anything. Your prompts will be stored in files and sent automatically to LLM.
 
 ## A description of our Solution
 
 - We split our project into smaller pieces generally equal to single source code files;
 - Every file is generated separately, and LLM has to work with a limited context. You can choose source code file size accordingly to the quality of LLM you are using. Better (and more expensive) LLM can generate bigger files, and cheaper (or local) LLMs have to work with less files, and you can adjust their size yourself.
-- Prompts can be included just like modules and includes just like in programming languages; this way, prompt modularization is reached.
+- Prompts can be included just like modules and includes in a similar way as you do in programming languages; this way, prompt modularization and reusability is reached.
 
 ## Why it works
 

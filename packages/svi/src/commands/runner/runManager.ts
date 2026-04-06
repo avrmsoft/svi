@@ -7,7 +7,7 @@ import { LLMProcessor } from "../../llm/llm";
 import logger from "../../utils/logger";
 import CheckerForRunManager from "./checkerForRunManager";
 import RunStatistics from "./runStatistics";
-import SviChecks from "../../svi/sviChecks";
+import SviChecks from "../../svi/sviChecks/sviChecks";
 import { SviFileToLoad } from "../../svi/types";
 
 /**
