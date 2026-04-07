@@ -18,7 +18,15 @@ At first, the SVI CLI tries to find the SVI project file usually called svi.json
 If the CLI was executed for the whole project, e.g., without providing certain file names for generation, then the svi.json must exist in the current folder unless you explicitly set path with the -p parameter.
 Once the project file is found, its location is considered as the root folder of the project. All the \*.svi files are searched under this location by default. Additionally, you can adjust the paths being searched with the help of parameters 'searchPaths' and 'ignorePaths' in the [main SVI project configuration file](reference/svi-json-file-format.md).
 
-If the CLI was excecuted for certain file or several files, the project file can be searched not only in the current folder, but also in parent folders.
+If the CLI was excecuted for a certain file or several files, the project file can be searched not only in the current folder, but also in parent folders.
 
-On the next step, all the found files
+On the next step, all the found \*.svi files are processed one by one. Before processing, each file is checked against the cache with is located in the .svicache file in the same folder. If the \*.svi file has not been changed since the previous generation, it is skipped.
+
+The processing of file consists of the following stages:
+
+- Prompt generation;
+- LLM execution;
+- Output file generation;
+- The update of the cache.
+
 TODO
