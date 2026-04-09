@@ -1,5 +1,7 @@
 # SVI - A Structured-VIbe coding
 
+![SVI Logo](images/logo1_cut.png)
+
 A command line tool that compiles text prompts (specifications) into a code.
 Want to start right away? Go to the [Getting Started](#getting-started) section.
 
