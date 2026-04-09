@@ -9,8 +9,7 @@ Parameters:
   if you need to change this parameter for certain file, you can override it in any \*.svi file (see [\*.svi file format](svi-file-format.md) for more details).
 
 - searchPaths - an array of paths to search for \*.svi files. By default it contains one element '\*\*\/\*' that means all files and folders.
-  The search is performed in the style of 'fg' function from 'fast-glob' library.
-  TODO - can we say so 'in the style of fg...'?
+  The search is performed using glob patterns (as supported by the 'fast-glob' library).
   An example of limited search paths:
 
 ```json

@@ -50,3 +50,7 @@ The variation is less than in regular agentic approach because each code generat
 - No need to copy your code to the chat and back, and to combine your prompts from several parts;
 - The possibility to use API keys;
 - The possibility to work in CI/CD pipelines.
+
+## A technical description
+
+If you need a more technical description, please refer to the [technical description of the solution](solution-technical-description.md).

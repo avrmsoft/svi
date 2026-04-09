@@ -10,7 +10,8 @@ Each part can have its own specification (prompt), it can include other specific
 
 ### Init command
 
-TODO
+If the command is executed without a file parameter, then a default svi.json file is created in the current folder.
+If the command is executed with a file parameter, then a new \*.svi file template is created with that name (or no that path if the file parameteter contains path).
 
 ### Run command
 
@@ -24,9 +25,7 @@ On the next step, all the found \*.svi files are processed one by one. Before pr
 
 The processing of file consists of the following stages:
 
-- Prompt generation;
+- Prompt generation, refer to [this file](reference/svi-file-prompt-construction.md);
 - LLM execution;
 - Output file generation;
 - The update of the cache.
-
-TODO
