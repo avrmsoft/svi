@@ -1,88 +1,83 @@
-# SVI - A Structured-VIbe coding
+# SVI - Structured Vibe Coding
 
 <img src="images/logo1_cut.png" width="200">
 
-A command line tool that compiles text prompts (specifications) into a code.
-Want to start right away? Go to the [Getting Started](#getting-started) section.
+SVI is a CLI tool that generates code from structured prompt files — like a build step, but powered by LLMs.
 
-# The problems we address
+Unlike chat-based tools, SVI treats prompts as source code and generation as a build step — enabling reproducible code generation by eliminating hidden state, chat history, and implicit context.
 
-- A regular agentic approach lets you 'vibe-code' PoCs, MVPs, and small projects within days and even hours instead of weeks and months.
-  However, when the project grows, each change made by agents is getting more and more flaky. It becomes harder to maintain the project.
-- Additionally, agents consume many tokens and require the most powerful LLM models to work consistenly on complex tasks. This leads to big inference costs.
-- One more consideration is that your context lives while chat is active.
-  When it is closed, the only place where context is contained is the source code.
-  The approaches such as using MD files for context and other ways of storage try to address this issue, but we cannot be sure which file at which moment will be considered by agent and which won't be.
-- Another approach is using cheap or even free models for simple code generations in code-completion and chat mode. But this approach often involves copying code between chat and your source code files.
+Instead of chat sessions or autonomous agents, define your code generation as version-controlled `.svi` files and run them as a build step:
 
-# A solution we offer
+1. write `auth.svi`
+2. run `svi run`
+3. produce a consistent `auth.ts`
 
-Unlike ordinary agentic approach, you get more control over your code.
-It helps you to create maintainable projects with the help of AI.
-Unlike copying-pasting from free chats, you won't need to copy/paste anything. Your prompts will be stored in files and sent automatically to LLM.
+### Why SVI?
 
-## A description of our Solution
+- Enable reproducible AI code generation — the same input produces consistent outputs across runs
+- Keep AI-generated code maintainable as your project grows
+- Reduce token usage and LLM costs
+- Eliminate copy-paste between chat and your codebase
 
-- We split our project into smaller pieces generally equal to single source code files;
-- Every file is generated separately, and LLM has to work with a limited context. You can choose source code file size accordingly to the quality of LLM you are using. Better (and more expensive) LLM can generate bigger files, and cheaper (or local) LLMs have to work with less files, and you can adjust their size yourself.
-- Prompts can be included just like modules and includes in a similar way as you do in programming languages; this way, prompt modularization and reusability is reached.
+# The problem
 
-To get more information on what problems we address and what our advantages are, please refer to [this document](docs/solution-description.md).
+- Agents work well for small projects but become unreliable as codebases grow
+- Outputs become inconsistent and hard to trust over time
+- High token usage leads to high cost
+- Chat-based workflows lack persistent, controllable context
 
-To get the technical description of the solution, please go to [this document](docs/solution-technical-description.md).
+# The solution
 
-# Installation
+SVI introduces a deterministic, file-based workflow for code generation — where each output file is derived from an explicit, version-controlled prompt.
+
+You control:
+
+- what gets generated
+- what context is used
+- how files depend on each other
+
+No hidden state. No chat history. Just reproducible outputs.
+
+## How it works
+
+- **File-based generation**
+  Each file is generated from its own `.svi` specification
+- **Controlled context size**
+  You explicitly define dependencies - smaller prompts, lower cost
+- **Prompt modularity**
+  Compose prompts like modules
+- **Model-aware scaling**
+  Use larger files for strong models, smaller units for weaker ones
+
+Think of `.svi` files as source code, and generation as compilation.
+
+# Getting started
+
+## Install
 
 ```bash
 npm install -g @avrm/svi
 ```
 
-# SVI File Format
+## Initialize
 
-File Format
-
-```bash
-# Destination File
-e.g. code.js
-# Dependencies
-utils/storage.js
-# Output
-e.g. class AwesomeAlg, methods doAwesome, doMagic
-# Options
-ProgrammingLanguage=Node.js
-Active=True
-# Import prompts
-<Paths to other svi files>
-# Prompt
-```
-
-Please refer to [this page](docs/reference/svi-file-format.md) for more information about SVI file format.
-
-# Getting started
-
-## Initialize the options
-
-1. Go to the root folder of your new project
-2. Create the svi.json file by the following command:
+Create the project configuration file:
 
 ```bash
 svi init
 ```
 
-3. File svi.json will be created in the current folder; edit the file if necessary.
-   It is recommended to enter programming language (in any form for LLM to understand).
+Example `svi.json`:
 
-## Write prompts
-
-Create one or several \*.svi files. You can create these files from scratch or use the following command to create a file template:
-
-```bash
-svi init svifile.svi
+```json
+{
+  "programmingLanguage": "TypeScript",
+  "searchPaths": ["**/*"],
+  "ignorePaths": []
+}
 ```
 
-## Run the code generation
-
-1. Create svi.env file in the root directory of your project, with the following content:
+## Configure environment
 
 ```env
 API_KEY=<your API key>
@@ -90,26 +85,59 @@ MODEL_NAME=<model name>, e.g., gemini-2.5-flash
 SERVICE=<service name>, e.g., google
 ```
 
-_Note:_ Important!!! Don't forget to add the .env file to .gitignore
+## Write prompts
 
-Please refer to [this file](docs/reference/svi-env-file-format.md) for more information on the svi.env file parameters.
+Create a prompt file:
 
-2. Go to the root directory of your project and just run:
+```bash
+svi init hello.svi
+```
+
+Example:
+
+```md
+# Destination File
+
+hello.js
+
+# Output
+
+function hello()
+
+# Options
+
+ProgrammingLanguage=Node.js
+Active=True
+
+# Prompt
+
+Create a function that prints "Hello World", and call this function
+```
+
+## Run
 
 ```bash
 svi run
 ```
 
-# Getting more information
+Output:
 
-To review the full technical reference of the solution, please go to [reference contents](docs/reference/contents.md) and choose the necessary chapter.
+```javascript
+// hello.js
+function hello() {
+  console.log("Hello World");
+}
+hello();
+```
 
-To get the business solution description, please refer to [this document](docs/solution-description.md).
+# Documentation
 
-To get the technical description of the solution, please go to [this document](docs/solution-technical-description.md).
+- [Reference](docs/reference/contents.md)
+- [Solution Overview](docs/solution-description.md)
+- [Technical Details](docs/solution-technical-description.md)
+- [`.svi` format](docs/reference/svi-file-format.md)
+- [Contribution guide](docs/CONTRIBUTION.md)
 
-To get information on contribution, please refer to this [document](docs/CONTRIBUTION.md).
+# Acknowledgement
 
-# Using other projects
-
-Bit thanks to the project [LLM.js](https://github.com/themaximalist/llm.js/) for the great library supporting working with many LLMs out of the box. By using this library, the support of many models has been added to the SVI project.
+Thanks to [LLM.js](https://github.com/themaximalist/llm.js/) for multi-model support.

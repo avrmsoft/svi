@@ -1,56 +1,86 @@
-# SVI - A Structured-VIbe coding
+# SVI - Structured Vibe Coding
 
-A command line tool that compiles text prompts (specifications) into a code.
+SVI is a CLI tool that turns structured prompt files into source code — consistently and predictably.
 
-# A problem we address
+Instead of relying on chat sessions or autonomous agents, you define code generation as version-controlled `.svi` files containing prompts and run them like a build step.
 
-A regular agentic approach lets you 'vibe-code' PoCs, MVPs, and small projects within days and even hours instead of weeks and months.
-However, when the project grows, each change made by agents is getting more and more flaky. It becomes harder to maintain the project.
-Additionally, agents consume many tokens and works good on the most powerful LLM models. This leads to big inference costs.
-Another approach is using cheap or even free models for simple code generations in code-completion and chat mode. But this approach often involves copying code between chat and your source code files.
-One more consideration is that your context lives while chat is active.
-When it is closed, the only place where context is contained is the source code.
+### Why SVI?
 
-# A solution we offer
+- Keep AI-generated code maintainable as your project grows
+- Reduce token usage and LLM costs
+- Get reproducible results across runs
+- Eliminate copy-pasting between chat and your codebase
 
-Unlike ordinary agentic approach, you get more control over your code.
-It helps you to create maintainable projects with the help of AI.
-Unlike copying-pasting from free chats, you won't need to copy/paste anything. Your prompts will be stored in files and sent automatically to LLM.
+# The problem
 
-## A description of our Solution
+- Coding agents can generate PoCs, MVPs, and small projects within days or even hours instead of weeks or months. However, they struggle with existing codebases, especially when adding new features or working on larger projects.
+- Additionally, agents consume a large number of tokens and require powerful LLMs to perform consistently on complex tasks. This leads to high inference costs.
+- In most cases, context only exists while the chat session is active. This can be partially mitigated by using `.md` files, but it is still difficult to control how they are used.
+- You can gain full control over your code and reduce token usage when working in chat mode, but this requires constant copying between the chat and your source files.
 
-- We split our project into smaller pieces generally equal to single source code files;
-- Every file is generated separately, and LLM has to work with a limited context. You can choose source code file size accordingly to the quality of LLM you are using. Better (and more expensive) LLM can generate bigger files, and cheaper (or local) LLMs have to work with less files, and you can adjust their size yourself.
-- Prompts can be included just like modules and includes in a similar way as you do in programming languages; this way, prompt modularization and reusability is reached.
+# The solution
+
+SVI replaces ad-hoc prompt usage with a structured, file-based workflow.
+
+Instead of relying on chat sessions or autonomous agents, you define code generation using reusable, version-controlled prompt files that make the process more deterministic.
+
+You control:
+
+- what gets generated
+- what context is used
+- how your code evolves
+
+No hidden state. No chat history. Just deterministic code generation.
+
+This gives you:
+
+- full control over what is generated and when
+- increased reproducibility across runs
+- no manual copy-pasting between chat and source code
+
+## A description of the solution
+
+- We split the project into smaller pieces, typically corresponding to individual source code files.
+- Each file is generated separately, so the LLM operates within a limited context. You can choose the file size based on the capabilities of the LLM you are using. More powerful (and more expensive) models can handle larger files, while cheaper (or local) models require smaller ones. This is fully configurable.
+- Prompts can be included like modules, similar to how includes or imports work in programming languages. This enables modularization and reuse of prompts.
 
 ## Why it works
 
-Each LLM needs context to provide consistent results. When the project is big, its code can contain hundreds of thousands of lines of code, and this context is far from limits of any LLM.
-In our solution, developer can have a full control over context which is provided to model. We split our projects into parts (source code files), and each file contains its own separated logic and references other files it depends on (dependencies).
-When a file is generated, LLM gets the main prompt for the file generation, information about dependencies, and additional reusable prompts if necessary.
-This approach allows using even free and local models by manually adjusting file size to models capabilities. Bigger and stronger models allow developer generate bigger and more complex files thus moving forward faster.
-The variation is less than in regular agentic approach because each code generation is strictly limited to only one source code file.
+Every LLM requires context to produce consistent results. In large projects, the codebase can contain hundreds of thousands of lines, which is far beyond the practical limits of any LLM.
+
+In this approach, the developer has full control over the context provided to the model. The project is split into parts (source code files), where each file contains isolated logic and references its dependencies.
+
+When a file is generated, the LLM receives:
+
+- the main prompt for file generation
+- information about dependencies
+- additional reusable prompts, if needed
+
+This approach allows you to use even free or local models by adjusting file size to match model capabilities. More powerful models enable developers to generate larger and more complex files, accelerating development.
+
+Variation is significantly lower than in agent-based approaches because each generation step is strictly limited to a single source code file.
 
 ## Our advantages
 
-### Our advantages compared to agentic approach
+### Compared to agent-based approaches
 
-- The source of truth is contained in human readable files instead of source code; the source specifications are contained in project folder and are subject to version control;
-- The possibility to work with cheaper, and even free and local LLMs;
-- Less token consumption due to limited context and caching;
-- Higher reproducibility of results due to limited context;
-- Less probability of unexpected changes due to scope separation (one specification for one source code file);
-- The possibility to generate code for part of project, keeping other parts untouched;
-- Smooth integration with legacy code; you can generate only new code or separate parts of code keeping other legacy code untouched.
+- The source of truth is stored in human-readable files rather than generated code; specifications are version-controlled within the project.
+- Ability to work with cheaper, free, or local LLMs.
+- Lower token consumption due to limited context and caching.
+- Higher reproducibility due to constrained context.
+- Reduced risk of unexpected changes due to strict scope separation (one specification per file).
+- Ability to generate only parts of a project while keeping others untouched.
+- Smooth integration with legacy code: you can generate new parts without modifying existing ones.
+- Built-in caching: generation is skipped if the input prompt has not changed.
 
-### Our advantages compared to chat-mode
+### Compared to chat-based workflows
 
-- A convenient way to store prompts, include them to your repository and apply version control on them;
-- A convenient way to include one prompts into another thus providing reusability of specifications;
-- No need to copy your code to the chat and back, and to combine your prompts from several parts;
-- The possibility to use API keys;
-- The possibility to work in CI/CD pipelines.
+- A structured way to store prompts in a repository with version control.
+- Ability to reuse prompts by including them in other prompts.
+- No need to copy code back and forth between the editor and chat.
+- Support for API key usage.
+- Easy integration into CI/CD pipelines.
 
-## A technical description
+## Technical description
 
-If you need a more technical description, please refer to the [technical description of the solution](solution-technical-description.md).
+For a more detailed explanation, see the [technical description of the solution](solution-technical-description.md).

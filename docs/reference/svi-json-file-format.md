@@ -1,16 +1,19 @@
-# The project configuration file path
+# Project Configuration File Path
 
-The svi.json path is the main configuration file for the svi.cli. The location of this file is considered as the root folder of the project.
-All the \*.svi files must be located in the same folder as the configuration file or in subfolders. It is possible to set additional filters on the subfolders of the project folder being search by using parameters 'searchPaths' and 'ignorePaths' (see descriptino below).
+The `svi.json` file is the main configuration file for the SVI CLI. The location of this file defines the root folder of the project.
 
-Parameters:
+All `.svi` files must be located either in the same directory as the configuration file or in its subdirectories. You can apply additional filtering for subdirectories using the `searchPaths` and `ignorePaths` parameters (see description below).
 
-- programmingLanguage - you can set the default programming language for the project;
-  if you need to change this parameter for certain file, you can override it in any \*.svi file (see [\*.svi file format](svi-file-format.md) for more details).
+## Parameters
 
-- searchPaths - an array of paths to search for \*.svi files. By default it contains one element '\*\*\/\*' that means all files and folders.
-  The search is performed using glob patterns (as supported by the 'fast-glob' library).
-  An example of limited search paths:
+- `programmingLanguage` — sets the default programming language for the project.  
+  If you need to override this value for a specific file, you can do so in any `.svi` file (see [\*.svi file format](svi-file-format.md) for more details).
+
+- `searchPaths` — an array of paths used to search for `.svi` files.  
+  By default, it contains a single entry: `"**/*"`, which includes all files and folders.  
+  The search is performed using glob patterns (as supported by the `fast-glob` library).
+
+  Example of restricted search paths:
 
 ```json
 {
@@ -20,6 +23,8 @@ Parameters:
 }
 ```
 
-- ignorePaths - an array of paths to be ignored when searching for \*.svi files. Works by using the same algorithm as the 'searchPaths' parameter, but successful result leads to a file being excluded rather than added.
+- ignorePaths - an array of paths to exclude from `.svi` file discovery.
+  It uses the same glob pattern rules as searchPaths, but matches are excluded instead of included.
 
-Note: Paths should be relative to the project root (project root is where the main configuration file, usually svi.json, is located).
+_Note_
+All paths must be relative to the project root. The project root is the directory containing the main configuration file, usually `svi.json`.

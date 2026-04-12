@@ -1,6 +1,6 @@
-# The svi.env file format
+# The `svi.env` File Format
 
-The svi.env file is a classical environment file having the following format and parameters:
+The `svi.env` file is a standard environment file with the following format and parameters:
 
 ```bash
 MODEL_NAME=
@@ -11,13 +11,13 @@ API_KEY=
 
 Parameter description:
 
-- MODEL_NAME - name of LLM model
-- SERVICE - name of LLM service
-- LLM_BASE_URL - URL of LLM API if it is not the standard URL of the provided for the model and/or service
-- API_KEY - cloud LLM model API KEY
+- `MODEL_NAME` - name of the LLM model
+- `SERVICE` - name of the LLM service
+- `LLM_BASE_URL` - URL of the LLM API, used if it differs from the default URL provided for the model and/or service
+- `API_KEY` - API key for cloud-based LLM services
 
-For more information on parameters selection please refer to the following [document](model-and-service-selection.md).
+For more information about parameter selection, please refer to the following [document](model-and-service-selection.md).
 
-If any of parameters is not required in certain case (e.g., no API KEY is needed for local LLMs), it can be ommitted.
+If any parameter is not required in a specific case (e.g., no API key is needed for local LLMs), it can be omitted.
 
-For information on how to correctly set service, model, and URL parameters in different cases with examples, please refer to the [Model and Service selection](svi-env-file-format.md) document.
+For information on how to correctly configure service, model, and URL parameters in different scenarios with examples, please refer to the [Model and Service selection](svi-env-file-format.md) document.
