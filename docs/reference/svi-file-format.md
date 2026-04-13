@@ -1,22 +1,30 @@
-TODO - improve
-
 # SVI file format
+
+The `.svi` file format is based on Markdown (`.md`) syntax and uses structured sections to define prompts for code generation.
+
+Each `.svi` file represents a reproducible prompt that is used to generate source code for a specific destination file.
+
+The main goal of this file is to define a clear and structured prompt that produces consistent and predictable code.
 
 ```bash
 # Destination File
-<relative or absolute file name>
+<relative or absolute file path>
+
 # Dependencies
-<a list of file it imports dependencies from>
+<list of files providing required declarations>
+
 # Output
-<Here you can describe main outputs, e.g., class name(s) and methods, functions,
-or other objects>
+<define main outputs, e.g. class names, methods, functions, or other objects>
+
 # Options
-ProgrammingLanguage=<programming language if not specified in the main svi.json or is different>
+ProgrammingLanguage=<target programming language (overrides global setting)>
 Active=True
+
 # Import prompts
-<Paths to other svi files whose prompts you would like to include>
+<paths to other .svi files or text files to include>
+
 # Prompt
-<The main prompt for the code generation>
+<main prompt for code generation>
 ```
 
 Example:
@@ -24,73 +32,102 @@ Example:
 ```bash
 # Destination File
 test.js
+
 # Dependencies
 utils/storage.js
+
 # Output
 export class SaveTestFile
 methods:
 * constructor(storage)
 * storeFile(fileName, content)
-* getFileFromStorage(fileName), returns content
+* getFileFromStorage(fileName) -> returns content
+
 # Options
-ProgrammingLanguage=Javascript
+ProgrammingLanguage=JavaScript
 Active=True
+
 # Import prompts
 mainProjectPrompt.svi
-# Prompt
-Please create a test java script file for file manipulation by using an external
-storage class.
-Methods algorithm:
-* constructor - Saves storage to class attributes
-* storeFile - writes a file with the certain name and content
-* getFileFromStorage - returns content of a certain file
 
-The class should log its activities to console
+# Prompt
+Create a JavaScript class for file manipulation using an external storage class.
+
+Methods:
+* constructor — stores the storage instance
+* storeFile — writes a file with the given name and content
+* getFileFromStorage — returns file content by name
+
+The class should log its activity to the console.
 ```
 
-# Description of SVI file sections
+# SVI file sections
 
 ## Destination
 
-The location of the resulting file that must be generated out of this \*.svi. It can be filename, a relative path, or an absolute path.
-The destination file is optional; if omitted, no source code will be generated out of this \*.svi file, but its prompt can be used in another \*.svi files by using the 'import prompts' section.
+Specifies the path of the file to generate.
+Can be a filename, relative path, absolute path, or a path relative to the project root.
+See [file and folder path resolution guidelines](file-and-folder-path-resolution.md) for more information.
+
+Optional: if omitted, no file is generated.
+The prompt can still be reused via **Import prompts**.
 
 ## Dependencies
 
-This section contains a list of files whose declarations are necessary for successful generation of the destination file.
-One line in this section is one source code file.
-Unlike files in the 'Import prompts' section, the dependency files are not added to the resulting prompt as is; instead, declarations are extracted from these files by using an additional [prompt](../../packages/svi/src/svi/prompts/generate.ts) and added to the resulting prompt to minimize the context and tokens usage.
+Lists files whose declarations are required to generate the target file.
+Each line represents one source file.
+See [file and folder path resolution guidelines](file-and-folder-path-resolution.md) for path resolution rules.
+
+Unlike **Import prompts**, these files are not included directly.
+Instead, their declarations are extracted and added to the prompt to reduce token usage.
+See [svi file prompt construction](svi-file-prompt-construction.md) for more information.
 
 ## Output
 
-This section may contain declarations from the generated source code to make their name stable. If no output object names are specified, the LLM may generate different names each time.
-The desired declarations are not necesserily must be added to this section; they also can be described in the main prompt.
+Defines stable names for generated entities (e.g. classes, methods).
+
+If omitted, the LLM may generate inconsistent names across runs.
+You can also define outputs directly in the main prompt instead.
 
 ## Options
 
-This section contains additional options.
+Additional configuration for the SVI file.
 
 ### ProgrammingLanguage
 
-The programming language name is added to each prompt to tell LLM in which language or using which technology the resulting source code should be generated.
-The programming language can be set globally in the [main project file (usually svi.json)](svi-json-file-format.md), but it can be redefined for each \*.svi file by using this parameter.
+Specifies the target programming language.
+
+Overrides the [global setting](svi-json-file-format.md) from the main project configuration (e.g. `svi.json`).
+
+_Note_ The programming language name must be understandable by the LLM.
+There is no predefined list, but the name should be clear and unambiguous.
 
 ### Active
 
-The \*.svi file can be switched off from the generation stage by setting the parameter Active=False.
+Controls whether the file participates in generation.
 
-_Note_: Even if a \*.svi file is deactivated, it can still be imported by another \*.svi files via the 'Import prompts' section.
+- True: included in generation
+- False: skipped
+
+_Note_: Inactive files can still be used via **Import prompts**.
 
 ## Import prompts
 
-This section contains a list of other \*.svi files whose content must be added to the final prompt for this file; also, any other file can be included (as a text).
-One line in this section is one imported file.
+Lists files whose content should be included in the final prompt.
 
-The imported files are processed differently depending on their format:
+Each line represents one file.
 
-- If the imported file is an \*.svi file, the contents of its 'Prompt' section is included. If this file also contains files in the 'Import prompts' section, they are also included.
-- If the imported file is not an \*.svi file, its contents are completely imported to the final prompt
+Processing rules:
+
+- `.svi` files: only their Prompt section is included
+  (including nested imports)
+- other files: full content is included
+
+See [file and folder path resolution guidelines](file-and-folder-path-resolution.md) for more information on path resolution rules.
 
 ## Prompt
 
-This section contains the main prompt of the \*.svi file. It is included to the generation prompt for this file without any restrictions. Also, this prompt can be included in the final prompt of another file if it is included via the 'Import prompts' section.
+Contains the main prompt for this file.
+
+- Always included in generation
+- Can be reused by other files via Import prompts

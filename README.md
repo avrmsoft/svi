@@ -2,22 +2,45 @@
 
 <img src="images/logo1_cut.png" width="200">
 
-SVI is a CLI tool that generates code from structured prompt files — like a build step, but powered by LLMs.
+SVI is a CLI tool that turns LLM code generation into a deterministic build step.
 
-Unlike chat-based tools, SVI treats prompts as source code and generation as a build step — enabling reproducible code generation by eliminating hidden state, chat history, and implicit context.
+It brings the reliability of traditional build systems to LLM code generation.
 
-Instead of chat sessions or autonomous agents, define your code generation as version-controlled `.svi` files and run them as a build step:
+Define prompts as Markdown-based `.svi` files, version them like source code, and generate consistent outputs — without hidden context, chat history, or guesswork:
 
 1. write `auth.svi`
 2. run `svi run`
 3. produce a consistent `auth.ts`
 
-### Why SVI?
+`.svi` files use a Markdown-like structure, making them easy to read, write, and version control.
+
+Think of `.svi` files as source code, and generation as compilation.
+
+### Why this matters
+
+LLM tools are great for prototyping — but become unreliable in real projects:
+
+- outputs drift over time
+- prompts become untraceable
+- results depend on implicit context
+
+SVI fixes this by making code generation explicit, versioned, and reproducible.
+
+## Why SVI?
 
 - Enable reproducible AI code generation — the same input produces consistent outputs across runs
-- Keep AI-generated code maintainable as your project grows
-- Reduce token usage and LLM costs
+- Keep generated code stable and predictable as your project grows
+- Reduce token usage by limiting context to explicit dependencies
 - Eliminate copy-paste between chat and your codebase
+
+## Works with existing projects
+
+SVI is designed for incremental adoption.
+
+You don't need to generate your entire codebase with SVI.  
+You can use it only for selected files, while the rest of your project remains handwritten.
+
+This makes it easy to introduce SVI into existing projects without disruption.
 
 # The problem
 
@@ -47,9 +70,7 @@ No hidden state. No chat history. Just reproducible outputs.
 - **Prompt modularity**
   Compose prompts like modules
 - **Model-aware scaling**
-  Use larger files for strong models, smaller units for weaker ones
-
-Think of `.svi` files as source code, and generation as compilation.
+  Use larger files with strong models, and smaller units with weaker ones
 
 # Getting started
 

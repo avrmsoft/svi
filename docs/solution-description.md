@@ -2,7 +2,7 @@
 
 SVI is a CLI tool that turns structured prompt files into source code — consistently and predictably.
 
-Instead of relying on chat sessions or autonomous agents, you define code generation as version-controlled `.svi` files containing prompts and run them like a build step.
+Instead of relying on chat sessions or autonomous agents, you define code generation as version-controlled .svi files — based on Markdown syntax — containing prompts and run them like a build step.
 
 ### Why SVI?
 
@@ -70,7 +70,8 @@ Variation is significantly lower than in agent-based approaches because each gen
 - Higher reproducibility due to constrained context.
 - Reduced risk of unexpected changes due to strict scope separation (one specification per file).
 - Ability to generate only parts of a project while keeping others untouched.
-- Smooth integration with legacy code: you can generate new parts without modifying existing ones.
+- Incremental adoption: you don’t need to generate the entire codebase with SVI. You can generate only selected files while keeping the rest of the code handwritten.
+- Smooth integration with legacy code: generate new parts without modifying existing ones.
 - Built-in caching: generation is skipped if the input prompt has not changed.
 
 ### Compared to chat-based workflows
