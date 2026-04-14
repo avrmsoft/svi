@@ -4,7 +4,7 @@
   "description": "SVI - Structural Vibe Coding (SVI), CLI tools",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && copy package.json dist",
+    "build": "tsc && shx cp package.json dist",
     "test": "vitest run",
     "test:watch": "vitest",
     "svi": "svi run -l TRACE -P"
@@ -13,6 +13,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.7.2",
     "@vitest/coverage-v8": "^4.0.6",
+    "shx": "^0.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.6"
@@ -22,8 +23,8 @@
     "commander": "^14.0.1",
     "dotenv": "^17.2.3",
     "execa": "^9.6.0",
-    "js-yaml": "^4.1.0",
-    "fast-glob": "^3.3.3"
+    "fast-glob": "^3.3.3",
+    "js-yaml": "^4.1.0"
   },
   "bin": {
     "svi": "dist/bin/cli.js"

@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  svi:
+    build: .
+    working_dir: /app
+    volumes:
+      - .:/app
+      - pnpm-store:/root/.local/share/pnpm/store
+    stdin_open: true
+    tty: true
+
+volumes:
+  pnpm-store:
