@@ -15,4 +15,7 @@ RUN pnpm install
 # copy rest of the project
 COPY . .
 
+# optional: expose debug port
+EXPOSE 9229
+
 CMD ["bash"]

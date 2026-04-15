@@ -1,6 +1,8 @@
 ProcessedSviFilesHash:
   fakeFileSystemHelper.svi:
     hash: df23e1dc62e825daf58c3daffd0396cd1b7eaba5fa963df2afb0335930c6436b
+  fakePath.svi:
+    hash: 57aa90183aff4107dc93588a17c962018bc29fc3511612d57b4bee2e6cb17d33
 GeneratedDepenenciesExports:
   fakeFileSystem.ts:
     hash: c68b807b5123e597c9415d92eb9561a7dcb9fe51628bb46bee891372a2338b24

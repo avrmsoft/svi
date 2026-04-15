@@ -7,6 +7,7 @@ import { type testFile } from "./types";
 import { FakeFsStatResult } from "./fakeFsStatResult";
 import FakeFileSystemHelper from "./fakeFileSystemHelper";
 import { fastGlobWrapper } from "../../../src/utils/fastGlobWrapper";
+import { fakePathDotResolve } from "./fakePath";
 
 /*interface testFile {
   fullPath: string;
@@ -219,6 +220,7 @@ class fakeFileSystem {
     );
 
     this.applyMockOnFastGlob();
+    this.applyMockOnPath();
   }
 
   public restoreMocks(): void {
@@ -248,19 +250,14 @@ class fakeFileSystem {
         return await fsh.fg(pattern, options);
       },
     );
-    /*vi.mock("fast-glob", () => ({
-      default: vi.fn(),
-    }));
+  }
 
-    vi.mocked(fg).mockImplementation(
-      async (
-        pattern: string | string[],
-        options?: fg.Options,
-      ): Promise<string[]> => {
-        const fsh = new FakeFileSystemHelper(this.files, this.fakeCwd);
-        return await fsh.fg(pattern, options);
+  private applyMockOnPath(): void {
+    vi.spyOn(path, "resolve").mockImplementation(
+      (...paths: string[]): string => {
+        return fakePathDotResolve(...paths);
       },
-    );*/
+    );
   }
 
   private convertToUnixPath(fullOrRelativePath: string): string {

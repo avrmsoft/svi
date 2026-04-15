@@ -1,11 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { runCli } from "../../../../src/commands/entryPoint";
 import { fakeFileSystem } from "../../../testUtils/fakeFileSystem/fakeFileSystem";
-/*import {
-  enableFakeLLMProcessor,
-  disableFakeLLMProcessor,
-} from "../../../testUtils/fakeLLM";
-import { pushProcessEnv, popProcessEnv } from "../../../testUtils/testUtils";*/
 import {
   beforeEachSimpleTest,
   afterEachSimpleTest,
@@ -80,8 +75,6 @@ Test prompt
   );
 
   fakeFs.applyMocks();
-
-  //enableFakeLLMProcessor({ apiKey: "testKey" });
 
   await runCli([
     "node",

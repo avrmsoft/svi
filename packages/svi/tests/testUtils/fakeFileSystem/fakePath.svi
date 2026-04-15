@@ -1,0 +1,29 @@
+# Destination File
+fakePath.ts
+
+# Dependencies
+
+# Output
+export function fakePathDotResolve(...paths: string[]): string
+
+# Options
+Active=True
+ProgrammingLanguage=
+
+# Import prompts
+
+# Prompt
+* export function fakePathDotResolve(...paths: string[]): string
+This function should first try to detect if paths are windows paths or linux paths.
+How to detect:
+ - Take the first part of the path;
+ - If it contains a starting path with a drive letter, e.g., `D:\\folder`, it is windows
+ - If it contains the windows separator `\\`, it is windows
+ - If it contains the Linux separator, it is linux
+ - If the part contains no signs of linux/windows path, it is not detected
+ - If the first parts is not detected (windows or linux), then go to the second part
+ - If no part is detected, then detect path separator according to current operating
+ system (windows or not)
+ - If detected, then merge all parts of separating by either linux or windows path separator
+ respectively
+ - return the merged result
