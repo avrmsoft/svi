@@ -7,7 +7,8 @@
     "build": "tsc && shx cp package.json dist",
     "test": "vitest run",
     "test:watch": "vitest",
-    "svi": "svi run -l TRACE -P"
+    "svi": "svi run -l TRACE -P",
+    "run": "node dist/bin/cli.js"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
