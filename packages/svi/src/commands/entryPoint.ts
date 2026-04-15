@@ -100,6 +100,11 @@ runProg.action(async (files: string[], options) => {
   }
 });
 
+program.action(() => {
+  program.outputHelp();
+  process.exit(0);
+});
+
 // Parse CLI arguments
 export async function runCli(argv = process.argv) {
   await program.parseAsync(argv);
