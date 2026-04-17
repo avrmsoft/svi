@@ -20,7 +20,7 @@ class fakeFileSystem {
     if (process.platform === "win32") {
       this.setCwd("C:\\temp");
     } else {
-      this.setCwd("/tmp");
+      this.setCwd("/temp");
     }
   }
 

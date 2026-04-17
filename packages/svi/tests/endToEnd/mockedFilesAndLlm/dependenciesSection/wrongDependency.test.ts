@@ -11,6 +11,7 @@ import {
   checkProcessExitCalledWith,
   restoreProcessExit,
 } from "../../../testUtils/fakeProcess";
+import { fail } from "assert/strict";
 
 describe("Dependency not found in 'Dependencies' section (E2E)", () => {
   let fakeFs: fakeFileSystem;
@@ -85,8 +86,13 @@ This is a test prompt that should not be processed due to the missing dependency
       fakeLogger.containsErrorLog("from 'Dependencies' section not found"),
     ).toBe(true);
 
-    expect(fakeLogger.containsErrorLog("C:\\temp\\wrongDependency.js")).toBe(
-      true,
-    );
+    if (
+      !fakeLogger.containsErrorLog("C:\\temp\\wrongDependency.js") &&
+      !fakeLogger.containsErrorLog("/temp/wrongDependency.js")
+    ) {
+      fail(
+        "Log should contain information about missing dependency with correct path",
+      );
+    }
   });
 });

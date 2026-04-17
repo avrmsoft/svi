@@ -6,6 +6,7 @@ import {
   afterEachSimpleTest,
 } from "../../templates/simpleTest";
 import FakeLogger from "../../../testUtils/fakeLogger/fakeLogger";
+import { fail } from "assert/strict";
 
 describe("Two files Test (E2E)", () => {
   let fakeFs: fakeFileSystem;
@@ -86,8 +87,22 @@ Test prompt 2
       true,
     );
 
-    expect(fakeLogger.containsLog("- Created: C:\\temp\\test.js")).toBe(true);
+    if (
+      !fakeLogger.containsLog("- Created: C:\\temp\\test.js") &&
+      !fakeLogger.containsLog("- Created: /temp/test.js")
+    ) {
+      fail(
+        "Log should contain information about created file test.js with correct path",
+      );
+    }
 
-    expect(fakeLogger.containsLog("- Created: C:\\temp\\test2.js")).toBe(true);
+    if (
+      !fakeLogger.containsLog("- Created: C:\\temp\\test2.js") &&
+      !fakeLogger.containsLog("- Created: /temp/test2.js")
+    ) {
+      fail(
+        "Log should contain information about created file test2.js with correct path",
+      );
+    }
   });
 });

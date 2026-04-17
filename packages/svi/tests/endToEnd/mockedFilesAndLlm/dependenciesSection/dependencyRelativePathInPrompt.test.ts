@@ -75,16 +75,17 @@ export default class Dummy {
     expect(fakeFs.fileExists("folder\\maintest.js")).toBe(true);
 
     const content = fakeFs.fileContent("folder\\maintest.js");
+    const normalizedContent = content ? content.replace(/\\/g, "/") : "";
 
-    expect(content).toContain("Please add 2 + 3 and output result");
+    expect(normalizedContent).toContain("Please add 2 + 3 and output result");
 
-    expect(content).toContain(
+    expect(normalizedContent).toContain(
       "Your task is to extract all declarations from the code",
     );
-    expect(content).toContain(
+    expect(normalizedContent).toContain(
       "The extracted information should not be a syntaxically correct code",
     );
-    expect(content).toContain("export default class Dummy");
-    expect(content).toContain("folder\\subfolder\\dependency.js");
+    expect(normalizedContent).toContain("export default class Dummy");
+    expect(normalizedContent).toContain("folder/subfolder/dependency.js");
   });
 });

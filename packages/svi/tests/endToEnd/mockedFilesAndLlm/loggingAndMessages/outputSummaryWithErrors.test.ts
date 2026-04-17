@@ -11,6 +11,7 @@ import {
   restoreProcessExit,
 } from "../../../testUtils/fakeProcess";
 import FakeLogger from "../../../testUtils/fakeLogger/fakeLogger";
+import { fail } from "assert/strict";
 
 describe("Output summary containing error messages (E2E)", () => {
   let fakeFs: fakeFileSystem;
@@ -107,9 +108,6 @@ Test prompt 3
       "gemini-2.5-flash",
       "-k",
       "testKey",
-      "-l",
-      "TRACE",
-      "-P",
     ]);
 
     checkProcessExitCalledWith(1);
@@ -126,9 +124,23 @@ Test prompt 3
       ),
     ).toBe(true);
 
-    expect(fakeLogger.containsLog("- Created: C:\\temp\\test.js")).toBe(true);
+    if (
+      !fakeLogger.containsLog("- Created: C:\\temp\\test.js") &&
+      !fakeLogger.containsLog("- Created: /temp/test.js")
+    ) {
+      fail(
+        "Log should contain information about created file test.js with correct path",
+      );
+    }
 
-    expect(fakeLogger.containsLog("- Updated: C:\\temp\\test3.js")).toBe(true);
+    if (
+      !fakeLogger.containsLog("- Updated: C:\\temp\\test3.js") &&
+      !fakeLogger.containsLog("- Updated: /temp/test3.js")
+    ) {
+      fail(
+        "Log should contain information about updated file test3.js with correct path",
+      );
+    }
 
     expect(
       fakeLogger.containsWarningLogRegex(
