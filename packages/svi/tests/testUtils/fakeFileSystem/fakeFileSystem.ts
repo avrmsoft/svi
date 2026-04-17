@@ -1,18 +1,16 @@
 import { vi } from "vitest";
 import fs from "fs";
 import path from "path";
-//import fg from "fast-glob";
-import { convertPathToAbsolute } from "../testUtils";
+import { convertPathToAbsolute, convertToUnixPath } from "../testUtils";
 import { type testFile } from "./types";
 import { FakeFsStatResult } from "./fakeFsStatResult";
 import FakeFileSystemHelper from "./fakeFileSystemHelper";
 import { fastGlobWrapper } from "../../../src/utils/fastGlobWrapper";
-import { fakePathDotResolve } from "./fakePath";
-
-/*interface testFile {
-  fullPath: string;
-  content?: string;
-}*/
+import { fakePathDotResolve } from "./fakePath/fakeResolve";
+import { fakePathDotIsAbsolute } from "./fakePath/fakeIsAbsolute";
+import { fakePathDotDirname } from "./fakePath/fakeDirname";
+import { fakePathDotJoin } from "./fakePath/fakeJoin";
+import logger from "../../../src/utils/logger";
 
 class fakeFileSystem {
   private files: testFile[] = [];
@@ -55,7 +53,11 @@ class fakeFileSystem {
 
   private convPath(fullOrRelativePath: string): string {
     const absPath = convertPathToAbsolute(fullOrRelativePath, this.fakeCwd);
-    return this.convertToUnixPath(absPath);
+    const result = this.convertToUnixPath(absPath);
+    logger.debug(
+      `Mock FS: fakeFileSystem.convPath: '${fullOrRelativePath}' -> '${result}'`,
+    );
+    return result;
   }
 
   public applyMocks(): void {
@@ -77,9 +79,13 @@ class fakeFileSystem {
       const dirPrefix = absPath.endsWith(path.sep)
         ? absPath
         : absPath + path.sep;
-      return this.files.some((f) =>
+      const result = this.files.some((f) =>
         this.convPath(f.fullPath).startsWith(dirPrefix),
       );
+      if (!result) {
+        this.outputDebugInfoWhenNotFound(filePath.toString());
+      }
+      return result;
     });
 
     vi.spyOn(fs, "readFileSync").mockImplementation(
@@ -95,6 +101,7 @@ class fakeFileSystem {
           (f) => this.convPath(f.fullPath) === this.convPath(path.toString()),
         );
         if (!file) {
+          this.outputDebugInfoWhenNotFound(path.toString());
           throw new Error(`File not found in mock: ${path.toString()}`);
         }
 
@@ -190,6 +197,10 @@ class fakeFileSystem {
           }));
         }
 
+        if (entries.size === 0) {
+          this.outputDebugInfoWhenNotFound(dirPath.toString());
+        }
+
         return Array.from(entries.keys());
       },
     );
@@ -258,10 +269,38 @@ class fakeFileSystem {
         return fakePathDotResolve(...paths);
       },
     );
+
+    vi.spyOn(path, "isAbsolute").mockImplementation((p: string): boolean => {
+      return fakePathDotIsAbsolute(p);
+    });
+
+    vi.spyOn(path, "dirname").mockImplementation((p: string): string => {
+      return fakePathDotDirname(p);
+    });
+
+    vi.spyOn(path, "join").mockImplementation((...paths: string[]): string => {
+      return fakePathDotJoin(...paths);
+    });
   }
 
   private convertToUnixPath(fullOrRelativePath: string): string {
-    return fullOrRelativePath.replace(/\\/g, "/");
+    const result = convertToUnixPath(fullOrRelativePath);
+
+    logger.debug(
+      `Mock FS: fakeFileSystem.convertToUnixPath: '${fullOrRelativePath}' -> '${result}'`,
+    );
+
+    return result;
+  }
+
+  private outputDebugInfoWhenNotFound(filePath: string): void {
+    if (!this.fileExists(filePath)) {
+      logger.debug(
+        `Mock FS: File or dir not found - ${filePath}. Current mock files: ${this.files
+          .map((f) => f.fullPath)
+          .join(", ")}`,
+      );
+    }
   }
 }
 

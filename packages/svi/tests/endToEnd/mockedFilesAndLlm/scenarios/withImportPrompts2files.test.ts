@@ -108,22 +108,28 @@ Please write a function add(a, b) that returns the sum of a and b.
     expect(fakeFs.fileExists("folder\\subfolder\\test.js")).toBe(true);
 
     const content = fakeFs.fileContent("folder\\subfolder\\test.js");
+    let normalizedContent = "";
+    if (content) {
+      normalizedContent = content.replace(/\\/g, "/");
+    }
 
-    expect(content).toContain(
+    expect(normalizedContent).toContain(
       "Please write a function add(a, b) that returns the sum of a and b",
     );
 
     // Must contain relative path to imported file according to project structure
-    expect(content).toContain("folder\\partDescription.svi");
-    expect(content).toContain("This module is responsible for computing");
-    expect(content).toContain(
+    expect(normalizedContent).toContain("folder/partDescription.svi");
+    expect(normalizedContent).toContain(
+      "This module is responsible for computing",
+    );
+    expect(normalizedContent).toContain(
       "We are building a simple application that can add numbers",
     );
 
     // Must contain relative path to imported file according to project structure
-    expect(content).toContain("folder\\additionalContext.svi");
+    expect(normalizedContent).toContain("folder/additionalContext.svi");
 
-    expect(content).toContain(
+    expect(normalizedContent).toContain(
       "Additional context: This is a second file containing additional context",
     );
 

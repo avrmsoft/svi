@@ -78,15 +78,19 @@ Please write a function add(a, b) that returns the sum of a and b.
     expect(fakeFs.fileExists("folder\\test.js")).toBe(true);
 
     const content = fakeFs.fileContent("folder\\test.js");
+    let normalizedContent = "";
+    if (content) {
+      normalizedContent = content.replace(/\\/g, "/");
+    }
 
-    expect(content).toContain(
+    expect(normalizedContent).toContain(
       "Please write a function add(a, b) that returns the sum of a and b",
     );
-    expect(content).toContain(
+    expect(normalizedContent).toContain(
       "We are building a simple application that can add numbers",
     );
-    expect(content).toContain(
-      "Relative file path of the *.svi file is folder\\test.svi",
+    expect(normalizedContent).toContain(
+      "Relative file path of the *.svi file is folder/test.svi",
     );
 
     expect(fakeFs.fileExists("projectDescription.js")).toBe(false);

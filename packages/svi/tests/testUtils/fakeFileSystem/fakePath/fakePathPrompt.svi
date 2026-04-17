@@ -1,0 +1,18 @@
+# Destination File
+
+# Dependencies
+
+# Output
+
+# Options
+Active=True
+ProgrammingLanguage=
+
+# Import prompts
+
+# Prompt
+You should not use the path library itself as it is a mock implementation for 'path'
+in tests.
+
+If the signature of the function in this prompt is wrong, feel free to fix it like in the
+original method of the 'path' library.

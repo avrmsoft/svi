@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import path from "path";
 import { runCli } from "../../../../../src/commands/entryPoint";
 import { fakeFileSystem } from "../../../../testUtils/fakeFileSystem/fakeFileSystem";
 import {
@@ -107,12 +108,19 @@ Please write a function add(a, b) that returns the sum of a and b.
 
     expect(fakeFs.fileExists("folder\\subfolder\\test.js")).toBe(true);
 
-    const content = fakeFs.fileContent("folder\\subfolder\\test.js");
+    const content1 = fakeFs.fileContent("folder\\subfolder\\test.js");
+    let content = "";
+    if (content1) {
+      content = content1.replace(/\\/g, "/");
+    }
 
     expect(content).toContain(
       "Please write a function add(a, b) that returns the sum of a and b",
     );
-    expect(content).toContain("folder\\partDescription.svi");
+
+    //const expectedPath = path.join("folder", "partDescription.svi");
+
+    expect(content).toContain("folder/partDescription.svi");
     expect(content).toContain("This module is responsible for computing");
     expect(content).toContain(
       "We are building a simple application that can add numbers",

@@ -1,40 +1,43 @@
-// src\utils\pathResolver.ts
-import * as path_module from 'path';
-import { Config } from '../config/config';
+// src/utils/pathResolver.ts
+import path from "path";
+import { Config } from "../config/config"; // Relative path from src/utils/ to src/config/
 
-export function resolvePath(path: string, basePath: string | null = null): string {
+export function resolvePath(p: string, basePath : string | null = null) : string {
   // Case 1: If the 'path' variable is an absolute path, just return it unchanged.
-  if (path_module.isAbsolute(path)) {
-    return path;
+  if (path.isAbsolute(p)) {
+    return p;
   }
 
-  const config = Config.getInstance();
-  // Get project path from config (the result of method dir() of Config class)
-  const projectRootPath = config.dir; 
+  const projectRoot = Config.getInstance().dir;
 
-  const PROJECT_ROOT_PREFIX = '@project_root';
-
-  // Case 2: If the 'path' variable starts with @project_root,
-  // then replace the @project_root variable with project path from config.
-  if (path.startsWith(PROJECT_ROOT_PREFIX)) {
-    let relativePathFromRoot = path.substring(PROJECT_ROOT_PREFIX.length);
-    // Remove leading directory separators to ensure it's treated as a relative segment
-    // when resolved against projectRootPath. This handles cases like "@project_root/src/file.ts"
-    // where substring yields "/src/file.ts".
-    // We check for both OS-specific separator and forward slash for consistency across platforms.
-    while (relativePathFromRoot.startsWith(path_module.sep) || relativePathFromRoot.startsWith('/')) {
-      relativePathFromRoot = relativePathFromRoot.substring(1);
+  // Case 2: If the 'path' variable starts with @project_root, then replace the
+  // @project_root variable with project path from config
+  if (p.startsWith('@project_root')) {
+    const relativePath = p.substring('@project_root'.length);
+    return path.resolve(projectRoot, relativePath);
+  }
+  // If the 'path' variable does not start with @
+  else if (!p.startsWith('@')) {
+    // Case 3: If 'basePath' parameter is not null, then resolve the path as
+    // <path from basePath> plus <path or filename from 'path'>
+    if (basePath !== null) {
+      return path.resolve(basePath, p);
     }
-    return path_module.resolve(projectRootPath, relativePathFromRoot);
+    // Case 4: If 'basePath' parameter is null, then resolve the path relative
+    // to project path from config
+    else { // basePath === null
+      return path.resolve(projectRoot, p);
+    }
   }
-
-  // Case 3 & 4: If the 'path' variable does not start with @, it is relative.
-  if (basePath !== null) {
-    // Case 3: basePath parameter is not null, then resolve the path as
-    // <path from basePath> plus <path or filename from 'path'>.
-    return path_module.resolve(basePath, path);
-  } else {
-    // Case 4: basePath parameter is null, then resolve the path relative to project path from config.
-    return path_module.resolve(projectRootPath, path);
+  // This 'else' block handles paths that are not absolute,
+  // do not start with '@project_root', but *do* start with '@'
+  // (e.g., "@some_other_prefix/file.txt").
+  // This specific scenario is not explicitly defined in the problem specification's cases.
+  // To ensure the function always returns a string and fulfills the general
+  // purpose of "turn relative path to absolute", the most robust fallback
+  // is to resolve it against the project root. This treats any unhandled
+  // '@' prefix as a literal part of a path segment relative to the project root.
+  else {
+    return path.resolve(projectRoot, p);
   }
 }

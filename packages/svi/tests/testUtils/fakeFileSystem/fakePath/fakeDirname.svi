@@ -1,0 +1,19 @@
+# Destination File
+fakeDirname.ts
+
+# Dependencies
+
+# Output
+export function fakePathDotDirname(path: string): string
+
+# Options
+Active=True
+ProgrammingLanguage=
+
+# Import prompts
+fakePathPrompt.svi
+
+# Prompt
+* fakePathDotDirname
+This function should return the parent folder of the given file or directory. It should work
+for both windows and Linux/Macos paths regardless of the current OS (by string operations).

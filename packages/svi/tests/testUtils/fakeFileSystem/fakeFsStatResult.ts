@@ -1,4 +1,5 @@
 import { testFile } from "./types.js";
+import { convertToUnixPath } from "../testUtils.js";
 
 export class FakeFsStatResult {
   private fileName: string;
@@ -35,6 +36,8 @@ export class FakeFsStatResult {
     );
   }
   private normalizePath(path: string): string {
-    return path.replace(/\\/g, "/");
+    //return path.replace(/\\/g, "/");
+    const result = convertToUnixPath(path);
+    return result;
   }
 }

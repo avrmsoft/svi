@@ -116,11 +116,11 @@ Test prompt from svi file
     ).toBe(true);
 
     expect(
-      fakeLogger.containsLogRegex(/End of prompt.*folder\\test\.svi/),
+      fakeLogger.containsLogRegex(/End of prompt.*folder[\\/]test\.svi/),
     ).toBe(true);
 
     expect(
-      fakeLogger.containsLogRegex(/End of prompt.*folder\\someCode\.js/),
+      fakeLogger.containsLogRegex(/End of prompt.*folder[\\/]someCode\.js/),
     ).toBe(true);
   });
 });

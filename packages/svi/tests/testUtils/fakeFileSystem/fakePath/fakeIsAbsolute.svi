@@ -1,0 +1,24 @@
+# Destination File
+fakeIsAbsolute.ts
+
+# Dependencies
+
+# Output
+export function fakePathDotIsAbsolute(path: string): boolean
+
+# Options
+Active=True
+ProgrammingLanguage=
+
+# Import prompts
+
+# Prompt
+* fakePathDotIsAbsolute
+This function should detect if the folder is absolute both for windows and linux not regarding
+in which OS it is executed (by string operations).
+If the signature of the function in this prompt is wrong, feel free to fix it like in the
+original path.isAbsolute function
+
+Special cases that should be considered:
+* Unix style path but with windows slash
+\absolute\path\file.txt -> true

@@ -78,6 +78,8 @@ Test prompt another file
       "gemini-2.5-flash",
       "-k",
       "testKey",
+      "-l",
+      "DEBUG",
     ]);
 
     expect(fakeFs.fileExists("C:\\project\\subfolder\\specific.svi")).toBe(

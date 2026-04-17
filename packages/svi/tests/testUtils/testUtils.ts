@@ -23,6 +23,27 @@ export function convertPathToAbsolute(
   return fullPath;
 }
 
+export function convertToUnixPath(fullOrRelativePath: string): string {
+  let result = fullOrRelativePath.replace(/\\/g, "/");
+
+  // Remove Windows drive letter (C:/ → "")
+  result = result.replace(/^[A-Za-z]:/, "");
+
+  // Ensure it starts with "/" if it was absolute
+  if (!result.startsWith("/")) {
+    result = "/" + result;
+  }
+
+  // Normalize duplicate slashes
+  result = result.replace(/\/+/g, "/");
+
+  //logger.debug(
+  //  `Mock FS: fakeFileSystem.convertToUnixPath: '${fullOrRelativePath}' -> '${result}'`,
+  //);
+
+  return result;
+}
+
 export function pushProcessEnv(): void {
   (globalThis as any)._savedProcessEnv = { ...process.env };
 }

@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fakeFileSystem } from "../../testUtils/fakeFileSystem/fakeFileSystem";
 import { fastGlobWrapper } from "../../../src/utils/fastGlobWrapper";
+import {
+  convertPathToAbsolute,
+  convertToUnixPath,
+} from "../../testUtils/testUtils";
 import fs from "fs";
 import path from "path";
 
@@ -29,8 +33,18 @@ describe("Main fake FS tests", () => {
       absolute: true,
     });
 
-    expect(results).toContain(fakeFs["convPath"]("globbed.svi"));
-    expect(results).toContain(fakeFs["convPath"]("anotherGlobbed.svi"));
+    const resultsUnix = results.map((r) => convertToUnixPath(r));
+
+    let aPath = convertPathToAbsolute("globbed.svi", fakeFs.getCwd());
+    aPath = convertToUnixPath(aPath);
+    expect(resultsUnix).toContain(aPath);
+
+    let anotherPath = convertPathToAbsolute(
+      "anotherGlobbed.svi",
+      fakeFs.getCwd(),
+    );
+    anotherPath = convertToUnixPath(anotherPath);
+    expect(resultsUnix).toContain(anotherPath);
   });
 
   it("In subfolders", async () => {
@@ -45,8 +59,19 @@ describe("Main fake FS tests", () => {
       absolute: true,
     });
 
-    expect(results).toContain(fakeFs["convPath"]("subfolder/file1.svi"));
-    expect(results).toContain(fakeFs["convPath"]("folder/anotherGlobbed.svi"));
+    const resultsUnix = results.map((r) => convertToUnixPath(r));
+
+    let aPath = convertPathToAbsolute("subfolder/file1.svi", fakeFs.getCwd());
+    aPath = convertToUnixPath(aPath);
+
+    expect(resultsUnix).toContain(aPath);
+
+    let anotherPath = convertPathToAbsolute(
+      "folder/anotherGlobbed.svi",
+      fakeFs.getCwd(),
+    );
+    anotherPath = convertToUnixPath(anotherPath);
+    expect(resultsUnix).toContain(anotherPath);
   });
 
   it("Unix style paths", async () => {
@@ -62,8 +87,18 @@ describe("Main fake FS tests", () => {
       absolute: true,
     });
 
-    expect(results).toContain(fakeFs["convPath"]("unixStyle.svi"));
-    expect(results).toContain(fakeFs["convPath"]("anotherUnixStyle.svi"));
+    const resultsUnix = results.map((r) => convertToUnixPath(r));
+
+    let aPath = convertPathToAbsolute("unixStyle.svi", fakeFs.getCwd());
+    aPath = convertToUnixPath(aPath);
+    expect(resultsUnix).toContain(aPath);
+
+    let anotherPath = convertPathToAbsolute(
+      "anotherUnixStyle.svi",
+      fakeFs.getCwd(),
+    );
+    anotherPath = convertToUnixPath(anotherPath);
+    expect(resultsUnix).toContain(anotherPath);
   });
 
   it("In root and in subfolders", async () => {
@@ -76,7 +111,17 @@ describe("Main fake FS tests", () => {
       absolute: true,
     });
 
-    expect(results).toContain(fakeFs["convPath"]("inRoot.svi"));
-    expect(results).toContain(fakeFs["convPath"]("subfolder\\inSubfolder.svi"));
+    const resultsUnix = results.map((r) => convertToUnixPath(r));
+
+    let aPath = convertPathToAbsolute("inRoot.svi", fakeFs.getCwd());
+    aPath = convertToUnixPath(aPath);
+    expect(resultsUnix).toContain(aPath);
+
+    let anotherPath = convertPathToAbsolute(
+      "subfolder/inSubfolder.svi",
+      fakeFs.getCwd(),
+    );
+    anotherPath = convertToUnixPath(anotherPath);
+    expect(resultsUnix).toContain(anotherPath);
   });
 });

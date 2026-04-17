@@ -24,3 +24,7 @@ parameter is null, then resolve the path relative to project path from config
 
 Additional considerations
 * Use path.resolve to merge paths or path and filename
+* Please use the following import for path
+```ts
+import path from "path";
+```

@@ -1,0 +1,33 @@
+# Destination File
+fakeJoin.ts
+
+# Dependencies
+
+# Output
+export function fakePathDotJoin(...paths: string[]): string
+
+# Options
+Active=True
+ProgrammingLanguage=
+
+# Import prompts
+fakePathPrompt.svi
+
+# Prompt
+* fakePathDotJoin
+This function should return the result of joining two paths just like in path.join.
+But it should work for both windows and Linux/Macos paths regardless of the current OS
+(by string operations). 
+And the resulting path should have the same format (windows or Linux) as the initial parts.
+If different parts have different separators (windows or Linux), the result should have
+the same format (windows or linux) as the first part.
+If the first part contains a windows drive letter, it should be preserved in the resulting
+path.
+
+Guidelines:
+* All the parts except the first part cannot be absolute paths and should always be considered
+as relative paths.
+For example, 
+```ts
+fakePathDotJoin("/tmp","/file.txt") -> "/tmp/file.txt"
+```

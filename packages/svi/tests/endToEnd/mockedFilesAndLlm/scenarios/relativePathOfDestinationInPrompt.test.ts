@@ -62,8 +62,12 @@ Test prompt
     expect(fakeFs.fileExists("folder\\test.js")).toBe(true);
 
     const content = fakeFs.fileContent("folder\\test.js");
+    let normalizedContent = "";
+    if (content) {
+      normalizedContent = content.replace(/\\/g, "/");
+    }
 
-    expect(content).toContain("folder\\test.svi");
-    expect(content).toContain("folder\\test.js");
+    expect(normalizedContent).toContain("folder/test.svi");
+    expect(normalizedContent).toContain("folder/test.js");
   });
 });
