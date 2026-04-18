@@ -1,0 +1,19 @@
+# Destination File
+fakeBasename.ts
+
+# Dependencies
+
+# Output
+export function fakePathDotBasename(path: string, ext?: string): string
+
+# Options
+Active=True
+ProgrammingLanguage=
+
+# Import prompts
+fakePathPrompt.svi
+
+# Prompt
+This function should work as original path.basename, but not using this library (it will mock it)
+and it must work with both windows and unix paths by string operations regardless of 
+which OS it is executed in.

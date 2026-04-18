@@ -52,6 +52,8 @@ function createGlobalConfig(options: InitOptions = {}): number {
 }
 
 function createSviFile(fileArg: string, options: InitOptions = {}): number {
+  Logger.trace("Creaing a new SVI file template");
+
   const sviFile: SVIFile = new SviFileClass();
   for (var option in options) {
     if (Object.prototype.hasOwnProperty.call(options, option)) {
@@ -63,15 +65,34 @@ function createSviFile(fileArg: string, options: InitOptions = {}): number {
   }
 
   // It can be not only a file name, but also a relative or absolute path. We need to handle all cases.
+  Logger.debug(
+    `Path requested by user, will detect the absolute path: ${fileArg}`,
+  );
+
   const requestedPath = path.isAbsolute(fileArg)
     ? fileArg
     : path.resolve(process.cwd(), fileArg);
 
+  Logger.debug(
+    `The final target absolute path of the new SVI file is: ${fileArg}`,
+  );
+
   const base = path.basename(fileArg, ".svi");
+
+  Logger.debug(`Base name extracted: ${base} (from ${fileArg})`);
+
   const fileName = `${base}.svi`;
+
+  Logger.debug(`Final file name: ${fileName}`);
+
   const filePath = path.dirname(requestedPath);
 
+  Logger.debug(`Directory path extracted: ${filePath}`);
+
   const targetPath = path.resolve(filePath, fileName);
+
+  Logger.debug(`Final target path for the new SVI file: ${targetPath}`);
+
   if (exists(targetPath)) {
     Logger.error(
       `File ${fileName} already exists, the initialization cancelled`,

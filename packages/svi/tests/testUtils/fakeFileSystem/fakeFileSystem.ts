@@ -10,6 +10,7 @@ import { fakePathDotResolve } from "./fakePath/fakeResolve";
 import { fakePathDotIsAbsolute } from "./fakePath/fakeIsAbsolute";
 import { fakePathDotDirname } from "./fakePath/fakeDirname";
 import { fakePathDotJoin } from "./fakePath/fakeJoin";
+import { fakePathDotBasename } from "./fakePath/fakeBasename";
 import logger from "../../../src/utils/logger";
 
 class fakeFileSystem {
@@ -222,6 +223,12 @@ class fakeFileSystem {
       },
     );
 
+    vi.spyOn(fs, "mkdirSync").mockImplementation(
+      (dirPath: fs.PathLike, options?: any) => {
+        // In unit test mode no implementation needed, files will create dirs as needed
+      },
+    );
+
     vi.spyOn(fs, "statSync").mockImplementation(
       (filePath: fs.PathLike): fs.Stats => {
         const absPath = this.convPath(filePath.toString());
@@ -281,6 +288,12 @@ class fakeFileSystem {
     vi.spyOn(path, "join").mockImplementation((...paths: string[]): string => {
       return fakePathDotJoin(...paths);
     });
+
+    vi.spyOn(path, "basename").mockImplementation(
+      (p: string, ext?: string): string => {
+        return fakePathDotBasename(p, ext);
+      },
+    );
   }
 
   private convertToUnixPath(fullOrRelativePath: string): string {

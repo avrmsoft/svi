@@ -7,4 +7,6 @@ ProcessedSviFilesHash:
     hash: adbf29646847b6bbd8d35d90994cda12289cdeea9fc59cb08a7995128b250957
   fakeJoin.svi:
     hash: 25edc807db5aab350691d4d32f7c2436f106518dc3e54def6273f9ad3b105142
+  fakeBasename.svi:
+    hash: a05e86ac133107d4ab3ae2a9f498810b916df4fa57b23b81cf531ea288fe6cb9
 GeneratedDepenenciesExports: {}
