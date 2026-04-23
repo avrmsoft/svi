@@ -2,7 +2,7 @@
 
 <img src="images/svi_logo.png" width="80">
 
-<img src="images/svi_demo.gif" width="600">
+<img src="images/svi_demo.gif" width="700">
 
 SVI is a CLI tool that turns LLM code generation into a deterministic build step.
 
