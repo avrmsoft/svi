@@ -1,10 +1,8 @@
 # SVI - Structured Vibe Coding
 
-<img src="images/svi_logo.png" width="80">
+<img src="images/svi_demo.gif" width="700">
 
 SVI is a CLI tool that turns LLM code generation into a deterministic build step.
-
-<img src="images/svi_demo.gif" width="700">
 
 SVI brings the reliability of traditional build systems to LLM code generation.
 
