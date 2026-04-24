@@ -20,7 +20,7 @@ Think of `.svi` files as source code, and generation as compilation.
 
 ### Why this matters
 
-LLM tools are great for prototyping — but become unreliable in real projects:
+AI coding agents are great for prototyping — but often become unreliable in real projects:
 
 - outputs drift over time
 - prompts become untraceable
