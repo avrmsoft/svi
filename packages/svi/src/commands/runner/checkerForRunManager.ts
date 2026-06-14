@@ -30,7 +30,7 @@ export default class CheckerForRunManager {
         logger.debug("Determined service: " + service);
       } else {
         logger.error(
-          `Could not determine service for model ${options.modelName}, please specify the service explicitly.`,
+          `Could not determine service for model ${options.modelName}, please specify the service explicitly; if unsure, please specify 'openai' as a service`,
         );
         logger.error(
           "Please specify the service name in svi.env file in your root directory, or specify another .env file via the -e parameter.",

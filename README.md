@@ -102,6 +102,7 @@ Example `svi.json`:
 
 ## Configure environment
 
+`svi.env`
 ```env
 API_KEY=<your API key>
 MODEL_NAME=<model name>, e.g., gemini-2.5-flash
