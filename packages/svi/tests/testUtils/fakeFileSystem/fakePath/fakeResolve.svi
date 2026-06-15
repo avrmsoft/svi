@@ -16,6 +16,10 @@ ProgrammingLanguage=
 * export function fakePathDotResolve(...paths: string[]): string
 This function should first try to detect if paths are windows paths or linux paths.
 How to detect:
+ - If one of the parts which is not the first part is absolute, then it is returned as path
+ with the exception case when first part is a windows absolute path with drive letter and 
+ the other absolute part is a unix absolute path, then we take drive letter from the first path, 
+ and the rest path from the last absolute path;
  - Take the first part of the path;
  - If it contains a starting path with a drive letter, e.g., `D:\\folder`, it is windows
  - If it contains the windows separator `\\`, it is windows
@@ -27,3 +31,8 @@ How to detect:
  - If detected, then merge all parts of separating by either linux or windows path separator
  respectively
  - return the merged result
+
+ * Guidelines:
+ To simplify algorithm, please explicitly process the first two parts of the path.
+ Then, if there are more than two paths, run the function recursively setting as the first
+ element the result of the resolve and then other parts, until there are only two paths left.

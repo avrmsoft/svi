@@ -1,216 +1,258 @@
-declare const process: {
-    platform: string;
-};
-
-enum PathStyle {
-    Windows,
-    Linux,
-    Unknown,
+export enum PathType {
+  None,
+  Windows,
+  Linux,
 }
 
-// Helper for internal path style detection
-const detectPathStyleInternal = (pathPart: string): PathStyle => {
-    // 1. Check for Windows drive letter (e.g., D:\folder, C:/folder)
-    if (/^[a-zA-Z]:[\\/]/.test(pathPart)) {
-        return PathStyle.Windows;
+export interface PathInfo {
+  original: string;
+  type: PathType;
+  separator: '/' | '\\' | undefined; // The separator detected in the original path string
+  isAbsolute: boolean;
+  driveLetter: string | undefined; // e.g., 'C' or 'D'
+}
+
+/**
+ * Determines if the current operating system is Windows.
+ * For this fake implementation, we assume `process` is available in a Node.js-like environment.
+ */
+function isWindowsOS(): boolean {
+  return typeof process !== 'undefined' && process.platform === 'win32';
+}
+
+/**
+ * Determines the default path separator for the current operating system.
+ */
+function determineSystemSeparator(): '/' | '\\' {
+  return isWindowsOS() ? '\\' : '/';
+}
+
+/**
+ * Parses a path string to determine its type, absolute status, and components.
+ */
+function parsePath(p: string): PathInfo {
+  let type: PathType = PathType.None;
+  let separator: '/' | '\\' | undefined = undefined;
+  let isAbsolute = false;
+  let driveLetter: string | undefined = undefined;
+
+  // 1. Check for Windows drive letter absolute path (e.g., C:\folder)
+  const winDriveAbsMatch = p.match(/^([a-zA-Z]):[\\\/]/);
+  if (winDriveAbsMatch) {
+    type = PathType.Windows;
+    separator = '\\'; // Windows paths primarily use backslash
+    isAbsolute = true;
+    driveLetter = winDriveAbsMatch[1].toUpperCase();
+  }
+  // 2. Check for Windows UNC path absolute (e.g., \\server\share)
+  else if (p.startsWith('\\\\') || p.startsWith('//')) {
+    type = PathType.Windows;
+    separator = '\\'; // UNC paths primarily use backslash
+    isAbsolute = true;
+  }
+  // 3. Check for Linux absolute path (e.g., /folder)
+  else if (p.startsWith('/')) {
+    type = PathType.Linux;
+    separator = '/';
+    isAbsolute = true;
+  }
+  // 4. Check for Windows drive letter only (e.g., C:) - not absolute
+  else {
+    const winDriveOnlyMatch = p.match(/^([a-zA-Z]):$/);
+    if (winDriveOnlyMatch) {
+      type = PathType.Windows;
+      separator = '\\'; // Implied Windows separator
+      isAbsolute = false; // C: is not an absolute path itself
+      driveLetter = winDriveOnlyMatch[1].toUpperCase();
     }
-    // 2. Check for Windows separator
-    if (pathPart.includes('\\')) {
-        return PathStyle.Windows;
+    // 5. Check for Windows separator within path
+    else if (p.includes('\\')) {
+      type = PathType.Windows;
+      separator = '\\';
     }
-    // 3. Check for Linux separator
-    if (pathPart.includes('/')) {
-        return PathStyle.Linux;
+    // 6. Check for Linux separator within path
+    else if (p.includes('/')) {
+      type = PathType.Linux;
+      separator = '/';
     }
-    return PathStyle.Unknown;
-};
+  }
+
+  // Ensure separator is set if type is detected but no explicit separator was found yet
+  if (type === PathType.Windows && separator === undefined) {
+      separator = '\\';
+  } else if (type === PathType.Linux && separator === undefined) {
+      separator = '/';
+  }
+
+  return { original: p, type, separator, isAbsolute, driveLetter };
+}
+
+/**
+ * Normalizes a path string, resolving '..' and '.', and using a consistent separator.
+ * @param inputPath The raw path string to normalize.
+ * @param targetSeparator The separator to use for the final normalized path.
+ * @param isPathAbsolute A boolean indicating if the final path should be absolute.
+ * @param driveLetter An optional drive letter for Windows paths.
+ * @returns The normalized path string.
+ */
+function normalizePath(
+  inputPath: string,
+  targetSeparator: '/' | '\\',
+  isPathAbsolute: boolean,
+  driveLetter: string | undefined,
+): string {
+  let pathWithoutDrive = inputPath;
+  let currentDriveLetter = driveLetter;
+
+  // If a drive letter is explicitly passed, ensure it's honored
+  // and remove it from the path string for segment processing.
+  const driveMatch = inputPath.match(/^([a-zA-Z]):[\\\/]?/);
+  if (driveMatch) {
+      currentDriveLetter = driveMatch[1].toUpperCase();
+      pathWithoutDrive = inputPath.substring(driveMatch[0].length);
+  } else if (currentDriveLetter) {
+      // If driveLetter was passed but not at the start of inputPath, it applies conceptually.
+      // E.g., for D:foo, the path starts with 'D:foo', not 'D:\foo'.
+      // No substring removal needed here, pathWithoutDrive remains inputPath for now.
+  }
+
+  // Split by both separators to handle mixed paths, filter out empty parts
+  const parts = pathWithoutDrive.split(/[\\/]+/).filter(p => p !== '');
+  const resolvedParts: string[] = [];
+
+  for (const part of parts) {
+    if (part === '..') {
+      if (
+        resolvedParts.length > 0 &&
+        resolvedParts[resolvedParts.length - 1] !== '..' && // Don't pop if previous was '..'
+        !resolvedParts[resolvedParts.length - 1].endsWith(':') // Don't pop if previous was a drive root like 'C:'
+      ) {
+        resolvedParts.pop();
+      } else if (isPathAbsolute || currentDriveLetter) {
+        // If absolute or has a drive letter, '..' from the root or drive root just stays there
+        // (or effectively means we're at the root, so don't add '..').
+        // We do nothing, effectively staying at the root.
+      } else {
+        // For relative paths, add '..' if we can't go up further.
+        resolvedParts.push('..');
+      }
+    } else if (part !== '.') {
+      resolvedParts.push(part);
+    }
+  }
+
+  let result = resolvedParts.join(targetSeparator);
+
+  // Prepend drive letter and/or leading separator if necessary
+  if (currentDriveLetter) {
+    if (isPathAbsolute || result.startsWith(targetSeparator)) {
+      // If absolute, or starts with a separator (like '/foo' on Windows), it becomes D:\foo
+      result = currentDriveLetter + ':' + targetSeparator + result;
+    } else if (result === '') {
+        // If path is empty, could be D:\ or D:
+        result = currentDriveLetter + ':' + (isPathAbsolute ? targetSeparator : '');
+    } else {
+        // If relative to drive, like D:foo
+        result = currentDriveLetter + ':' + result;
+    }
+  } else if (isPathAbsolute) {
+    result = targetSeparator + result;
+  }
+
+  // Handle cases where normalization results in an empty string
+  if (result === '') {
+      if (currentDriveLetter) {
+          // If a drive letter was present, an empty path becomes D:\
+          return currentDriveLetter + ':' + targetSeparator;
+      }
+      // If absolute, an empty path becomes /
+      if (isPathAbsolute) {
+          return targetSeparator;
+      }
+      // For relative empty path, it means '.'
+      return '.';
+  }
+
+  return result;
+}
+
 
 export function fakePathDotResolve(...paths: string[]): string {
-    let detectedStyle: PathStyle = PathStyle.Unknown;
+  // 1. Handle base cases
+  if (paths.length === 0) {
+    return '';
+  }
+  if (paths.length === 1) {
+    const info = parsePath(paths[0]);
+    const sep = info.separator || determineSystemSeparator();
+    return normalizePath(paths[0], sep, info.isAbsolute, info.driveLetter);
+  }
 
-    // Detect path style based on the first path part that provides a clear indicator (left-to-right)
-    for (const pathPart of paths) {
-        const style = detectPathStyleInternal(pathPart);
-        if (style !== PathStyle.Unknown) {
-            detectedStyle = style;
-            break;
-        }
-    }
+  // 2. Recursive reduction for more than two paths
+  // Resolve the first two paths, then resolve the result with the next path, and so on.
+  if (paths.length > 2) {
+    const [first, second, ...rest] = paths;
+    return fakePathDotResolve(fakePathDotResolve(first, second), ...rest);
+  }
 
-    // Determine the separator based on detected style or current OS default
-    let resolvedSeparator: string;
-    if (detectedStyle === PathStyle.Windows) {
-        resolvedSeparator = '\\';
-    } else if (detectedStyle === PathStyle.Linux) {
-        resolvedSeparator = '/';
+  // 3. Core logic for resolving two paths (paths.length === 2)
+  const path1 = paths[0];
+  const path2 = paths[1];
+
+  const info1 = parsePath(path1);
+  const info2 = parsePath(path2);
+
+  let determinedSeparator: '/' | '\\' = determineSystemSeparator();
+  let finalIsAbsolute = false;
+  let finalDriveLetter: string | undefined = undefined;
+  let resolvedPathString = '';
+
+  // Determine the primary separator and drive letter based on detection priority
+  if (info1.type !== PathType.None) {
+    determinedSeparator = info1.separator!;
+    finalDriveLetter = info1.driveLetter;
+  } else if (info2.type !== PathType.None) {
+    determinedSeparator = info2.separator!;
+    finalDriveLetter = info2.driveLetter;
+  }
+  // If no type was detected in either, default to system separator and no initial drive letter.
+  // determinedSeparator is already set to system default, finalDriveLetter remains undefined.
+
+
+  // Determine the base path string and absolute status
+  if (info2.isAbsolute) {
+    finalIsAbsolute = true;
+
+    // Exception case: first part is Win absolute with drive letter, second is Unix absolute
+    if (
+      info1.driveLetter &&
+      info1.type === PathType.Windows &&
+      info2.type === PathType.Linux
+    ) {
+      // "take drive letter from the first path, and the rest path from the last absolute path"
+      // The example `D:/b` implies using '/' for the rest of path even if final separator is '\'.
+      resolvedPathString = info1.driveLetter + ':' + '/' + info2.original.substring(1);
+      finalDriveLetter = info1.driveLetter; // Keep drive letter from the first path
     } else {
-        // If no style detected, fallback to current operating system
-        // Assuming Node.js environment where `process` is available.
-        resolvedSeparator = typeof process !== 'undefined' && process.platform === 'win32' ? '\\' : '/';
+      // Standard absolute path2 takes precedence
+      resolvedPathString = info2.original;
+      finalDriveLetter = info2.driveLetter; // Use drive letter from path2 if it has one
     }
+  } else {
+    // path2 is relative
+    finalIsAbsolute = info1.isAbsolute;
+    finalDriveLetter = info1.driveLetter;
 
-    const resolvedSegments: string[] = [];
-    let absolutePathFound = false;
-    let dots = 0; // Counter for '..' segments that need to pop a path segment
-    let rootPart = ''; // Stores the absolute root found (e.g., 'C:\', '/', '\\server\share')
-
-    // Iterate paths from right to left (mimicking path.resolve's behavior for finding base)
-    for (let i = paths.length - 1; i >= 0; i--) {
-        let part = paths[i];
-        if (part === '') {
-            continue;
-        }
-
-        // Normalize internal separators of the current part to the resolvedSeparator
-        if (resolvedSeparator === '\\') {
-            part = part.replace(/\//g, '\\');
-        } else if (resolvedSeparator === '/') {
-            part = part.replace(/\\/g, '/');
-        }
-
-        // Check if the current 'part' is an absolute path and extract its root
-        let isCurrentPartAbsolute = false;
-        let currentPartRoot = '';
-        let remainingPart = part;
-
-        if (resolvedSeparator === '\\') {
-            const driveMatch = part.match(/^([a-zA-Z]:)([\\/])?/);
-            if (driveMatch) {
-                isCurrentPartAbsolute = true;
-                currentPartRoot = driveMatch[1].toUpperCase();
-                if (driveMatch[2]) { // If it had C:\ or D:/
-                    currentPartRoot += resolvedSeparator;
-                } else if (part.length > 2 && !part.startsWith(currentPartRoot + resolvedSeparator)) {
-                    // C:foo style, keep C: as root, but don't add separator unless next part needs it
-                    // Path.resolve handles C: differently based on current drive. For fake, simplify.
-                    // If C: is followed by non-separator, treat 'C:' as root prefix.
-                } else {
-                    currentPartRoot += resolvedSeparator; // Ensure C:\
-                }
-                remainingPart = part.substring(driveMatch[0].length);
-            } else if (part.startsWith('\\\\')) { // UNC path
-                const uncMatch = part.match(/^(\\\\[^\\/]+[\\/][^\\/]+)/); // Matches \\server\share
-                if (uncMatch) {
-                    isCurrentPartAbsolute = true;
-                    currentPartRoot = uncMatch[1];
-                    remainingPart = part.substring(uncMatch[1].length);
-                } else if (part.startsWith('\\')) { // Simple Windows root '\'
-                    isCurrentPartAbsolute = true;
-                    currentPartRoot = '\\';
-                    remainingPart = part.substring(1);
-                }
-            } else if (part.startsWith('\\')) { // Simple Windows root '\'
-                isCurrentPartAbsolute = true;
-                currentPartRoot = '\\';
-                remainingPart = part.substring(1);
-            }
-        } else if (resolvedSeparator === '/') {
-            if (part.startsWith('/')) {
-                isCurrentPartAbsolute = true;
-                currentPartRoot = '/';
-                remainingPart = part.substring(1);
-            }
-        }
-
-        // Split the (remaining, non-root) part into segments, filtering out empty ones
-        const segments = remainingPart.split(resolvedSeparator).filter(s => s !== '');
-
-        for (let j = segments.length - 1; j >= 0; j--) {
-            const segment = segments[j];
-            if (segment === '.') {
-                continue; // Ignore '.' segments
-            }
-            if (segment === '..') {
-                dots++; // Increment '..' counter
-            } else if (dots > 0) {
-                dots--; // Consume a '..' with this regular segment
-            } else {
-                resolvedSegments.unshift(segment); // Prepend regular segments to build path
-            }
-        }
-
-        if (isCurrentPartAbsolute && !absolutePathFound) {
-            absolutePathFound = true;
-            rootPart = currentPartRoot; // Set the root from the rightmost absolute path
-            // Any remaining 'dots' should not go above this root
-            while(dots > 0 && resolvedSegments.length > 0) {
-                resolvedSegments.shift();
-                dots--;
-            }
-        }
-    }
-
-    let finalPath = resolvedSegments.join(resolvedSeparator);
-
-    if (absolutePathFound) {
-        // Prepend the determined absolute root
-        finalPath = rootPart + finalPath;
+    // Special handling for paths like 'D:' followed by a relative path
+    // If path1 is just a drive letter (e.g., 'D:') it conceptually acts as 'D:\' for resolution
+    if (info1.driveLetter && !info1.isAbsolute && info1.original.match(/^[a-zA-Z]:$/)) {
+      // Treat 'D:' as 'D:\' for joining purposes before normalization
+      resolvedPathString = info1.original + determinedSeparator + info2.original;
+      finalIsAbsolute = true; // D:foo -> D:\foo, implies absolute to drive root
     } else {
-        // If no absolute path was found, prepend '..' for any remaining dots
-        while (dots > 0) {
-            finalPath = '..' + resolvedSeparator + finalPath;
-            dots--;
-        }
-        // If no absolute path and no segments after '..', path.resolve returns CWD.
-        // For fake, if it's empty, we return empty.
-        // If it was just `../..` and `finalPath` is empty, it should be `../..`
-        if (finalPath === '' && paths.length === 0) {
-            return ''; // Or '.' like path.join, but problem implies a result.
-        }
+      resolvedPathString = info1.original + determinedSeparator + info2.original;
     }
+  }
 
-    // Normalize redundant separators (e.g., `//` -> `/`, `\\` -> `\`)
-    // Special handling for UNC paths: `\\server\share` should remain `\\`.
-    // The regex needs to avoid reducing `\\\\` to `\` for UNC.
-    let doubleSeparatorRegex;
-    if (resolvedSeparator === '\\') {
-        // For Windows, don't reduce UNC \\ (first two slashes)
-        doubleSeparatorRegex = /(?<!^\\{1})\\{2,}/g; // Matches two or more backslashes not at start (for UNC)
-        finalPath = finalPath.replace(doubleSeparatorRegex, resolvedSeparator);
-        // Correct starting \\ for UNC paths if it was lost by previous segment processing.
-        if (rootPart.startsWith('\\\\') && !finalPath.startsWith('\\\\')) {
-             finalPath = '\\\\' + finalPath; // Simple fix, might not cover all UNC edge cases
-        }
-        // Ensure C: becomes C:\ if it's a root
-        if(finalPath.match(/^[a-zA-Z]:$/)) {
-            finalPath += resolvedSeparator;
-        }
-    } else { // Linux
-        doubleSeparatorRegex = new RegExp(`${resolvedSeparator.replace(/\\/g, '\\\\')}{2,}`, 'g');
-        finalPath = finalPath.replace(doubleSeparatorRegex, resolvedSeparator);
-    }
-    
-    // If the path results in just the root (e.g., C:\ or /) and no other segments
-    if (finalPath === resolvedSeparator && rootPart === resolvedSeparator && resolvedSegments.length === 0) {
-        return resolvedSeparator;
-    }
-    if (finalPath.match(/^[a-zA-Z]:[\\/]?$/) && rootPart.match(/^[a-zA-Z]:[\\/]?$/) && resolvedSegments.length === 0) {
-        return finalPath;
-    }
-
-    // Final cleanup for leading/trailing separators if they are not part of an absolute root
-    if (resolvedSeparator === '/') {
-        if (finalPath.length > 1 && finalPath.endsWith(resolvedSeparator)) {
-            finalPath = finalPath.substring(0, finalPath.length - 1);
-        }
-        // Ensure leading `/` for absolute Linux paths
-        if (absolutePathFound && !finalPath.startsWith('/')) {
-             finalPath = '/' + finalPath;
-        }
-    } else if (resolvedSeparator === '\\') {
-        if (finalPath.length > 1 && finalPath.endsWith(resolvedSeparator) && !finalPath.match(/^[a-zA-Z]:[\\/]$/)) {
-            finalPath = finalPath.substring(0, finalPath.length - 1);
-        }
-        // Ensure drive letter or UNC root has a trailing separator if it's not just C:
-        if (finalPath.match(/^[a-zA-Z]:$/)) {
-             finalPath += resolvedSeparator;
-        }
-    }
-
-    // if all paths were empty or just '.' and no absolute path, return empty string or '.'
-    if (finalPath === '' && !absolutePathFound && paths.filter(p => p !== '' && p !== '.').length === 0) {
-        return ''; // Node's path.resolve returns process.cwd() here. For "fake", '' is acceptable.
-    }
-
-    return finalPath;
+  return normalizePath(resolvedPathString, determinedSeparator, finalIsAbsolute, finalDriveLetter);
 }

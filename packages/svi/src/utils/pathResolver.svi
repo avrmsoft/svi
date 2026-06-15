@@ -3,23 +3,30 @@ pathResolver.ts
 # Dependencies
 ../config/config.ts
 # Output
-export function resolvePath(path: string, basePath : string | null = null) : string
+export function resolvePath(mainPath: string, basePath : string | null = null) : string
 # Options
-Active=True
+Active=False
 # Import prompts
 # Prompt
 The purpose of this function is to turn relative path to absolute considering
 various scenarios.
 
 Cases:
-* If the 'path' variable is an absolute path, just return it unchanged.
-* If the 'path' variable starts with @project_root, then replace the 
+* If the 'mainPath' variable is an absolute path, just return it unchanged.
+* If the 'mainPath' variable starts with @project_root, then replace the 
 @project_root variable with project path from config (the result of method dir()
-of Config class)
-* If the 'path' variable does not start with @, it is relative, and 'basePath'
+of Config class).
+Example conversion:
+```bash
+@project_root/somefolder/somefile.svi -> /project/root/somefolder/somefile.svi
+```
+When calling path.resolve, please pass relative path without separator as
+the second argument. If you just delete @project_root, the path looks like absolute
+and path.resolve works incorrectly.
+* If the 'mainPath' variable does not start with @, it is relative, and 'basePath'
 parameter is not null, then resolve the path as <path from basePath> plus 
-<path or filename from 'path'>
-* If the 'path' variable does not start with @, it is relative, and 'basePath'
+<path or filename from 'mainPath'>
+* If the 'mainPath' variable does not start with @, it is relative, and 'basePath'
 parameter is null, then resolve the path relative to project path from config
 
 Additional considerations

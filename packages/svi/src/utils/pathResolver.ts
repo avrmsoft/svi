@@ -2,7 +2,7 @@
 import path from "path";
 import { Config } from "../config/config"; // Relative path from src/utils/ to src/config/
 
-export function resolvePath(p: string, basePath : string | null = null) : string {
+export function resolvePath(p: string, basePath: string | null = null): string {
   // Case 1: If the 'path' variable is an absolute path, just return it unchanged.
   if (path.isAbsolute(p)) {
     return p;
@@ -12,12 +12,15 @@ export function resolvePath(p: string, basePath : string | null = null) : string
 
   // Case 2: If the 'path' variable starts with @project_root, then replace the
   // @project_root variable with project path from config
-  if (p.startsWith('@project_root')) {
-    const relativePath = p.substring('@project_root'.length);
+  if (p.startsWith("@project_root")) {
+    let relativePath = p.substring("@project_root".length);
+    if (relativePath.startsWith("/") || relativePath.startsWith("\\")) {
+      relativePath = relativePath.substring(1);
+    }
     return path.resolve(projectRoot, relativePath);
   }
   // If the 'path' variable does not start with @
-  else if (!p.startsWith('@')) {
+  else if (!p.startsWith("@")) {
     // Case 3: If 'basePath' parameter is not null, then resolve the path as
     // <path from basePath> plus <path or filename from 'path'>
     if (basePath !== null) {
@@ -25,7 +28,8 @@ export function resolvePath(p: string, basePath : string | null = null) : string
     }
     // Case 4: If 'basePath' parameter is null, then resolve the path relative
     // to project path from config
-    else { // basePath === null
+    else {
+      // basePath === null
       return path.resolve(projectRoot, p);
     }
   }
