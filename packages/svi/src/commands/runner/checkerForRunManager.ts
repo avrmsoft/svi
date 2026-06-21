@@ -7,6 +7,18 @@ export default class CheckerForRunManager {
   public static async checkOptions(options: any): Promise<boolean> {
     let isLLMParamsOkay = true;
 
+    if (options.clipboardMode) {
+      logger.info(
+        "Clipboard mode is enabled, will skip the LLM parameter checks.",
+      );
+      logger.debug("Clipboard mode is enabled, will use manual LLM executor.");
+      return true;
+    } else {
+      logger.debug(
+        "Clipboard mode is disabled, will use API-based LLM executor.",
+      );
+    }
+
     if (!options.modelName) {
       logger.error("LLM model name is not specified.");
       logger.error(

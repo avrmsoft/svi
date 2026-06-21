@@ -1,0 +1,23 @@
+ProcessedSviFilesHash:
+  manualLlmExecutor.svi:
+    hash: 305cf2416f8991050da5735d04e314d8c183fbe1387a910aa7cdead8a31498d3
+GeneratedDepenenciesExports:
+  types.ts:
+    hash: 5f4f4d47f8024db25ae83d9b25554d3eebcb866676d8d6d56db7af9f8d26bb49
+    exports: |-
+      interface LLMOptions {
+        modelName: string;
+        service?: string;
+        apiKey?: string;
+        llmBaseUrl?: string;
+        envFile?: string;
+        clipboardMode?: boolean;
+      }
+
+      interface LLMExecutor {
+        ask(
+          prompt: string,
+          systemPrompt?: string,
+          promptDescription?: string,
+        ): Promise<string>;
+      }

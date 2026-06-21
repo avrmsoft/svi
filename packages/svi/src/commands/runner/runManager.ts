@@ -29,6 +29,7 @@ export class RunManager {
   private llmBaseUrl?: string;
   private envPath?: string;
   private sviJsonPath?: string;
+  private clipboardMode: boolean;
   private onlyLoadFiles: string[] = [];
 
   constructor(
@@ -40,6 +41,7 @@ export class RunManager {
       llmBaseUrl?: string;
       envPath?: string;
       sviJsonPath?: string;
+      clipboard?: boolean;
     },
   ) {
     this.config = config;
@@ -49,6 +51,7 @@ export class RunManager {
     this.apiKey = opts?.apiKey;
     this.envPath = opts?.envPath;
     this.sviJsonPath = opts?.sviJsonPath;
+    this.clipboardMode = opts?.clipboard || false;
   }
 
   public setOnlyLoadFiles(files: string[]) {
@@ -101,6 +104,7 @@ export class RunManager {
         service: this.service,
         llmBaseUrl: this.llmBaseUrl,
         envFile: this.envPath,
+        clipboardMode: this.clipboardMode,
       });
 
       let result = true;
@@ -111,6 +115,7 @@ export class RunManager {
             modelName: this.model || "",
             service: this.service,
             apiKey: this.apiKey,
+            clipboardMode: this.clipboardMode,
           }))
         ) {
           logger.error("Finishing due to LLM parameter errors.");

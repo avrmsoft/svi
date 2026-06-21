@@ -3,6 +3,8 @@ import fakeLogger from "../../testUtils/fakeLogger/fakeLogger";
 import {
   enableFakeLLMProcessor,
   disableFakeLLMProcessor,
+  enableFakeManualLlmExecutor,
+  disableFakeManualLlmExecutor,
 } from "../../testUtils/fakeLLM";
 //import { vi } from "vitest";
 //import { pushProcessEnv, popProcessEnv } from "../../../testUtils/testUtils";
@@ -18,19 +20,20 @@ export function beforeEachSimpleTest(
   testModel?: string, // = "gemini-2.5-flash",
   testService?: string, // = "google",
   testLlmBaseUrl?: string, //= "http://fake-llm-base-url.com",
+  clipboardMode?: boolean,
 ) {
   beforeEachEndToEndTest(fakeFs, fakeLogger);
-  /*pushProcessEnv();
-  fakeFs.applyMocks();
-  if (fakeLogger) {
-    fakeLogger.applyMocks();
-  }*/
-  enableFakeLLMProcessor({
-    apiKey: testApiKey,
-    modelName: testModel,
-    service: testService,
-    llmBaseUrl: testLlmBaseUrl,
-  });
+
+  if (clipboardMode) {
+    enableFakeManualLlmExecutor();
+  } else {
+    enableFakeLLMProcessor({
+      apiKey: testApiKey,
+      modelName: testModel,
+      service: testService,
+      llmBaseUrl: testLlmBaseUrl,
+    });
+  }
 }
 
 export function afterEachSimpleTest(
@@ -46,6 +49,7 @@ export function afterEachSimpleTest(
     fakeLogger.disableMocks();
   }*/
   disableFakeLLMProcessor();
+  disableFakeManualLlmExecutor();
 }
 
 export function prepareSimpleTest(fakeFs: fakeFileSystem) {

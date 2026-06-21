@@ -1,0 +1,24 @@
+# Destination File
+manualLlmExecutor.ts
+# Dependencies
+types.ts
+# Output
+export default class ManualLlmExecutor
+# Options
+Active=True
+ProgrammingLanguage=
+# Import prompts
+../projectDescription.svi
+# Prompt
+This implementation will provide user a possibility to copy prompt to clipboard, paste to an external chat tool, 
+and then paste the result back to this tool to continue.
+It can be useful if api key is not accessible for some reason.
+Requirements:
+Copy prompt to clipboard automatically in the beginning of method and notify user that they can copy
+to chat and paste back the response.
+Please use a handy tool for user to paste the text comfortably. Text may contain multiple lines and different
+separators, all should be preserved.
+Please give instruction to user on how to finish the pasting (if they need to press a key combination or something).
+
+Additional guidelines:
+Use the 'clipboardy' lib for clipboard interaction. 

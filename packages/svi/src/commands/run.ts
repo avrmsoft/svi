@@ -16,6 +16,7 @@ export async function runCommand(
     llmBaseUrl?: string;
     envPath?: string;
     sviJsonPath?: string;
+    clipboard?: boolean;
   },
 ) {
   try {
@@ -45,6 +46,7 @@ export async function runCommand(
       llmBaseUrl: options.llmBaseUrl,
       envPath: options.envPath,
       sviJsonPath: options.sviJsonPath,
+      clipboard: options.clipboard,
     });
 
     if (files && files.length > 0) {

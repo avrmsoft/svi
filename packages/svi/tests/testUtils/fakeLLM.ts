@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 import { LLMProcessor } from "../../src/llm/llm";
 import { clearMarkdownBackticks } from "./testUtils";
+import ManualLlmExecutor from "../../src/llm/manualLlmExecutor";
 
 export interface RequiredLLMOptions {
   modelName?: string;
@@ -93,5 +94,24 @@ export function disableFakeLLMProcessor() {
   }
   if (staticSpy) {
     staticSpy.mockRestore();
+  }
+}
+
+export function enableFakeManualLlmExecutor() {
+  askSpy = vi
+    .spyOn(LLMProcessor.prototype, "ask")
+    .mockImplementation(async function (
+      this: LLMProcessor,
+      prompt: string,
+      systemPrompt?: string,
+    ): Promise<string> {
+      const clearedPrompt = clearMarkdownBackticks(prompt);
+      return `Fake ManualLlmExecutor answer for system prompt = ${systemPrompt}, user prompt = ${clearedPrompt}`;
+    });
+}
+
+export function disableFakeManualLlmExecutor() {
+  if (askSpy) {
+    askSpy.mockRestore();
   }
 }

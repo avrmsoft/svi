@@ -60,5 +60,12 @@ export const runOptions: CliOption[] = [
     description: "Output LLM prompts and responses in console output",
     paramName: "showPrompts",
   },
+  {
+    shortFlag: "-c",
+    fullFlag: "--clipboard",
+    description:
+      "Copy prompt to clipboard and manually paste the external response",
+    paramName: "clipboard",
+  },
   ...initOptions,
 ];

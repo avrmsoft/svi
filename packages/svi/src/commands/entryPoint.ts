@@ -93,6 +93,7 @@ runProg.action(async (files: string[], options) => {
       llmBaseUrl: options.url,
       envPath: options.env,
       sviJsonPath: options.configPath,
+      clipboard: options.clipboard,
     });
   } catch (error: any) {
     Logger.error("❌ Run failed:", error.message);
