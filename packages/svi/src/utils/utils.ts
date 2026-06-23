@@ -25,7 +25,14 @@ export function toCamelCase(value: string): string {
     .toLowerCase()
     .split("_")
     .map((part, index) =>
-      index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)
+      index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1),
     )
     .join("");
+}
+
+export function fileNameHasSviExtension(fileName: string): boolean {
+  const lowerCaseFileName = fileName.toLowerCase();
+  return (
+    lowerCaseFileName.endsWith(".svi") || lowerCaseFileName.endsWith(".svi.md")
+  );
 }

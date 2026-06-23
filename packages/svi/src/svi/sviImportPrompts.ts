@@ -4,7 +4,7 @@ import Logger from "../utils/logger";
 import fs from "fs";
 //import { SVIParser } from "./sviParser/sviParser";
 import ParsedSviDirectory from "./sviParser/parsedSviDirectory";
-import { computeHashFromString } from "../utils/utils";
+import { computeHashFromString, fileNameHasSviExtension } from "../utils/utils";
 import { fileHasExtension, getRelativePath } from "../utils/file";
 import SviDependencies from "./sviDependencies";
 import { LLMProcessor } from "../llm/llm";
@@ -83,6 +83,18 @@ export class SVIImportPrompts {
         }
       }
 
+      if (!promptPath.fullPath.endsWith(".svi.md")) {
+        const resolvedPathWithExtension = promptPath.fullPath + ".svi.md";
+        if (
+          await this.loadPromptForPath(
+            resolvedPathWithExtension,
+            //promptPath.relativePath,
+          )
+        ) {
+          continue;
+        }
+      }
+
       success = false;
     }
 
@@ -131,7 +143,9 @@ export class SVIImportPrompts {
 
     if (
       !promptContent &&
-      !fileHasExtension(fullPath, ".svi") &&
+      !this.fileHasSviExtension(fullPath) &&
+      //!fileHasExtension(fullPath, ".svi") &&
+      //!fileHasExtension(fullPath, ".svi.md") &&
       fs.existsSync(fullPath)
     ) {
       promptContent = fs.readFileSync(fullPath, "utf-8");
@@ -206,6 +220,6 @@ export class SVIImportPrompts {
   }
 
   private fileHasSviExtension(filePath: string): boolean {
-    return fileHasExtension(filePath, ".svi");
+    return fileNameHasSviExtension(filePath);
   }
 }

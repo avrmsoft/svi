@@ -6,7 +6,7 @@ import Logger from "../utils/logger";
 import SviFileOrderOptimizer from "./sviFileOrderOptimizer/sviFileOrderOptimizer";
 import ParsedSviDirectory from "./sviParser/parsedSviDirectory";
 import { SVIFile, SviFileToLoad } from "./types";
-//import { error } from "console";
+import { fileNameHasSviExtension } from "../utils/utils";
 
 export class SviLoader {
   private config: SviConfig;
@@ -40,7 +40,7 @@ export class SviLoader {
 
     // filter out only *.svi files and ignore ignored paths
     results = results.filter((file) => {
-      if (!file.endsWith(".svi")) {
+      if (!fileNameHasSviExtension(file)) {
         return false;
       }
 
@@ -80,7 +80,7 @@ export class SviLoader {
         throw new Error(`File is ignored by ignorePaths: ${absPath}`);
       }
 
-      if (!absPath.endsWith(".svi")) {
+      if (!fileNameHasSviExtension(absPath)) {
         Logger.warn(`Skipping non-.svi file: ${absPath}`);
         continue;
       }

@@ -6,7 +6,7 @@ import {
   afterEachSimpleTest,
 } from "../../templates/simpleTest";
 
-describe("A config file with parameters 'searchPaths' (E2E)", () => {
+describe("A clipboard mode with -c parameter (E2E)", () => {
   let fakeFs: fakeFileSystem;
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe("A config file with parameters 'searchPaths' (E2E)", () => {
     afterEachSimpleTest(fakeFs);
   });
 
-  it("A test with parameter 'searchPaths'", async () => {
+  it("A clipboard mode with -c parameter, a simple test", async () => {
     fakeFs.addFile(
       `svi.json`,
       `
