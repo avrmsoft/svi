@@ -32,6 +32,7 @@ _Note_ Refer to this [document](model-and-service-selection.md) for more informa
 - -p <path>, --configPath <path> — Path to the svi.json file if it is not in the current directory or has a different name
 - -P, --show-prompts — Output full prompts sent to the LLM and responses received, for debugging purposes
 - -l <level>, --loglevel <level> — Set the log level (ERROR, WARN, INFO, SUCCESS, DEBUG, TRACE). Default: INFO
+- -c, --clipboard — Activates the mode when each prompt is copied to clipboard and CLI expects user to paste LLM response from external chat tool
 - -h, --help — Display help for the command
 
 You can also execute the command for specific file(s). In this case, only the specified files will be generated instead of the entire project.

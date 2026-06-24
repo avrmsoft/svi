@@ -4,16 +4,35 @@ SVI is a CLI tool that turns structured prompt files into source code — consis
 
 Instead of relying on chat sessions or autonomous agents, you define code generation as version-controlled .svi files — based on Markdown syntax — containing prompts and run them like a build step.
 
-### Why SVI?
+SVI treats prompts as source code.
+
+Instead of storing generated code as the primary source of truth, you store version-controlled specifications that can be regenerated whenever needed.
+
+## Why SVI?
 
 - Keep AI-generated code maintainable as your project grows
 - Reduce token usage and LLM costs
 - Get reproducible results across runs
 - Eliminate copy-pasting between chat and your codebase
 
+## Bring your own model
+
+SVI does not provide AI models.
+
+You can use:
+
+- OpenAI
+- Claude
+- Gemini
+- OpenRouter
+- Ollama
+- other providers supported by LLM.js
+
+Or use generated prompts manually in your preferred AI chat.
+
 # The problem
 
-- Coding agents can generate PoCs, MVPs, and small projects within days or even hours instead of weeks or months. However, they struggle with existing codebases, especially when adding new features or working on larger projects.
+- Modern AI coding tools can generate PoCs, MVPs, and small projects extremely quickly. However, maintaining consistency becomes increasingly difficult as projects grow and requirements evolve.
 - Additionally, agents consume a large number of tokens and require powerful LLMs to perform consistently on complex tasks. This leads to high inference costs.
 - In most cases, context only exists while the chat session is active. This can be partially mitigated by using `.md` files, but it is still difficult to control how they are used.
 - You can gain full control over your code and reduce token usage when working in chat mode, but this requires constant copying between the chat and your source files.
@@ -22,7 +41,7 @@ Instead of relying on chat sessions or autonomous agents, you define code genera
 
 SVI replaces ad-hoc prompt usage with a structured, file-based workflow.
 
-Instead of relying on chat sessions or autonomous agents, you define code generation using reusable, version-controlled prompt files that make the process more deterministic.
+Instead of relying on chat sessions or autonomous agents, you define code generation using reusable, version-controlled prompt files that make the process more reproducible.
 
 You control:
 
@@ -30,13 +49,14 @@ You control:
 - what context is used
 - how your code evolves
 
-No hidden state. No chat history. Just deterministic code generation.
+No hidden state. No chat history. Just controlled, reproducible code generation.
 
 This gives you:
 
 - full control over what is generated and when
 - increased reproducibility across runs
-- no manual copy-pasting between chat and source code
+- Automate code generation through APIs when available
+- Fall back to manual chat workflows when necessary
 
 ## A description of the solution
 
@@ -65,7 +85,7 @@ Variation is significantly lower than in agent-based approaches because each gen
 ### Compared to agent-based approaches
 
 - The source of truth is stored in human-readable files rather than generated code; specifications are version-controlled within the project.
-- Ability to work with cheaper, free, or local LLMs.
+- Ability to work with cheaper, free, or local LLMs (may require source code file size adoption).
 - Lower token consumption due to limited context and caching.
 - Higher reproducibility due to constrained context.
 - Reduced risk of unexpected changes due to strict scope separation (one specification per file).
@@ -78,7 +98,8 @@ Variation is significantly lower than in agent-based approaches because each gen
 
 - A structured way to store prompts in a repository with version control.
 - Ability to reuse prompts by including them in other prompts.
-- No need to copy code back and forth between the editor and chat.
+- Direct API integration when available.
+- Manual prompt export/import when API access is unavailable (but all the dependencies are added to the prompt automatically, no need to copy multiple files to the chat, just a single Ctrl+C action).
 - Support for API key usage.
 - Easy integration into CI/CD pipelines.
 

@@ -63,6 +63,9 @@ export default class CheckerForRunManager {
 
     if (!isLLMParamsOkay) {
       printEnvFileExampleAsError();
+      logger.error(
+        "If you have no access to an LLM api, you can use the clipboard mode with '-c' flag which allows you to copy the prompt to your clipboard and paste it into an LLM interface of your choice, then paste back the response.",
+      );
     }
     /*  logger.error(".env file example:");
       logger.error("MODEL_NAME=your-model-name");
