@@ -16,9 +16,22 @@ It can be useful if api key is not accessible for some reason.
 Requirements:
 Copy prompt to clipboard automatically in the beginning of method and notify user that they can copy
 to chat and paste back the response.
-Please use a handy tool for user to paste the text comfortably. Text may contain multiple lines and different
-separators, all should be preserved.
-Please give instruction to user on how to finish the pasting (if they need to press a key combination or something).
+As soon as command line tools don't support comfortable paste of any text to the clipboard, let's ask user 
+to copy the response and press Enter. At this moment, we will get the clipboard contents.
+Please give instruction to user on how to finish the pasting.
+
+Additional checks: 
+1. When user pressed enter, if clipboard is empty, let's say that it is empty and give it one more chance;
+2. When user presses enter, if clipboard is equal to the prompt we copied before, it looks like the user
+has not copied anything, then also give a message about it and give it one more chance.
 
 Additional guidelines:
-Use the 'clipboardy' lib for clipboard interaction. 
+* Use the 'clipboardy' lib for clipboard interaction. 
+* As soon as we ask user recopy the response in case of error, we need to let user to leave this loop somehow.
+Please select a suitable way for this and instruct user.
+* Let's notify user in the initial message, that they should paste only the code snippet, not the whole text from
+the chat.
+* Import clipboardy as
+```ts
+import clipboard from 'clipboardy';
+```

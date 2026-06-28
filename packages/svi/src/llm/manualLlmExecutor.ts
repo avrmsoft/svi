@@ -1,15 +1,35 @@
-import clipboard from 'clipboardy';
-import * as readline from 'readline';
+import clipboard from "clipboardy";
+import * as readline from "readline";
 
 // Relative file path of the *.svi file is src\llm\manualLlmExecutor.svi.
 // Generated file path is: src\llm\manualLlmExecutor.ts.
-// Assuming src/llm/types.ts is in the same directory (src/llm)
-import { LLMOptions, LLMExecutor } from './types';
+// We need to import from 'src/llm/types' but since this file is also in 'src/llm',
+// the relative path should be just './types'.
+import { LLMExecutor, LLMOptions } from "./types";
+
+/**
+ * Helper function to wait for user input (Enter or specific text).
+ * @param message The message to display to the user.
+ * @returns A promise that resolves with the trimmed user input.
+ */
+async function waitForInput(message: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise<string>((resolve) => {
+    rl.question(message, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
 
 export default class ManualLlmExecutor implements LLMExecutor {
-  constructor(private options: LLMOptions) {
-    // The constructor takes LLMOptions for consistency with other LLM executors,
-    // though many options (like apiKey, llmBaseUrl) are not directly used in this manual mode.
+  constructor(private options?: LLMOptions) {
+    // The constructor is provided to match the interface if needed,
+    // but the manual executor doesn't strictly use LLMOptions for its core functionality.
   }
 
   async ask(
@@ -17,80 +37,99 @@ export default class ManualLlmExecutor implements LLMExecutor {
     systemPrompt?: string,
     promptDescription?: string,
   ): Promise<string> {
-    let fullPromptParts: string[] = [];
-
-    // Construct the full prompt, including system instructions and description if provided
+    let combinedPrompt = prompt;
     if (systemPrompt) {
-      fullPromptParts.push(`--- System Instructions ---\n${systemPrompt}`);
-    }
-    if (promptDescription) {
-      fullPromptParts.push(`--- Context/Description ---\n${promptDescription}`);
-    }
-    fullPromptParts.push(`--- User Request ---\n${prompt}`);
-
-    const fullPrompt = fullPromptParts.join('\n\n'); // Join parts with double newline for readability
-
-    // 1. Copy the full prompt to the clipboard and instruct the user
-    try {
-      await clipboard.write(fullPrompt);
-      console.log('----------------------------------------------------');
-      console.log('PROMPT COPIED TO CLIPBOARD!');
-      console.log('Please paste this prompt into your external chat tool (e.g., ChatGPT, Claude).');
-      console.log('----------------------------------------------------');
-      console.log('\nOnce you have the response from the chat tool, paste it back here.');
-      console.log('To finish pasting the response, press "Enter" twice (once for the last line of the response, and then an empty line to signal completion).');
-      console.log('Waiting for your response...');
-      console.log('----------------------------------------------------');
-    } catch (error) {
-      console.error('Failed to copy prompt to clipboard. You may need to install/configure a clipboard tool (e.g., xclip on Linux, or ensure your terminal has clipboard access).');
-      console.log('\n----------------------------------------------------');
-      console.log('Please manually copy the following prompt:');
-      console.log('----------------------------------------------------');
-      console.log(fullPrompt);
-      console.log('----------------------------------------------------');
-      console.log('\nOnce you have the response from the chat tool, paste it back here.');
-      console.log('To finish pasting the response, press "Enter" twice (once for the last line of the response, and then an empty line to signal completion).');
-      console.log('Waiting for your response...');
-      console.log('----------------------------------------------------');
+      combinedPrompt = `System Prompt:\n${systemPrompt}\n\nUser Prompt:\n${prompt}`;
     }
 
-    // 2. Read the pasted response from the user via standard input
-    const rl = readline.createInterface({
-      input: process.stdin,
-      // output: process.stdout is not strictly needed if we only read input, but can be useful for echoing prompts.
-      // Setting terminal to false is important for handling multiline pastes without line-by-line echoing.
-      terminal: false
-    });
+    // Copy the combined prompt to the clipboard
+    await clipboard.write(combinedPrompt);
 
-    let responseLines: string[] = [];
-    let hasContent = false; // Flag to track if any non-empty line has been received
+    console.log("\n--- Manual LLM Interaction Mode ---");
+    console.log("The prompt has been automatically copied to your clipboard.");
+    console.log("Please follow these steps:");
+    console.log(
+      "1. Paste the prompt into your preferred external chat tool (e.g., ChatGPT, Gemini, etc.).",
+    );
+    console.log("2. Obtain the LLM response from the chat tool.");
+    console.log(
+      "3. Copy ONLY THE RELEVANT CODE SNIPPET (or text) from the LLM response to your clipboard.",
+    );
+    console.log("4. Return to this tool and press Enter to continue.");
+    console.log(
+      '   (To cancel the operation, type "q" or "quit" and press Enter instead of just Enter.)',
+    );
+    console.log("-----------------------------------\n");
 
-    return new Promise<string>((resolve) => {
-      rl.on('line', (line) => {
-        if (line.trim() === '') {
-          // If an empty line is received *after* some actual content,
-          // it signifies the end of the user's input.
-          if (hasContent) {
-            rl.close(); // Close the readline interface to signal completion
-          }
-          // If no content has been received yet, ignore leading empty lines.
-        } else {
-          // This line contains actual content
-          hasContent = true;
-          responseLines.push(line);
+    let responseFromClipboard: string = "";
+    let attempts = 0;
+    const MAX_ATTEMPTS = 3; // Allow user a few retries before aborting
+
+    while (true) {
+      const userInput = await waitForInput(
+        `[Attempt ${attempts + 1}/${MAX_ATTEMPTS}] Press Enter when you have pasted the content back, or type "q" to quit: `,
+      );
+
+      if (
+        userInput.toLowerCase() === "q" ||
+        userInput.toLowerCase() === "quit"
+      ) {
+        console.log("\nManual LLM interaction cancelled by user.");
+        throw new Error("Manual LLM interaction cancelled by user.");
+      }
+
+      responseFromClipboard = await clipboard.read();
+
+      // Check 1: Clipboard is empty
+      if (!responseFromClipboard.trim()) {
+        console.log("\n--- Warning ---");
+        console.log(
+          "Your clipboard appears to be empty. No content was found.",
+        );
+        console.log(
+          "Please ensure you have copied the LLM response and try again.",
+        );
+        console.log("---------------\n");
+        attempts++;
+        if (attempts >= MAX_ATTEMPTS) {
+          console.log(
+            `Maximum attempts (${MAX_ATTEMPTS}) reached. Aborting operation.`,
+          );
+          throw new Error(
+            "Failed to get valid content from clipboard after multiple attempts.",
+          );
         }
-      });
+        continue; // Give the user another chance
+      }
 
-      // 'close' event is emitted when the input stream is closed
-      // (e.g., by calling rl.close() or when the input stream ends).
-      rl.on('close', () => {
-        resolve(responseLines.join('\n'));
-      });
+      // Check 2: Clipboard content is identical to the initial prompt
+      if (responseFromClipboard.trim() === combinedPrompt.trim()) {
+        console.log("\n--- Warning ---");
+        console.log(
+          "The content in your clipboard is identical to the prompt that was initially copied.",
+        );
+        console.log(
+          "It seems you have not copied the LLM response. Please try again.",
+        );
+        console.log("---------------\n");
+        attempts++;
+        if (attempts >= MAX_ATTEMPTS) {
+          console.log(
+            `Maximum attempts (${MAX_ATTEMPTS}) reached. Aborting operation.`,
+          );
+          throw new Error(
+            "Failed to get a unique response from clipboard after multiple attempts.",
+          );
+        }
+        continue; // Give the user another chance
+      }
 
-      // In case the input stream ends abruptly (e.g., Ctrl+D/Z without an explicit empty line to close rl)
-      process.stdin.on('end', () => {
-        rl.close();
-      });
-    });
+      // If all checks pass, we have a valid response
+      console.log("\nSuccessfully retrieved content from clipboard.");
+      break;
+    }
+
+    console.log("--- Manual LLM Interaction End ---\n");
+    return responseFromClipboard;
   }
 }

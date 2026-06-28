@@ -17,4 +17,4 @@ create method findConfigFile(startingFolder : string) : string | null
 Try to find file svi.json in starting folder; if found, then return the path to the
 found config.
 If not found, go one level up, and try again.
-If not found in any folder, return null.
+If not found in any folder, return null. 
