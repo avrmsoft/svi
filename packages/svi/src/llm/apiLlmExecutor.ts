@@ -10,7 +10,11 @@ import LlmJsFactories from "./theMaximalistLlmJs/LlmJsFactories";
 import { LLMExecutor, LLMOptions } from "./types";
 
 export default class ApiLLMExecutor implements LLMExecutor {
-  constructor(private readonly options: LLMOptions) {}
+  private options: LLMOptions;
+
+  constructor(private readonly optionsIn: LLMOptions) {
+    this.options = optionsIn;
+  }
 
   public getOptions(): LLMOptions {
     return this.options;

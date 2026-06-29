@@ -4,6 +4,7 @@ manualLlmExecutor.ts
 types.ts
 # Output
 export default class ManualLlmExecutor
+constuctor method signature: constructor(private readonly optionsIn: LLMOptions)
 # Options
 Active=True
 ProgrammingLanguage=
@@ -35,3 +36,22 @@ the chat.
 ```ts
 import clipboard from 'clipboardy';
 ```
+* Use the following guidelines for working with prompt, and write the code accordingly:
+```ts
+
+    console.log("\n--- Manual LLM Interaction Mode ---");
+    console.log("The prompt has been automatically copied to your clipboard.");
+    console.log("Please follow these steps:");
+    console.log(
+      "1. Paste the prompt into your preferred external chat tool (e.g., ChatGPT, Gemini, etc.).",
+    );
+    console.log("2. Obtain the LLM response from the chat tool.");
+    console.log(
+      "3. Copy ONLY THE RELEVANT CODE SNIPPET (or text) from the LLM response to your clipboard.",
+    );
+    console.log("4. Return to this tool and press Enter to continue.");
+    console.log(
+      '   (To cancel the operation, type "q" or "quit" and press Enter instead of just Enter.)',
+    );
+    
+    ```

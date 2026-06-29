@@ -3,6 +3,7 @@ configFinder.ts
 # Dependencies
 # Output
 export default class ConfigFinder
+with method public findConfigFile(startingFolder: string): string | null
 # Options
 Active=True
 ProgrammingLanguage=
