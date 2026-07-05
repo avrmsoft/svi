@@ -19,6 +19,7 @@ describe("SVI CLI empty inputs", () => {
     const { stdout } = await execa("node", [CLI_PATH, "--help"]);
     //const { stdout } = await execa("ts-node", [CLI_PATH, "--help"]);
     expect(stdout).toContain("SVI CLI tool");
+    expect(stdout).toContain("https://github.com/avrmsoft/svi");
     expect(stdout).toContain("Usage:");
     expect(stdout).toContain("init");
     expect(stdout).toContain("run");

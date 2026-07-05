@@ -12,7 +12,13 @@ const program = new Command();
 
 program
   .name("svi")
-  .description("SVI CLI tool — run and manage .svi configuration files")
+  .description(`SVI CLI tool — run and manage .svi configuration files
+
+Repository:
+  https://github.com/avrmsoft/svi
+
+More Info:
+  Turns AI outputs into a reproducible build step.`)
   .version(version);
 
 /**
