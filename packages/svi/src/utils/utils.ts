@@ -1,6 +1,8 @@
 import { SVIOptionValue } from "../svi/types";
 import crypto from "crypto";
 
+const SVI_EXTENSIONS = [".svi", ".svi.md"];
+
 export function optionValueAsString(value: SVIOptionValue): string {
   if (typeof value === "boolean") {
     return value ? "True" : "False";
@@ -32,7 +34,23 @@ export function toCamelCase(value: string): string {
 
 export function fileNameHasSviExtension(fileName: string): boolean {
   const lowerCaseFileName = fileName.toLowerCase();
-  return (
-    lowerCaseFileName.endsWith(".svi") || lowerCaseFileName.endsWith(".svi.md")
-  );
+  return SVI_EXTENSIONS.some((ext) => lowerCaseFileName.endsWith(ext));
+}
+
+export function deleteSviExtensionFromFileName(fileName: string): string {
+  for (const ext of SVI_EXTENSIONS) {
+    if (fileName.toLowerCase().endsWith(ext)) {
+      return fileName.slice(0, -ext.length);
+    }
+  }
+  return fileName;
+}
+
+export function getSviExtensionFromFileName(fileName: string): string | null {
+  for (const ext of SVI_EXTENSIONS) {
+    if (fileName.toLowerCase().endsWith(ext)) {
+      return ext;
+    }
+  }
+  return null;
 }

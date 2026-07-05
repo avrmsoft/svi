@@ -1,6 +1,6 @@
 {
   "name": "@avrm/svi",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "SVI - Structural Vibe Coding (SVI), CLI tools",
   "license": "MIT",
   "scripts": {

@@ -5,6 +5,7 @@ import Logger from "../utils/logger";
 import { writeJSON, exists } from "../utils/file";
 import { type SVIFile } from "../svi/types";
 import SviFileClass from "../svi/sviFileClass";
+import { fileNameHasSviExtension } from "../utils/utils";
 
 interface InitOptions {
   lang?: string;
@@ -77,11 +78,20 @@ function createSviFile(fileArg: string, options: InitOptions = {}): number {
     `The final target absolute path of the new SVI file is: ${fileArg}`,
   );
 
-  const base = path.basename(fileArg, ".svi");
+  let fileName = "";
+  if (fileNameHasSviExtension(fileArg)) {
+    Logger.debug(`User provided a file name with SVI extension: ${fileArg}`);
+    const base = path.basename(fileArg);
+    Logger.debug(`Base name extracted: ${base} (from ${fileArg})`);
+    fileName = base;
+  } else {
+    Logger.debug(`User provided a file name without SVI extension: ${fileArg}`);
+    const base = path.basename(fileArg);
+    Logger.debug(`Base name extracted: ${base} (from ${fileArg})`);
+    fileName = `${base}.svi.md`;
+  }
 
-  Logger.debug(`Base name extracted: ${base} (from ${fileArg})`);
-
-  const fileName = `${base}.svi`;
+  //const base = path.basename(fileArg, ".svi");
 
   Logger.debug(`Final file name: ${fileName}`);
 
