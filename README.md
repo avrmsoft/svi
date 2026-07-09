@@ -43,11 +43,7 @@ If you don't have an API key, have reached your daily limits, or prefer using Ch
 svi run -c
 ```
 
-## No API key? Use your favorite AI chat
-
-SVI can also generate prompts for manual use.
-
-If you don't have an API key, have reached your daily limits, or prefer using ChatGPT, Claude, Gemini, or another web interface, you can:
+Then:
 
 1. Copy the generated prompt to the clipboard
 2. Paste it into your preferred AI chat
@@ -113,6 +109,14 @@ No hidden state. No chat history. Just reproducible outputs.
   Use larger files with strong models, and smaller units with weaker ones
 
 # Getting started
+
+## Video tutorials
+
+Watch the Getting Started series on YouTube:
+
+| [![SVI Getting Started - Part 1](https://img.youtube.com/vi/YQ6GUTLWTQw/hqdefault.jpg)](https://youtu.be/YQ6GUTLWTQw) | [![SVI Getting Started - Part 2](https://img.youtube.com/vi/c0OwT7mpoNc/hqdefault.jpg)](https://youtu.be/c0OwT7mpoNc) |
+| :---: | :---: |
+| **[Part 1 — Build a Simple Program with AI](https://youtu.be/YQ6GUTLWTQw)** | **[Part 2 — Multi-File Projects and Dependencies](https://youtu.be/c0OwT7mpoNc)** |
 
 ## Install
 
